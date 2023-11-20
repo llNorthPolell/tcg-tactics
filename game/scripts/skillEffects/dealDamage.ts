@@ -1,9 +1,9 @@
-import UnitStats from "@/game/data/unitStats";
+import UnitStats from "@/game/data/unitData";
 import SkillEffect from "./skillEffect";
 import { ValueType } from "@/game/enums/valueType";
 
 export default class DealDamage implements SkillEffect{
-    readonly target:UnitStats;
+    target?:UnitStats;
     readonly amount:number;
     readonly valueType: ValueType;
     readonly isDelayed:boolean;  
@@ -16,17 +16,15 @@ export default class DealDamage implements SkillEffect{
 /**
  * This effect will deal damage to the target. Can be used for instant damage, damage over time or delayed damage.
  * @param amount - Amount of damage to deal to target
- * @param target - Target to apply damage to
  * @param valueType - Actual value or percentage
  * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
  * @param isDoT - If true, will apply damage over time
  * @param isDelayed - If true, will apply damage when time is up
  * @param isRemovable - If true, can be removed by a cleansing effect
  */
-    constructor(amount: number, target:UnitStats, valueType=ValueType.VALUE, duration=0, isDoT=false, isDelayed=false, isRemovable=true){
+    constructor(amount: number, valueType=ValueType.VALUE, duration=0, isDoT=false, isDelayed=false, isRemovable=true){
         this.amount = amount;
         this.valueType=valueType;
-        this.target = target;
 
         this.isDelayed=isDelayed;
         this.isDoT=isDoT;
@@ -53,8 +51,8 @@ export default class DealDamage implements SkillEffect{
     private applyDamage(){
         const damageDealt = (this.valueType===ValueType.VALUE)? 
             this.amount : 
-            Math.floor(this.target.currHp*(this.amount/100));
-        this.target.currHp-=damageDealt;
+            Math.floor(this.target!.currHp*(this.amount/100));
+        this.target!.currHp-=damageDealt;
         console.log(`Deal ${damageDealt} damage to target`);
     }
 

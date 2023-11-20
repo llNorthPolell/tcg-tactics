@@ -1,7 +1,7 @@
-import UnitStats from "@/game/data/unitStats";
+import UnitStats from "@/game/data/unitData";
 
 export default interface SkillEffect{
-    readonly target:UnitStats;
+    target?:UnitStats;
     readonly duration:number;
     readonly isRemovable:boolean;
 

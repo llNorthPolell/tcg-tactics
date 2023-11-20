@@ -1,9 +1,9 @@
-import HeroCard from "@/game/data/heroCard";
-import UnitStats from "@/game/data/unitStats";
+import UnitCardData from "@/game/data/cards/unitCardData";
+import UnitStats from "@/game/data/unitData";
 import SkillEffect from "@/game/scripts/skillEffects/skillEffect";
 
 export const createTestUnit : ()=>UnitStats = () =>{
-    const card = new HeroCard("test","test char","soldier",1000,1000,1000,1000,3,"none","none","none",[]);
+    const card = new UnitCardData("test","test char","soldier",1000,1000,1000,1000,3,1);
     return new UnitStats(card);
 }
 

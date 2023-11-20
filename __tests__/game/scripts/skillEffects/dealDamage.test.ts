@@ -5,7 +5,8 @@ import { checkEffectEnded, createTestUnit } from "./common";
 
 it("should deal damage once and is diabled immediately after", ()=>{
     const target = createTestUnit();
-    const damageSpell = new DealDamage(100,target);
+    const damageSpell = new DealDamage(100);
+    damageSpell.target=target;
     const applyDamageFn = jest.spyOn(damageSpell as any,"applyDamage");
 
     for(let i=0 ; i < 5; i++){
@@ -21,7 +22,8 @@ it("should deal damage once and is diabled immediately after", ()=>{
 
 it("should deal damage 3 times", ()=>{
     const target = createTestUnit();
-    const damageSpell = new DealDamage(100,target,ValueType.VALUE,3,true);
+    const damageSpell = new DealDamage(100,ValueType.VALUE,3,true);
+    damageSpell.target=target;
     const applyDamageFn = jest.spyOn(damageSpell as any,"applyDamage");
 
     for(let i=0 ; i < 5; i++){
@@ -37,7 +39,8 @@ it("should deal damage 3 times", ()=>{
 
 it("should deal damage once after 5 turns", ()=>{
     const target = createTestUnit();
-    const damageSpell = new DealDamage(100,target,ValueType.VALUE,5,false,true);
+    const damageSpell = new DealDamage(100,ValueType.VALUE,5,false,true);
+    damageSpell.target=target;
     const applyDamageFn = jest.spyOn(damageSpell as any,"applyDamage");
 
     for(let i=0 ; i < 5; i++){
@@ -53,7 +56,8 @@ it("should deal damage once after 5 turns", ()=>{
 
 it("should deal 5% damage to target each turn for 3 turns",()=>{
     const target = createTestUnit();
-    const damageSpell = new DealDamage(5,target,ValueType.PERCENTAGE,3,true,false); 
+    const damageSpell = new DealDamage(5,ValueType.PERCENTAGE,3,true,false); 
+    damageSpell.target=target;
     const applyDamageFn = jest.spyOn(damageSpell as any,"applyDamage");
 
     for (let i=0; i<5;i++){

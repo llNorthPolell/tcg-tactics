@@ -1,7 +1,7 @@
-import { Card } from "./card";
+import { CardData } from "../cardData";
 
 
-export default class HeroCard implements Card{
+export default class UnitCardData implements CardData{
     readonly id: string;
     readonly name: string;
     
@@ -13,10 +13,10 @@ export default class HeroCard implements Card{
     readonly def: number;
     readonly mvt: number;
 
-    readonly leaderSkill: string;
-    readonly passiveSkill: string;
-    readonly activeSkill: string;
-    readonly minions: string[];
+    readonly passiveSkill?: string;
+    readonly activeSkill?: string;
+
+    readonly cost:number;
 
     constructor(
         id : string, 
@@ -27,10 +27,9 @@ export default class HeroCard implements Card{
         pwr:number,
         def:number,
         mvt:number,
-        leaderSkill: string,
-        passiveSkill: string,
-        activeSkill: string,
-        minions: string[]
+        cost:number,
+        passiveSkill?: string,
+        activeSkill?: string
         ){
         this.id=id;
         this.name=name;
@@ -40,10 +39,11 @@ export default class HeroCard implements Card{
         this.pwr=pwr;
         this.def=def;
         this.mvt=mvt;
-        this.leaderSkill=leaderSkill;
         this.passiveSkill=passiveSkill;
         this.activeSkill=activeSkill;
-        this.minions=minions;
+        this.cost=cost;
     }
     
+
+
 }

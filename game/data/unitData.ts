@@ -1,6 +1,6 @@
-import HeroCard from "./heroCard";
+import UnitCardData from "./cards/unitCardData";
 
-export default class UnitStats {
+export default class UnitData {
     readonly unitClass:string;
 
     readonly baseMaxHp:number;
@@ -21,7 +21,7 @@ export default class UnitStats {
     isStunned:boolean;
     sleepTime:number;
 
-    constructor(card:HeroCard){
+    constructor(card:UnitCardData){
         this.unitClass=card.unitClass;
         
         this.baseMaxHp = card.hp;

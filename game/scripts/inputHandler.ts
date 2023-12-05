@@ -1,10 +1,9 @@
-import { TILESIZE } from "../config";
-
 export default function setupMouseInputs(
     input: Phaser.Input.InputPlugin,
     camera: Phaser.Cameras.Scene2D.Camera) {
 
-    input.on(
+    input
+    .on(
         Phaser.Input.Events.GAMEOBJECT_POINTER_MOVE,
         (pointer: Phaser.Input.Pointer) => {
             if (!pointer.isDown) return;
@@ -13,4 +12,10 @@ export default function setupMouseInputs(
             camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom;
         }
     )
+    /*.on(
+        Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
+        (pointer: Phaser.Input.Pointer,objects:Phaser.GameObjects.GameObject)=>{    
+            console.log(JSON.stringify(objects));
+        }
+    )*/
 }

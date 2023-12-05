@@ -102,7 +102,7 @@
             0, 0, 0, 0, 0, 0, 0, 899, 897, 899, 0, 0, 0, 0, 0, 0],
          "height":16,
          "id":4,
-         "name":"KeyPoints",
+         "name":"Landmarks",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -290,84 +290,54 @@
                  "id":0,
                  "properties":[
                         {
-                         "name":"capturable",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"type",
+                         "name":"name",
                          "type":"string",
-                         "value":"stronghold"
+                         "value":"Stronghold"
                         }]
                 }, 
                 {
                  "id":1,
                  "properties":[
                         {
-                         "name":"capturable",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"type",
+                         "name":"name",
                          "type":"string",
-                         "value":"resourceNode"
+                         "value":"Resource Node"
                         }]
                 }, 
                 {
                  "id":2,
                  "properties":[
                         {
-                         "name":"capturable",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"type",
+                         "name":"name",
                          "type":"string",
-                         "value":"rallyPoint"
+                         "value":"Rally Point"
                         }]
                 }, 
                 {
                  "id":3,
                  "properties":[
                         {
-                         "name":"capturable",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"type",
+                         "name":"name",
                          "type":"string",
-                         "value":"outpost"
+                         "value":"Outpost"
                         }]
                 }, 
                 {
                  "id":4,
                  "properties":[
                         {
-                         "name":"capturable",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"type",
+                         "name":"name",
                          "type":"string",
-                         "value":"pointOfInterest"
+                         "value":"Interest Point"
                         }]
                 }, 
                 {
                  "id":6,
                  "properties":[
                         {
-                         "name":"capturable",
-                         "type":"bool",
-                         "value":false
-                        }, 
-                        {
-                         "name":"type",
+                         "name":"name",
                          "type":"string",
-                         "value":"camp"
+                         "value":"Camp"
                         }]
                 }],
          "tilewidth":32,

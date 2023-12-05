@@ -1,4 +1,5 @@
 import Player from "../gameobjects/player";
+import { EventEmitter } from "./events";
 
 export default class TurnManager{
     private players:Player[];
@@ -10,6 +11,12 @@ export default class TurnManager{
         this.players = players;
         this.activePlayerIndex = 1;
         this.turn = 1;
+
+        EventEmitter.on(
+            'turn-end',
+            this.next,
+            this
+        );
     }
 
 

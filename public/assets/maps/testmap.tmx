@@ -10,38 +10,32 @@
   <image source="tilesets/mapicons.png" trans="ff00ff" width="120" height="120"/>
   <tile id="0">
    <properties>
-    <property name="capturable" type="bool" value="true"/>
-    <property name="type" value="stronghold"/>
+    <property name="name" value="Stronghold"/>
    </properties>
   </tile>
   <tile id="1">
    <properties>
-    <property name="capturable" type="bool" value="true"/>
-    <property name="type" value="resourceNode"/>
+    <property name="name" value="Resource Node"/>
    </properties>
   </tile>
   <tile id="2">
    <properties>
-    <property name="capturable" type="bool" value="false"/>
-    <property name="type" value="rallyPoint"/>
+    <property name="name" value="Rally Point"/>
    </properties>
   </tile>
   <tile id="3">
    <properties>
-    <property name="capturable" type="bool" value="true"/>
-    <property name="type" value="outpost"/>
+    <property name="name" value="Outpost"/>
    </properties>
   </tile>
   <tile id="4">
    <properties>
-    <property name="capturable" type="bool" value="true"/>
-    <property name="type" value="pointOfInterest"/>
+    <property name="name" value="Interest Point"/>
    </properties>
   </tile>
   <tile id="6">
    <properties>
-    <property name="capturable" type="bool" value="false"/>
-    <property name="type" value="camp"/>
+    <property name="name" value="Camp"/>
    </properties>
   </tile>
  </tileset>
@@ -105,7 +99,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,731,732,0
 </data>
  </layer>
- <layer id="4" name="KeyPoints" width="16" height="16">
+ <layer id="4" name="Landmarks" width="16" height="16">
   <data encoding="csv">
 0,0,0,0,0,0,899,897,899,0,0,0,0,0,0,0,
 0,0,0,0,0,0,899,899,899,0,0,0,0,0,0,0,

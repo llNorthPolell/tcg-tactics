@@ -1,51 +1,22 @@
 import HeroCardData from "../../data/cards/heroCardData";
 import { Card } from "./card";
 import Unit from "../unit";
-import { CARD_SIZE } from "@/game/config";
+import { EventEmitter } from "@/game/scripts/events";
+import { EVENTS } from "@/game/enums/keys/events";
+import { randomUUID } from "crypto";
 
-export default class HeroCard implements Card{
-    readonly id:string;
-    readonly data: HeroCardData;
-
-    private container?: Phaser.GameObjects.Container;
-
-    private x: number;
-    private y: number;
-
+export default class HeroCard extends Card<HeroCardData>{
     constructor(id:string,data:HeroCardData){
-        this.id=id;
-        this.data=data;
-        this.x=0;
-        this.y=0;
-    }
-
-    setPosition(x:number,y:number){
-        this.x=x;
-        this.y=y;
+        super(id,data);
     }
     
-    play():Unit{
-        return new Unit(this.data);
+    play(){
+        const unit = new Unit(randomUUID().toString(),this.data);
+
+        EventEmitter.emit(EVENTS.fieldEvent.SUMMON_UNIT,unit);
     }
 
     render(scene:Phaser.Scene){
-        this.container=scene.add.container(this.x,this.y);
-        const bg = scene.add.rectangle(0,0,CARD_SIZE.width, CARD_SIZE.height,0x770000)
-            .setOrigin(0,0)
-            .setStrokeStyle(1,0x000000);
-
-        this.container?.add(bg);
-        this.container.add(
-            scene.add.text(
-                CARD_SIZE.width*0.1,CARD_SIZE.height*0.5,this.data.name
-            )
-        );
-        this.container.setInteractive(bg,Phaser.Geom.Rectangle.Contains).on(
-            Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
-            ()=>{
-                console.log(`Viewing card#${this.id}`);
-            }
-        );
-        return this.container;
+        return this.renderGameObject(scene,0x770000);
     }
 }

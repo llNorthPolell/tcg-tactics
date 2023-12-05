@@ -1,0 +1,274 @@
+{ "compressionlevel":-1,
+ "height":8,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[116, 116, 116, 116, 116, 116, 116, 116,
+            116, 116, 116, 116, 116, 116, 116, 116,
+            116, 116, 116, 116, 116, 116, 116, 116,
+            116, 116, 116, 116, 116, 116, 116, 116,
+            116, 116, 116, 116, 116, 116, 116, 116,
+            116, 116, 116, 116, 116, 116, 116, 116,
+            116, 116, 116, 116, 116, 116, 116, 116,
+            116, 116, 116, 116, 116, 116, 116, 116],
+         "height":8,
+         "id":2,
+         "name":"Ground",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":8,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0],
+         "height":8,
+         "id":5,
+         "name":"Decoration",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":8,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[0, 0, 0, 121, 123, 0, 0, 0,
+            0, 0, 0, 121, 123, 0, 0, 0,
+            0, 0, 0, 153, 155, 0, 0, 0,
+            90, 91, 0, 0, 0, 0, 89, 90,
+            154, 155, 0, 0, 0, 0, 153, 154,
+            0, 0, 0, 89, 91, 0, 0, 0,
+            0, 0, 0, 121, 123, 0, 0, 0,
+            0, 0, 0, 121, 123, 0, 0, 0],
+         "height":8,
+         "id":1,
+         "name":"Obstacles",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":8,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[1, 3, 2, 0, 0, 0, 0, 4,
+            3, 3, 0, 0, 0, 2, 0, 3,
+            2, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 2, 2, 0, 0, 0,
+            0, 0, 0, 2, 2, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 2,
+            3, 0, 2, 0, 0, 0, 3, 3,
+            4, 0, 0, 0, 0, 2, 3, 1],
+         "height":8,
+         "id":3,
+         "name":"Landmarks",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":8,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":4,
+         "name":"PlayerStart",
+         "objects":[
+                {
+                 "height":32,
+                 "id":1,
+                 "name":"1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":224,
+                 "y":224
+                }, 
+                {
+                 "height":32,
+                 "id":2,
+                 "name":"1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":192,
+                 "y":224
+                }, 
+                {
+                 "height":32,
+                 "id":3,
+                 "name":"1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":224,
+                 "y":192
+                }, 
+                {
+                 "height":32,
+                 "id":4,
+                 "name":"1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":192,
+                 "y":192
+                }, 
+                {
+                 "height":32,
+                 "id":6,
+                 "name":"2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":0,
+                 "y":32
+                }, 
+                {
+                 "height":32,
+                 "id":7,
+                 "name":"2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":32,
+                 "y":32
+                }, 
+                {
+                 "height":32,
+                 "id":8,
+                 "name":"2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":32,
+                 "y":0
+                }, 
+                {
+                 "height":32,
+                 "id":9,
+                 "name":"2",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":0,
+                 "y":0
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":8,
+ "nextobjectid":17,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.10.2",
+ "tileheight":32,
+ "tilesets":[
+        {
+         "columns":3,
+         "firstgid":1,
+         "image":"tilesets\/mapicons.png",
+         "imageheight":120,
+         "imagewidth":120,
+         "margin":9,
+         "name":"mapicons",
+         "spacing":0,
+         "tilecount":9,
+         "tileheight":32,
+         "tiles":[
+                {
+                 "id":0,
+                 "properties":[
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"Stronghold"
+                        }]
+                }, 
+                {
+                 "id":1,
+                 "properties":[
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"Resource Node"
+                        }]
+                }, 
+                {
+                 "id":2,
+                 "properties":[
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"Rally Point"
+                        }]
+                }, 
+                {
+                 "id":3,
+                 "properties":[
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"Outpost"
+                        }]
+                }, 
+                {
+                 "id":4,
+                 "properties":[
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"Interest Point"
+                        }]
+                }, 
+                {
+                 "id":6,
+                 "properties":[
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"Camp"
+                        }]
+                }],
+         "tilewidth":32,
+         "transparentcolor":"#ff00ff"
+        }, 
+        {
+         "columns":32,
+         "firstgid":10,
+         "image":"tilesets\/tileset.png",
+         "imageheight":934,
+         "imagewidth":1044,
+         "margin":10,
+         "name":"tileset",
+         "spacing":0,
+         "tilecount":896,
+         "tileheight":32,
+         "tilewidth":32,
+         "transparentcolor":"#ff00ff"
+        }],
+ "tilewidth":32,
+ "type":"map",
+ "version":"1.10",
+ "width":8
+}

@@ -1,6 +1,7 @@
 import UnitCardData from "./cards/unitCardData";
 
 export default class UnitData {
+    readonly name: string;
     readonly unitClass:string;
 
     readonly baseMaxHp:number;
@@ -22,6 +23,7 @@ export default class UnitData {
     sleepTime:number;
 
     constructor(card:UnitCardData){
+        this.name = card.name;
         this.unitClass=card.unitClass;
         
         this.baseMaxHp = card.hp;

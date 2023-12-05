@@ -1,10 +1,8 @@
 import Phaser from "phaser";
 
-export const SCALE = 3.125;
-
 export const TILESIZE = {
-    width:100,
-    height:100
+    width:32,
+    height:32
 }
 
 export const CANVAS_SIZE = {
@@ -18,7 +16,7 @@ export const HAND_UI_SIZE = {
 }
 
 export const CARD_SIZE = {
-    width:HAND_UI_SIZE.width*0.025*SCALE,
+    width:HAND_UI_SIZE.width*0.08,
     height: HAND_UI_SIZE.height
 }
 

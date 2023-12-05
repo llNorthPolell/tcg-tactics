@@ -4,10 +4,10 @@ import CapturableLandmark from "./capturableLandmark";
 import Buff from "@/game/scripts/skillEffects/buff";
 import { ValueType } from "@/game/enums/valueType";
 import { UnitStatField } from "@/game/enums/unitStatField";
-import ParentLandmark from "./parentLandmark";
 import RallyPoint from "./rallyPoint";
+import ParentLandmark from "./parentLandmark";
 
-export default class Stronghold extends CapturableLandmark implements ParentLandmark{
+export default class Outpost extends CapturableLandmark implements ParentLandmark{
     private rallyPoints: RallyPoint[];
     readonly effects:SkillEffect[]
 
@@ -16,16 +16,16 @@ export default class Stronghold extends CapturableLandmark implements ParentLand
 
         this.effects = [
             new Buff(
-                "Stronghold's Advantage",
-                3,
+                "Outpost's Advantage",
+                1,
                 ValueType.VALUE,
                 UnitStatField.PWR,
                 -1,
                 false
             ),
             new Buff(
-                "Stronghold's Advantage",
-                3,
+                "Outpost's Advantage",
+                1,
                 ValueType.VALUE,
                 UnitStatField.DEF,
                 -1,

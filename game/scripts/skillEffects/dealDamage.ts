@@ -3,6 +3,7 @@ import SkillEffect from "./skillEffect";
 import { ValueType } from "@/game/enums/valueType";
 
 export default class DealDamage implements SkillEffect{
+    readonly name;
     target?:UnitStats;
     readonly amount:number;
     readonly valueType: ValueType;
@@ -15,6 +16,7 @@ export default class DealDamage implements SkillEffect{
 
 /**
  * This effect will deal damage to the target. Can be used for instant damage, damage over time or delayed damage.
+ * @param name - Name of the skill effect
  * @param amount - Amount of damage to deal to target
  * @param valueType - Actual value or percentage
  * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
@@ -22,7 +24,8 @@ export default class DealDamage implements SkillEffect{
  * @param isDelayed - If true, will apply damage when time is up
  * @param isRemovable - If true, can be removed by a cleansing effect
  */
-    constructor(amount: number, valueType=ValueType.VALUE, duration=0, isDoT=false, isDelayed=false, isRemovable=true){
+    constructor(name:string,amount: number, valueType=ValueType.VALUE, duration=0, isDoT=false, isDelayed=false, isRemovable=true){
+        this.name = name;
         this.amount = amount;
         this.valueType=valueType;
 
@@ -78,8 +81,13 @@ export default class DealDamage implements SkillEffect{
             console.log("This spell effect cannot be removed.");
             return;
         }
+        this.forceRemove();
+    }
+
+
+    forceRemove():void{
         this.active=false;
-        console.log("This spell effect has been removed.")
+        console.log("This spell effect has been removed.");
     }
     
 }

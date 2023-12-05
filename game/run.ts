@@ -13,6 +13,7 @@ import SpellCard from "./gameobjects/cards/spellCard";
 import SpellCardData from "./data/cards/spellCardData";
 import DealDamage from "./scripts/skillEffects/dealDamage";
 import { ValueType } from "./enums/valueType";
+import { GAME_STATE } from "./enums/keys/gameState";
 
 
 
@@ -118,10 +119,14 @@ export default function run() : Phaser.Game{
     ];
 
 
-    const testPlayer = new Player(1,deck)
+    const testPlayer = new Player(1);
 
-    game.scene.add(SCENES.GAMEPLAY,GameplayScene,false,{player:testPlayer});
-    game.scene.add(SCENES.HUD,HUD,false,{player:testPlayer});
+    game.registry.set(GAME_STATE.player, testPlayer);
+    game.registry.set(GAME_STATE.deck, deck);
+    game.registry.set(GAME_STATE.opponents, [])
+
+    game.scene.add(SCENES.GAMEPLAY,GameplayScene,false);
+    game.scene.add(SCENES.HUD,HUD,false);
     game.scene.start(SCENES.GAMEPLAY, {player:testPlayer});
 
     return game;

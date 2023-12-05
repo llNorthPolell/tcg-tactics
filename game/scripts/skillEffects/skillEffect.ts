@@ -1,6 +1,7 @@
 import UnitStats from "@/game/data/unitData";
 
 export default interface SkillEffect{
+    readonly name: string;
     target?:UnitStats;
     readonly duration:number;
     readonly isRemovable:boolean;
@@ -12,4 +13,6 @@ export default interface SkillEffect{
     apply() : void;
 
     remove() : void;
+
+    forceRemove(): void;
 }

@@ -19,6 +19,7 @@ import { TileStatus } from "../enums/tileStatus";
 import SelectionTile from "../gameobjects/selectionTile";
 import UnitCardData from "../data/cards/unitCardData";
 import { v4 as uuidv4 } from 'uuid';
+import { getWalkablePositions } from "./util";
 
 export type PlayerOwnership = {
     player: GamePlayer,
@@ -56,7 +57,8 @@ export default class FieldManager{
     private selectionTiles?: SelectionTile[][];
     private playerOwnershipList: PlayerOwnership[];
     private activeHighlightTiles: SelectionTile[];
-
+    private tilemap: TilemapData;
+    
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
         
@@ -80,6 +82,7 @@ export default class FieldManager{
 
 
         const tilemap = this.generateMap();
+        this.tilemap=tilemap;
         this.generateHighlightTiles(tilemap);
         this.activeHighlightTiles=[];
         const landmarks = this.loadLandmarks(tilemap);
@@ -123,7 +126,7 @@ export default class FieldManager{
                             rallyPoint=> {return {x:rallyPoint.x,y:rallyPoint.y}}
                         );
                     
-                    this.showHighlightTiles(TileStatus.SUCCESS,rallyPointPositions);
+                    this.showHighlightTiles(rallyPointPositions);
                 }
             }
         )
@@ -143,6 +146,18 @@ export default class FieldManager{
             EVENTS.fieldEvent.CAST_SPELL,
             ()=>{
                 console.log(`Played spell... `);
+            }
+        )
+        .on(
+            EVENTS.unitEvent.SELECT,
+            (unit: Unit)=>{
+                console.log(`Selected ${unit.getUnitData().name}`)
+                const movement = unit.getUnitData().currMvt;
+                const location = unit.getLocation();
+                const highlightTiles = getWalkablePositions(location,{x:this.tilemap.map.width-1,y:this.tilemap.map.height-1}, movement);
+                console.log(JSON.stringify(highlightTiles));
+                this.showHighlightTiles(highlightTiles);
+                
             }
         )
     }
@@ -348,15 +363,12 @@ export default class FieldManager{
         );
     }
 
-    showHighlightTiles(
-        status:TileStatus,
-        locations?:Position[]
-    ){
-        locations?.forEach(
+    showHighlightTiles(locations:Position[]){
+        locations.forEach(
             position=>{
                 const selectionTile = this.selectionTiles![position.y][position.x];
                 this.activeHighlightTiles = [...this.activeHighlightTiles,selectionTile];
-                selectionTile.show(status);
+                selectionTile.show();
             }
         )
     }
@@ -377,4 +389,6 @@ export default class FieldManager{
         unit.render(this.scene);
         console.log(`Summoned ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
     }
+
+
 }

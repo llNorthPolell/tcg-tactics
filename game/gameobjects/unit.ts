@@ -1,10 +1,16 @@
 
 import { TILESIZE } from "../config";
+import { CardData } from "../data/cardData";
 import HeroCardData from "../data/cards/heroCardData";
 import UnitCardData from "../data/cards/unitCardData";
 import { Position } from "../data/position";
 import UnitData from "../data/unitData";
 import { ASSETS } from "../enums/keys/assets";
+import { EVENTS } from "../enums/keys/events";
+import { EventEmitter } from "../scripts/events";
+import { Card } from "./cards/card";
+import HeroCard from "./cards/heroCard";
+import UnitCard from "./cards/unitCard";
 import GamePlayer from "./gamePlayer";
 
 export default class Unit {
@@ -32,6 +38,14 @@ export default class Unit {
         this.activeColor=this.owner.color;
         const darkColor = Phaser.Display.Color.ValueToColor(this.owner.color).darken(80);
         this.inactiveColor= darkColor.color;
+
+        EventEmitter.on(
+            EVENTS.cardEvent.SELECT,
+            (card : Card<CardData>)=>{
+                if (card instanceof UnitCard || card instanceof HeroCard)
+                    EventEmitter.emit(EVENTS.unitEvent.CHECK_STANDING_ON_RALLY,this);
+            }
+        )
     }
 
     getUnitData(){
@@ -65,14 +79,36 @@ export default class Unit {
         this.image = scene.add.sprite(TILESIZE.width*0.5,TILESIZE.height*0.5,assetName)
             .setOrigin(0.5)
             .setDisplaySize(TILESIZE.width*0.9, TILESIZE.height*0.9);
+
+            
         this.container.add(this.image);
+
+        if (this.active)
+            this.image.setAlpha(1);
+        else
+            this.image.setAlpha(0.7);
+
+        this.container.setInteractive(bg,Phaser.Geom.Rectangle.Contains)
+        .on(
+            Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
+            ()=>{
+                EventEmitter.emit(EVENTS.unitEvent.SELECT,this);
+            }
+        )
+
     }
 
+    isActive(){
+        return this.active;
+    }
+    
     wake(){
         this.active=true;
+        this.image!.setAlpha(1);
     };
 
     sleep(){
         this.active=false;
+        this.image!.setAlpha(0.7);
     }
 }

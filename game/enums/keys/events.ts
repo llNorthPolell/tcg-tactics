@@ -2,7 +2,7 @@ export const EVENTS = {
     cardEvent: Object.freeze({
         SELECT: "select-card",
         PLAY: "play-card",
-        CANCEL: "cancel-card-selection"
+        CANCEL: "cancel-card-select"
     }),
     uiEvent: Object.freeze({
         SELECT_LOCATION: "select-location",
@@ -21,6 +21,11 @@ export const EVENTS = {
         GENERATE_RESOURCES: "generate-resources",
         SUMMON_UNIT: "summon-unit",
         CAST_SPELL: "cast-spell"
+    }),
+    unitEvent: Object.freeze({
+        CHECK_STANDING_ON_RALLY: "check-standing-on-rally",
+        SELECT: "select-unit",
+        CANCEL: "cancel-unit-select"
     })
 }
 

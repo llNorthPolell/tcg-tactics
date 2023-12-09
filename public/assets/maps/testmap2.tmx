@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="17">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="24">
  <editorsettings>
   <export target="testmap2.json" format="json"/>
  </editorsettings>
@@ -89,12 +89,6 @@
  </layer>
  <objectgroup id="4" name="PlayerStart">
   <object id="1" name="1" x="224" y="224" width="32" height="32"/>
-  <object id="2" name="1" x="192" y="224" width="32" height="32"/>
-  <object id="3" name="1" x="224" y="192" width="32" height="32"/>
-  <object id="4" name="1" x="192" y="192" width="32" height="32"/>
-  <object id="6" name="2" x="0" y="32" width="32" height="32"/>
-  <object id="7" name="2" x="32" y="32" width="32" height="32"/>
-  <object id="8" name="2" x="32" y="0" width="32" height="32"/>
   <object id="9" name="2" x="0" y="0" width="32" height="32"/>
  </objectgroup>
 </map>

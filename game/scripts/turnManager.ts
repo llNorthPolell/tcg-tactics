@@ -1,33 +1,36 @@
-import Player from "../gameobjects/player";
+import { EVENTS } from "../enums/keys/events";
+import GamePlayer from "../gameobjects/gamePlayer";
 import { EventEmitter } from "./events";
 
 export default class TurnManager{
-    private players:Player[];
+    private player: GamePlayer;
+    private playersInGame:GamePlayer[];
     private turn:number;
     private activePlayerIndex: number;
-    private activePlayer?:Player;
+    private activePlayer?:GamePlayer;
 
-    constructor(players=[]){ 
-        this.players = players;
-        this.activePlayerIndex = 1;
+    constructor(player:GamePlayer, playersInGame:GamePlayer[]){ 
+        this.player=player;
+        this.playersInGame = playersInGame;
+        console.log(`Param: ${JSON.stringify(playersInGame)}, Class Property: ${JSON.stringify(this.playersInGame)}`);
+        this.activePlayerIndex = -1;
         this.turn = 1;
 
         EventEmitter.on(
-            'turn-end',
-            this.next,
-            this
+            EVENTS.gameEvent.NEXT_TURN,
+            ()=>{
+                if (this.activePlayerIndex==this.playersInGame.length){
+                    this.activePlayerIndex=-1;
+                    this.turn++;
+                }
+                    
+                this.activePlayerIndex++;
+                this.activePlayer=this.playersInGame[this.activePlayerIndex];
+        
+                if (this.activePlayer == this.player)
+                    EventEmitter.emit(EVENTS.gameEvent.PLAYER_TURN);
+            }
         );
     }
 
-
-    next(){
-        if (this.activePlayerIndex==this.players.length){
-            this.activePlayerIndex=-1;
-            this.turn++;
-        }
-            
-        this.activePlayerIndex++;
-        this.activePlayer=this.players[this.activePlayerIndex];
-
-    }
 } 

@@ -1,23 +1,21 @@
 import { Card } from "./card";
-import Unit from "../unit";
 import UnitCardData from "@/game/data/cards/unitCardData";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
-import { randomUUID } from "crypto";
+import { Position } from "@/game/data/position";
+import GamePlayer from "../gamePlayer";
 
 export default class UnitCard extends Card<UnitCardData>{
 
-    constructor(id:string,data:UnitCardData){
-        super(id,data);
+    constructor(id:string,data:UnitCardData,owner:GamePlayer){
+        super(id,data,owner);
     }
     
-    play(){
-        const unit = new Unit(randomUUID().toString(),this.data);
-
-        EventEmitter.emit(EVENTS.fieldEvent.SUMMON_UNIT,unit);
+    play(location:Position){
+        EventEmitter.emit(EVENTS.fieldEvent.SUMMON_UNIT,location,this.data,this.owner);
     }
 
     render(scene:Phaser.Scene){
-        return this.renderGameObject(scene,0x777700);
+        return this.renderGameObject(scene,0x777700,"units");
     }
 }

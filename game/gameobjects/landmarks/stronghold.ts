@@ -1,18 +1,18 @@
 import SkillEffect from "@/game/scripts/skillEffects/skillEffect";
-import Player from "../player";
 import CapturableLandmark from "./capturableLandmark";
 import Buff from "@/game/scripts/skillEffects/buff";
 import { ValueType } from "@/game/enums/valueType";
 import { UnitStatField } from "@/game/enums/unitStatField";
 import ParentLandmark from "./parentLandmark";
 import RallyPoint from "./rallyPoint";
+import BaseLandmark from "./baseLandmark";
 
-export default class Stronghold extends CapturableLandmark implements ParentLandmark{
+export default class Stronghold extends BaseLandmark implements ParentLandmark,CapturableLandmark{
     private rallyPoints: RallyPoint[];
     readonly effects:SkillEffect[]
 
-    constructor(id:string, x:number,y:number,owner? : Player){
-        super(id,x,y,owner);
+    constructor(id:string, x:number,y:number,tile: Phaser.Tilemaps.Tile){
+        super(id,x,y,tile);
 
         this.effects = [
             new Buff(
@@ -38,5 +38,9 @@ export default class Stronghold extends CapturableLandmark implements ParentLand
     
     linkRallyPoints(rallyPoints: RallyPoint[]){
         this.rallyPoints = [...this.rallyPoints, ...rallyPoints];
+    }
+
+    getRallyPoints(){
+        return this.rallyPoints;
     }
 }

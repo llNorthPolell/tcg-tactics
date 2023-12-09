@@ -1,7 +1,10 @@
 import { CANVAS_SIZE } from "@/game/config";
 import { Position } from "@/game/data/position";
-import { GAME_STATE } from "@/game/enums/keys/gameState";
+import { EVENTS } from "@/game/enums/keys/events";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
+import CardManager from "@/game/scripts/cardManager";
+import { EventEmitter } from "@/game/scripts/events";
+
 
 const RESOURCE_DISPLAY_SIZE = {
     width:  CANVAS_SIZE.width*0.15,
@@ -25,17 +28,11 @@ export default class ResourceDisplay extends Phaser.GameObjects.Container{
             RESOURCE_DISPLAY_SIZE.height,
             UI_COLORS.background
         ).setOrigin(0);
-
-        
-
-        const player = scene.game.registry.get(GAME_STATE.player);
-        console.log(JSON.stringify(player));
-        const {current,max,perTurn}=player.getResources();
         
         const currResourceText = scene.add.text(
             RESOURCE_DISPLAY_SIZE.width*0.2,
             RESOURCE_DISPLAY_SIZE.height*0.2,
-            String(current),
+            "0",
             {
                 fontSize:50
             }
@@ -56,7 +53,7 @@ export default class ResourceDisplay extends Phaser.GameObjects.Container{
         const maxResourceText = scene.add.text(
             RESOURCE_DISPLAY_SIZE.width*0.65,
             RESOURCE_DISPLAY_SIZE.height*0.5,
-            String(max),
+            "0",
             {
                 fontSize:50
             }
@@ -66,6 +63,14 @@ export default class ResourceDisplay extends Phaser.GameObjects.Container{
         this.add(line);
         this.add(maxResourceText);
         
+        EventEmitter.on(
+            EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY,
+            (currResource:number, maxResource:number)=>{
+                console.log(`Update Display with ${currResource}/ ${maxResource}`);
+                currResourceText.setText(String(currResource));
+                maxResourceText.setText(String(maxResource));
+            }
+        )
     }
 
 

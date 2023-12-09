@@ -1,11 +1,5 @@
-import Player from "../player";
-import LandmarkImpl from "./landmarkImpl";
+import Landmark from "./landmark";
 
-export default abstract class CapturableLandmark extends LandmarkImpl{
-    owner?: Player;
+export default interface CapturableLandmark extends Landmark{
 
-    constructor(id:string, x:number,y:number,owner? : Player){
-        super(id,x,y);
-        this.owner = owner;
-    }
 }

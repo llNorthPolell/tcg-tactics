@@ -1,12 +1,19 @@
 import { CARD_SIZE } from "../config";
 import { CardData } from "../data/cardData";
+import { Position } from "../data/position";
 import { EVENTS } from "../enums/keys/events";
 import { Card } from "../gameobjects/cards/card";
-import Player from "../gameobjects/player";
+import GamePlayer from "../gameobjects/gamePlayer";
+import Player from "../gameobjects/gamePlayer";
 import { EventEmitter } from "./events";
 
+export type Resources={
+    current:number,
+    max:number
+}
+
 export default class CardManager{
-    private player: Player;
+    private player: GamePlayer;
 
     private deck: Card<CardData>[];
     private hand:Card<CardData>[];
@@ -14,17 +21,35 @@ export default class CardManager{
 
     private selected?: Card<CardData>;
     
+    private currResource: number;
+    private maxResource:number;
+
     constructor(player:Player,deck:Card<CardData>[]){
         this.player= player;
         this.deck=deck;
         this.hand=[];
         this.graveyard=[];
 
+        this.currResource=0;
+        this.maxResource=2;
+
         this.drawCard();
         this.drawCard();
         this.drawCard();
 
+        this.handleEvents();
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource);
+    }
+
+    private handleEvents(){
         EventEmitter
+        .on(
+            EVENTS.fieldEvent.GENERATE_RESOURCES,
+            (income:number)=>{
+                console.log("You've got paid!!");
+                this.generateResources(income);
+            }
+        )
         .on(
             EVENTS.cardEvent.SELECT,
             (card : Card<CardData>)=>{
@@ -35,7 +60,7 @@ export default class CardManager{
             }
         )
         .on(
-            EVENTS.cardEvent.DESELECT,
+            EVENTS.cardEvent.CANCEL,
             ()=>{
                 if (!this.selected) return;
                 this.returnCard();
@@ -45,38 +70,64 @@ export default class CardManager{
         )
         .on(
             EVENTS.cardEvent.PLAY,
-            ()=>{
+            (location: Position)=>{
                 if (!this.selected){
                     console.log("No card is selected...");
                     return;
                 }
-                console.log(`Play the card ${this.selected?.data.name}`)
-                this.playCard();
+                console.log(`Play the card ${this.selected?.data.name} at ${JSON.stringify(location)}`)
+                this.playCard(location);
             }
         )
- 
+    }
+
+    generateResources(income: number){
+        let newCurrentResource = this.currResource + income;
+        if (newCurrentResource>this.maxResource)
+            newCurrentResource=this.maxResource;
+
+        this.currResource=newCurrentResource;
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource)
+    }
+
+    spendResources(card: Card<CardData>) {
+        const cost = card.data.cost;
+
+        if (cost > this.currResource) 
+            throw new Error("Not enough resources");
+
+        this.currResource -= cost;
+
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource)
+    }
+
+    getResources():Resources{
+        return {
+            current: this.currResource,
+            max: this.maxResource
+        }
     }
 
     getHand(){
         return [...this.hand];
     }
 
-    playCard(){
+    playCard(location:Position){
         if (!this.selected){
             console.log("No card is selected...");
             return;
         }
 
         try{
-            const card = this.selected;
-            this.player.spendResources(card);
-            card.play();
+            this.spendResources(this.selected);
+            this.selected.play(location);
+            this.removeSelected();
         }
         catch(error){
             console.log((error as Error).message);
         }
         finally{
-            EventEmitter.emit(EVENTS.cardEvent.DESELECT);
+            EventEmitter.emit(EVENTS.cardEvent.CANCEL);
         }
     }
 
@@ -90,6 +141,24 @@ export default class CardManager{
         this.hand = [...this.hand,card];
 
         return card;
+    }
+
+    removeSelected(){
+        this.hand = this.hand.filter(card=> card!==this.selected);
+        this.selected!.hide();
+        this.selected=undefined;
+        this.repositionCardsInHand();
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND, this.hand);
+    }
+
+    repositionCardsInHand(){
+        let c=0;
+        this.hand.forEach(
+            card=>{
+                card.setPosition(c*CARD_SIZE.width,0);
+                c++;
+            }
+        )
     }
 
     pullOutCard(){

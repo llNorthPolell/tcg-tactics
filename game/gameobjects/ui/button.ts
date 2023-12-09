@@ -36,6 +36,7 @@ export default class Button extends Phaser.GameObjects.Container {
 
         this.add(this.bg);
         this.add(this.display);
+        this.scene.add.existing(this);
 
         this.setInteractive(this.bg,Phaser.Geom.Rectangle.Contains)
             .on(

@@ -11,4 +11,7 @@ export const ASSETS = Object.freeze({
     TILE_MAP_PLAYER_START_LAYER: "PlayerStart",
     TILE_MAP_TILE_SET_IMG: "tileset",
     TILE_MAP_ICON_SET_IMG: "mapicons",
+
+    UNDEFINED: "undefined",
+    PORTRAIT: "portrait_",
 })

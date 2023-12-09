@@ -1,9 +1,9 @@
-import Player from "../player";
 import CapturableLandmark from "./capturableLandmark";
+import BaseLandmark from "./baseLandmark";
 
-export default class ResourceNode extends CapturableLandmark{
+export default class ResourceNode extends BaseLandmark implements CapturableLandmark{
     
-    constructor(id:string,x:number,y:number, owner?:Player){
-        super(id,x,y,owner);
+    constructor(id:string,x:number,y:number, tile: Phaser.Tilemaps.Tile){
+        super(id,x,y,tile);
     }
 }

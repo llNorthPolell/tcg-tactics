@@ -12,10 +12,4 @@ export default function setupMouseInputs(
             camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom;
         }
     )
-    /*.on(
-        Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
-        (pointer: Phaser.Input.Pointer,objects:Phaser.GameObjects.GameObject)=>{    
-            console.log(JSON.stringify(objects));
-        }
-    )*/
 }

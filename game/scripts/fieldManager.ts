@@ -1,28 +1,31 @@
 import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
 import { GAME_STATE } from "../enums/keys/gameState";
-import { PLAYER_TINTS } from "../enums/keys/playerTints";
-import { TILE_COLORS } from "../enums/keys/tileColors";
 import { EventEmitter } from "./events";
-import CapturableLandmark from "../gameobjects/landmarks/capturableLandmark";
 import Stronghold from "../gameobjects/landmarks/stronghold";
-import Player from "../gameobjects/player";
+import GamePlayer from "../gameobjects/gamePlayer";
 import Unit from "../gameobjects/unit";
-import Landmark from "../gameobjects/landmarks/landmark";
 import RallyPoint from "../gameobjects/landmarks/rallyPoint";
 import Outpost from "../gameobjects/landmarks/outpost";
 import ResourceNode from "../gameobjects/landmarks/resourceNode";
-import { Position } from "../data/position";
 import ParentLandmark from "../gameobjects/landmarks/parentLandmark";
+import PointOfInterest from "../gameobjects/landmarks/pointOfInterest";
+import { Card } from "../gameobjects/cards/card";
+import { Position } from "../data/position";
+import { CardData } from "../data/cardData";
+import UnitCard from "../gameobjects/cards/unitCard";
+import HeroCard from "../gameobjects/cards/heroCard";
+import { TileStatus } from "../enums/tileStatus";
+import SelectionTile from "../gameobjects/selectionTile";
+import UnitCardData from "../data/cards/unitCardData";
+import { v4 as uuidv4 } from 'uuid';
 
-export type PlayerFieldData = {
-    player: Player,
+export type PlayerOwnership = {
+    player: GamePlayer,
     champions: Unit[],
     activeUnits: Unit[],   
     traps: any[], // TODO: Implement trap spell effects 
-    capturables: CapturableLandmark[],
-    stronghold?: Stronghold,
-    rallyPoints: any[] // TODO: Implement rally points
+    landmarksOwned: Landmarks
 }
 
 export type TilemapData = {
@@ -36,55 +39,114 @@ export type TilemapData = {
     }
 }
 
+export type Landmarks = {
+    strongholds : Stronghold[],
+    outposts: Outpost[],
+    resourceNodes: ResourceNode[],
+    rallyPoints?:RallyPoint[]
+}
+
 export type Field = {
     mapData: TilemapData,
-    neutral: {
-        capturables: CapturableLandmark[];
-    },
-    players: PlayerFieldData[]
+    playerOwnership: PlayerOwnership[]
 }
 
 export default class FieldManager{
     private scene: Phaser.Scene;
-    private highlightTiles?: Phaser.GameObjects.Rectangle[][];
+    private selectionTiles?: SelectionTile[][];
+    private playerOwnershipList: PlayerOwnership[];
+    private activeHighlightTiles: SelectionTile[];
 
-
-    constructor(scene:Phaser.Scene){
+    constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
- 
-
-        EventEmitter.on(
-            EVENTS.fieldEvent.SUMMON_UNIT,
-            this.summonUnit
+        
+        this.playerOwnershipList = playersInGame.map(
+            (player)=>{
+                return {
+                    player: player,
+                    champions: [],
+                    activeUnits: [],   
+                    traps: [],
+                    landmarksOwned:{
+                        strongholds : [],
+                        outposts: [],
+                        resourceNodes: [],
+                        rallyPoints: [] 
+                    },
+                    
+                }
+            }
         );
 
 
-        EventEmitter.on(
+        const tilemap = this.generateMap();
+        this.generateHighlightTiles(tilemap);
+        this.activeHighlightTiles=[];
+        const landmarks = this.loadLandmarks(tilemap);
+
+        this.assignInitialLandmarks(tilemap,landmarks);
+
+        const field :Field = {
+            mapData: tilemap,
+            playerOwnership: this.playerOwnershipList
+        }
+
+
+        this.scene.game.registry.set(GAME_STATE.field,field);
+
+        this.handleEvents();
+    }
+
+    private handleEvents(){
+        EventEmitter
+        .on(
+            EVENTS.gameEvent.PLAYER_TURN,
+            ()=>{
+                const landmarksOwned = this.playerOwnershipList[0].landmarksOwned;
+                const income = 
+                    (landmarksOwned.strongholds.length*2) + 
+                    landmarksOwned.outposts.length + 
+                    landmarksOwned.resourceNodes.length;
+
+                EventEmitter.emit(EVENTS.fieldEvent.GENERATE_RESOURCES,income)
+            }
+        )
+        .on(
+            EVENTS.cardEvent.SELECT,
+            (card : Card<CardData>)=>{
+                this.hideHighlightTiles();
+                if (card instanceof UnitCard || card instanceof HeroCard){
+                    const rallyPointPositions : Position[] = this.playerOwnershipList[0]
+                        .landmarksOwned
+                        .rallyPoints!
+                        .map(
+                            rallyPoint=> {return {x:rallyPoint.x,y:rallyPoint.y}}
+                        );
+                    
+                    this.showHighlightTiles(TileStatus.SUCCESS,rallyPointPositions);
+                }
+            }
+        )
+        .on(
+            EVENTS.cardEvent.CANCEL,
+            ()=>{
+                this.hideHighlightTiles();
+            }
+        )
+        .on(
+            EVENTS.fieldEvent.SUMMON_UNIT,
+            (location:Position, unitData:UnitCardData,owner:GamePlayer)=>{
+                this.summonUnit(location,unitData,owner)
+            }
+        )
+        .on(
             EVENTS.fieldEvent.CAST_SPELL,
             ()=>{
                 console.log(`Played spell... `);
             }
         )
-
-        const tilemap = this.generateMap();
-        this.generateHighlightTiles(tilemap);
-        const landmarks = this.loadLandmarks(tilemap);
-        console.log(landmarks);
-
-        this.assignInitialLandmarks(tilemap);
-
-        
-        const field :Field = {
-            mapData: tilemap,
-            neutral: {
-                capturables: []
-            },
-            players: []
-        }
-
-
-        this.scene.game.registry.set(GAME_STATE.field,field);
     }
+
 
     private generateMap() : TilemapData{
         const map = this.scene.make.tilemap({key:ASSETS.TILE_MAP})!;
@@ -126,71 +188,72 @@ export default class FieldManager{
         const map = tilemapData.map;
         const obstacleLayer = tilemapData.layers.obstacle;
 
-        let highlightTiles= new Array(map.height).fill([]).map(row=>new Array(map.width));
+        let selectionTiles= new Array(map.height).fill([]).map(row=>new Array(map.width));
         map.forEachTile(
             tile=>{
-                const color = (obstacleLayer.getTileAt(tile.x,tile.y))? TILE_COLORS.danger:TILE_COLORS.success;
+                const status = (obstacleLayer.getTileAt(tile.x,tile.y))? TileStatus.DANGER:TileStatus.SUCCESS;
+                const selectionTile = new SelectionTile(
+                    this.scene,
+                    `tile_${tile.x}_${tile.y}`,
+                    {x:tile.pixelX, y:tile.pixelY},
+                    {x:tile.x,y:tile.y},
+                    tile.width, 
+                    tile.height,
+                    status);
 
-                const highlight = this.scene.add.rectangle(tile.pixelX, tile.pixelY,tile.width, tile.height,color,0.25)
-                    .setStrokeStyle(1,color)
-                    .setOrigin(0)
-                    .setName(`tile_${tile.x}_${tile.y}`)
-                    .setInteractive(); 
-            
-                highlight.on(
-                    Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
-                    ()=>{
-                        console.log(`Clicked on tile at (${tile.x},${tile.y})`)
-                    }
-                )
-
-                highlightTiles[tile.y][tile.x]=highlight;
-
-                highlight.setVisible(false).setActive(false);
+                selectionTiles[tile.y][tile.x]=selectionTile;
             }
         );
 
-        this.highlightTiles=highlightTiles;
+        this.selectionTiles=selectionTiles;
     }
 
 
-    loadLandmarks(tilemapData:TilemapData) :  Map<string,Landmark>{
-        let landmarks : Map<string,Landmark> = new Map();
+    loadLandmarks(tilemapData:TilemapData) : Landmarks{
+        let landmarks :Landmarks = {
+            strongholds : [],
+            outposts : [],
+            resourceNodes : []
+        };
         let rallyPoints: Map<string,RallyPoint> = new Map();
         let parentNodes: Map<string,ParentLandmark> = new Map();
+
         const landmarksLayer = tilemapData.layers.landmarks;
-        
+
         landmarksLayer.forEachTile(
-            landmark=>{
-                const tileX = landmark.x;
-                const tileY = landmark.y;
-                const position = {x:tileX,y:tileY};
-                const landmarkName = landmark.properties.name as string;
+            landmarkTile=>{
+                const tileX = landmarkTile.x;
+                const tileY = landmarkTile.y;
+                const landmarkName = landmarkTile.properties.name as string;
                 const key = `${tileX}_${tileY}`;
                 let value;
                 // store reference to landmark
                 switch(landmarkName){
                     case "Stronghold":
                         console.log(`Stronghold at (${tileX},${tileY})`);
-                        value = new Stronghold(`stronghold_${landmarks.size}`,tileX,tileY);
+                        value = new Stronghold(`stronghold_${tileX}_${tileY}`,tileX,tileY,landmarkTile);
                         parentNodes.set(key, value);
+                        landmarks.strongholds = [...landmarks.strongholds,value];
                         break;
                     case "Rally Point":
                         console.log(`Rally Point at (${tileX},${tileY})`);
-                        value = new RallyPoint(`rally_point_${landmarks.size}`,tileX,tileY);
+                        value = new RallyPoint(`rally_point_${tileX}_${tileY}`,tileX,tileY,landmarkTile);
                         rallyPoints.set(key,value);
                         break;
                     case "Outpost":
                         console.log(`Outpost at (${tileX},${tileY})`);
-                        value = new Outpost(`outpost_${landmarks.size}`,tileX,tileY);
+                        value = new Outpost(`outpost_${tileX}_${tileY}`,tileX,tileY,landmarkTile);
+                        landmarks.outposts = [...landmarks.outposts,value];
                         parentNodes.set(key, value);
                         break;
                     case "Resource Node": 
                         console.log(`Resource Node at (${tileX},${tileY})`);
-                        value = new ResourceNode(`resource_node_${landmarks.size}`,tileX,tileY);
+                        value = new ResourceNode(`resource_node_${tileX}_${tileY}`,tileX,tileY,landmarkTile);
+                        landmarks.resourceNodes = [...landmarks.resourceNodes,value];
                         break;
                     case "Interest Point":
                         console.log(`Interest Point at (${tileX},${tileY})`);
+                        value = new PointOfInterest(`point_of_interest_${tileX}_${tileY}`,tileX,tileY,landmarkTile);
                         break;
                     case "Camp":
                         console.log(`Camp at (${tileX},${tileY})`);
@@ -198,10 +261,6 @@ export default class FieldManager{
                     default:
                         break;
                 }
-
-                if (value)
-                    landmarks.set(key, value);
-                
             }
         );
         this.linkRalliesToParents(parentNodes, rallyPoints)
@@ -236,31 +295,52 @@ export default class FieldManager{
     }
 
 
-    assignInitialLandmarks(tilemapData:TilemapData){
+    assignInitialLandmarks(tilemapData:TilemapData, landmarks:Landmarks){
         const playerStartLayer=tilemapData.layers.playerStarts;
         const landmarksLayer=tilemapData.layers.landmarks;
-        
+
         playerStartLayer.objects.forEach(
             object=>{
                 const tileX = Math.floor(object.x!/object.width!);
                 const tileY = Math.floor(object.y!/object.height!);
 
-                const landmark = landmarksLayer.getTileAt(tileX,tileY);
-                // assign color to landmark
-                switch(object.name){
-                    case "1":
-                        landmark.tint=PLAYER_TINTS.PLAYER1;
+                const landmarkTile = landmarksLayer.getTileAt(tileX,tileY);
+                const landmarkName = landmarkTile.properties.name;
+                const playerOwnership = this.playerOwnershipList.at(Number(object.name) -1);
+
+                switch(landmarkName){
+                    case "Stronghold":
+                        const stronghold = landmarks.strongholds.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                        if (stronghold){
+                            playerOwnership!.landmarksOwned.strongholds = [...playerOwnership!.landmarksOwned.strongholds, stronghold];
+                            stronghold.tile.tint=playerOwnership!.player.color;
+                            stronghold.getRallyPoints().forEach(
+                                rallyPoint=>{
+                                    rallyPoint.tile.tint=playerOwnership!.player.color;
+                                    playerOwnership!.landmarksOwned.rallyPoints = [...playerOwnership!.landmarksOwned.rallyPoints!,rallyPoint];
+                                }
+                            )
+                        }
                         break;
-                    case "2":
-                        landmark.tint=PLAYER_TINTS.PLAYER2;
+                    case "Outpost":
+                        const outpost = landmarks.outposts.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                        if (outpost){
+                            playerOwnership!.landmarksOwned.outposts = [...playerOwnership!.landmarksOwned.outposts, outpost];
+                            outpost.tile.tint=playerOwnership!.player.color;
+                            outpost.getRallyPoints().forEach(
+                                rallyPoint=>{
+                                    rallyPoint.tile.tint=playerOwnership!.player.color;
+                                    playerOwnership!.landmarksOwned.rallyPoints = [...playerOwnership!.landmarksOwned.rallyPoints!,rallyPoint];
+                                }
+                            )
+                        }
                         break;
-                    case "3":
-                        landmark.tint=PLAYER_TINTS.PLAYER3;
-                        break;
-                    case "4":
-                        landmark.tint=PLAYER_TINTS.PLAYER4;
-                        break;
-                    default:
+                    case "Resource Node":
+                        const resourceNode = landmarks.resourceNodes.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                        if (resourceNode){
+                            playerOwnership!.landmarksOwned.resourceNodes = [...playerOwnership!.landmarksOwned.resourceNodes, resourceNode];
+                            resourceNode.tile.tint=playerOwnership!.player.color;
+                        }
                         break;
                 }
                 
@@ -268,33 +348,33 @@ export default class FieldManager{
         );
     }
 
-
     showHighlightTiles(
-        locations?:{x:number,y:number}[],
-        color?:number
+        status:TileStatus,
+        locations?:Position[]
     ){
         locations?.forEach(
             position=>{
-                const highlightTile = this.highlightTiles![position.y][position.x];
-                highlightTile.setActive(true).setVisible(true);
-                highlightTile.setFillStyle(color,0.25).setStrokeStyle(1,color);
+                const selectionTile = this.selectionTiles![position.y][position.x];
+                this.activeHighlightTiles = [...this.activeHighlightTiles,selectionTile];
+                selectionTile.show(status);
             }
         )
     }
 
-    hideHighlightTiles(
-        locations?:{x:number,y:number}[]
-    ){
-        locations?.forEach(
-            position=>{
-                this.highlightTiles![position.y][position.x]
-                    .setActive(false)
-                    .setVisible(false);
+    hideHighlightTiles(){
+        this.activeHighlightTiles?.forEach(
+            selectionTile=>{
+                selectionTile.hide();
             }
         )
+
+        this.activeHighlightTiles= [];
     }
 
-    summonUnit(unit:Unit,x:number,y:number){
-        console.log(`Summoned ${unit.getData().name} with id ${unit.id} at location ${x},${y}`);
+    summonUnit(location:Position,unitData:UnitCardData, owner: GamePlayer){
+        const unit = new Unit(uuidv4().toString(),location,unitData,owner);
+        const position = unit.getLocation();
+        unit.render(this.scene);
+        console.log(`Summoned ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
     }
 }

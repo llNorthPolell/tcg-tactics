@@ -27,11 +27,13 @@ export default class HUD extends Phaser.Scene{
     private player?: GamePlayer;
 
     private cardManager? : CardManager;
+    private isPlayerTurn:boolean;
 
     constructor(){
         super({
             key: SCENES.HUD
         });
+        this.isPlayerTurn=false;
     }
 
     preload(){}
@@ -130,14 +132,16 @@ export default class HUD extends Phaser.Scene{
             EVENTS.cardEvent.SELECT,
             ()=>{
                 cancelCardButton.show();
-                endTurnButton.hide();
+                if(this.isPlayerTurn) 
+                    endTurnButton.hide();
             }
         )
         .on(
             EVENTS.cardEvent.CANCEL,
             ()=>{
                 cancelCardButton.hide();
-                endTurnButton.show();
+                if(this.isPlayerTurn) 
+                    endTurnButton.show();
             }
         )
         .on(
@@ -159,12 +163,35 @@ export default class HUD extends Phaser.Scene{
                 handUIObject.setVisible(true);
                 unitStatDisplay.hide();
             }
+        )
+        .on(
+            EVENTS.gameEvent.PLAYER_TURN,
+            ()=>{
+                this.wake();
+                endTurnButton.setVisible(true);
+                this.cardManager!.drawCard();
+            }
+        )
+        .on(
+            EVENTS.gameEvent.END_TURN,
+            ()=>{
+                this.sleep();
+                endTurnButton.setVisible(false);
+            }
         );
 
         // TODO: This is a temporary place to draw cards. Should trigger an event somewhere to initialize drawing cards and choosing redraws when game starts.
         this.cardManager.drawCard();
         this.cardManager.drawCard();
         this.cardManager.drawCard();
+    }
+
+    sleep(){
+        this.isPlayerTurn=false;
+    }
+
+    wake(){
+        this.isPlayerTurn=true;
     }
     
     update(){

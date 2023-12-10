@@ -1,6 +1,7 @@
 import { Position } from "../data/position";
 import { EVENTS } from "../enums/keys/events";
 import { getColorByStatus } from "../enums/keys/tileColors";
+import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus} from "../enums/tileStatus";
 import { EventEmitter } from "../scripts/events";
 import Unit from "./unit";
@@ -10,6 +11,7 @@ export default class SelectionTile {
     private status:TileStatus; 
     private readonly initStatus:TileStatus;
     readonly tilePosition: Position;
+    private tileSelectionType: TileSelectionType;
 
     constructor(
         scene: Phaser.Scene,
@@ -28,13 +30,24 @@ export default class SelectionTile {
             .setStrokeStyle(1,color)
             .setName(name)
             .setInteractive();
-        
+        this.tileSelectionType=TileSelectionType.NONE;
+
         this.tile.on(
             Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
             ()=>{
                 switch(this.status){
                     case TileStatus.SUCCESS:
-                        EventEmitter.emit(EVENTS.cardEvent.PLAY,{x:tilePosition.x,y:tilePosition.y});
+                        switch(this.tileSelectionType){
+                            case TileSelectionType.PLAY_CARD:
+                                EventEmitter.emit(EVENTS.cardEvent.PLAY,{x:tilePosition.x,y:tilePosition.y});
+                                break;
+                            case TileSelectionType.MOVE_UNIT:
+                                EventEmitter.emit(EVENTS.unitEvent.MOVE,this.tilePosition);
+                                break;
+                            default:
+                                break;
+                        }
+                        
                         break;
                     default:
                         console.log("Not a valid target");
@@ -44,7 +57,8 @@ export default class SelectionTile {
             }
         )
 
-        EventEmitter.on(
+        EventEmitter
+        .on(
             EVENTS.unitEvent.CHECK_STANDING_ON_RALLY,
             (unit:Unit)=>{
                 const location = unit.getLocation();
@@ -73,7 +87,8 @@ export default class SelectionTile {
         return this.tile;
     }
 
-    show(status?:TileStatus){
+    show(status?:TileStatus, tileSelectionType: TileSelectionType = TileSelectionType.NONE){
+        this.tileSelectionType=tileSelectionType;
         this.setStatus(status? status: this.initStatus);
         
         this.tile.setVisible(true);

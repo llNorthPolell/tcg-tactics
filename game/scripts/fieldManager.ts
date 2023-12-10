@@ -20,6 +20,7 @@ import SelectionTile from "../gameobjects/selectionTile";
 import UnitCardData from "../data/cards/unitCardData";
 import { v4 as uuidv4 } from 'uuid';
 import { getTilesInRange } from "./util";
+import { TileSelectionType } from "../enums/tileSelectionType";
 
 export type PlayerOwnership = {
     player: GamePlayer,
@@ -49,34 +50,38 @@ export type Landmarks = {
 
 export type Field = {
     mapData: TilemapData,
-    playerOwnership: PlayerOwnership[]
+    playerOwnership: Map<number,PlayerOwnership>
 }
 
 export default class FieldManager{
     private scene: Phaser.Scene;
     private selectionTiles?: SelectionTile[][];
-    private playerOwnershipList: PlayerOwnership[];
+    private playerOwnershipMap: Map<number,PlayerOwnership>;
     private activeHighlightTiles: SelectionTile[];
     private tilemap: TilemapData;
-    
+    private isPlayerTurn: boolean;
+
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
         
-        this.playerOwnershipList = playersInGame.map(
+        this.playerOwnershipMap = new Map();
+        playersInGame.forEach(
             (player)=>{
-                return {
-                    player: player,
-                    champions: [],
-                    activeUnits: [],   
-                    traps: [],
-                    landmarksOwned:{
-                        strongholds : [],
-                        outposts: [],
-                        resourceNodes: [],
-                        rallyPoints: [] 
-                    },
-                    
-                }
+                this.playerOwnershipMap.set(
+                    player.id,
+                    {
+                        player: player,
+                        champions: [],
+                        activeUnits: [],   
+                        traps: [],
+                        landmarksOwned:{
+                            strongholds : [],
+                            outposts: [],
+                            resourceNodes: [],
+                            rallyPoints: [] 
+                        }
+                    }
+                )
             }
         );
 
@@ -91,13 +96,15 @@ export default class FieldManager{
 
         const field :Field = {
             mapData: tilemap,
-            playerOwnership: this.playerOwnershipList
+            playerOwnership: this.playerOwnershipMap
         }
 
 
         this.scene.game.registry.set(GAME_STATE.field,field);
 
         this.handleEvents();
+
+        this.isPlayerTurn=false;
     }
 
     private handleEvents(){
@@ -105,13 +112,21 @@ export default class FieldManager{
         .on(
             EVENTS.gameEvent.PLAYER_TURN,
             ()=>{
-                const landmarksOwned = this.playerOwnershipList[0].landmarksOwned;
+                const playerOwnership = this.playerOwnershipMap.get(1)!;
+                const landmarksOwned = playerOwnership.landmarksOwned;
                 const income = 
                     (landmarksOwned.strongholds.length*2) + 
                     landmarksOwned.outposts.length + 
                     landmarksOwned.resourceNodes.length;
 
-                EventEmitter.emit(EVENTS.fieldEvent.GENERATE_RESOURCES,income)
+                this.wake();
+                EventEmitter.emit(EVENTS.fieldEvent.GENERATE_RESOURCES,income);
+                
+                playerOwnership.activeUnits.forEach(
+                    (unit:Unit)=>{
+                        unit.wake();
+                    }
+                )
             }
         )
         .on(
@@ -119,14 +134,17 @@ export default class FieldManager{
             (card : Card<CardData>)=>{
                 this.hideHighlightTiles();
                 if (card instanceof UnitCard || card instanceof HeroCard){
-                    const rallyPointPositions : Position[] = this.playerOwnershipList[0]
+                    const rallyPointPositions : Position[] = this.playerOwnershipMap.get(1)!
                         .landmarksOwned
                         .rallyPoints!
                         .map(
                             rallyPoint=> {return {x:rallyPoint.x,y:rallyPoint.y}}
                         );
                     
-                    this.showHighlightTiles(rallyPointPositions);
+                    if(this.isPlayerTurn)
+                        this.showHighlightTiles(rallyPointPositions,undefined,TileSelectionType.PLAY_CARD);
+                    else
+                        this.showHighlightTiles(rallyPointPositions,TileStatus.WARNING);
                 }
             }
         )
@@ -139,7 +157,7 @@ export default class FieldManager{
         .on(
             EVENTS.fieldEvent.SUMMON_UNIT,
             (location:Position, unitData:UnitCardData,owner:GamePlayer)=>{
-                this.summonUnit(location,unitData,owner)
+                this.summonUnit(location,unitData,owner);
             }
         )
         .on(
@@ -160,7 +178,11 @@ export default class FieldManager{
                     location,
                     {x:this.tilemap.map.width-1,y:this.tilemap.map.height-1}, 
                     active? movement:range);
-                this.showHighlightTiles(highlightTiles, (active)? undefined:TileStatus.WARNING);
+                    
+                if (active)
+                    this.showHighlightTiles(highlightTiles,undefined,TileSelectionType.MOVE_UNIT);
+                else 
+                    this.showHighlightTiles(highlightTiles,TileStatus.WARNING);
                 
             }
         )
@@ -168,6 +190,12 @@ export default class FieldManager{
             EVENTS.unitEvent.CANCEL,
             ()=>{
                 this.hideHighlightTiles();
+            }
+        )
+        .on(
+            EVENTS.gameEvent.END_TURN,
+            ()=>{
+                this.sleep();
             }
         )
     }
@@ -331,7 +359,7 @@ export default class FieldManager{
 
                 const landmarkTile = landmarksLayer.getTileAt(tileX,tileY);
                 const landmarkName = landmarkTile.properties.name;
-                const playerOwnership = this.playerOwnershipList.at(Number(object.name) -1);
+                const playerOwnership = this.playerOwnershipMap.get(Number(object.name));
 
                 switch(landmarkName){
                     case "Stronghold":
@@ -373,12 +401,12 @@ export default class FieldManager{
         );
     }
 
-    showHighlightTiles(locations:Position[],status?:TileStatus){
+    showHighlightTiles(locations:Position[],status?:TileStatus,tileSelectionType:TileSelectionType=TileSelectionType.NONE){
         locations.forEach(
             position=>{
                 const selectionTile = this.selectionTiles![position.y][position.x];
                 this.activeHighlightTiles = [...this.activeHighlightTiles,selectionTile];
-                selectionTile.show(status);
+                selectionTile.show(status,tileSelectionType);
             }
         )
     }
@@ -397,8 +425,18 @@ export default class FieldManager{
         const unit = new Unit(uuidv4().toString(),location,unitData,owner);
         const position = unit.getLocation();
         unit.render(this.scene);
+
+        const playerOwnership = this.playerOwnershipMap.get(owner.id)!;
+        playerOwnership.activeUnits=[...playerOwnership.activeUnits,unit]
+
         console.log(`Summoned ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
     }
 
+    wake(){
+        this.isPlayerTurn=true;
+    }
 
+    sleep(){
+        this.isPlayerTurn=false;
+    }
 }

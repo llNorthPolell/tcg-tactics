@@ -14,4 +14,5 @@ export default class HandUIObject extends Phaser.GameObjects.Container{
             this.add(cardContainer);
         });
     }
+    
 }

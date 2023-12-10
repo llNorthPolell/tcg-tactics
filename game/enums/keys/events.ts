@@ -15,7 +15,8 @@ export const EVENTS = {
     gameEvent: Object.freeze({
         PLAYER_TURN: "player-turn",
         NEXT_TURN:"next-turn",
-        END_TURN: "end-turn"
+        END_TURN: "end-turn",
+        OPPONENT_TURN: "opponent-turn"
     }),
     fieldEvent: Object.freeze({
         GENERATE_RESOURCES: "generate-resources",
@@ -27,6 +28,7 @@ export const EVENTS = {
         SELECT: "select-unit",
         CANCEL: "cancel-unit-select",
         ATTACK: "attack-unit",
+        MOVE: "move-unit",
         WAIT: "wait-unit"
     })
 }

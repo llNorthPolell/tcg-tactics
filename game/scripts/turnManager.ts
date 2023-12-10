@@ -29,6 +29,21 @@ export default class TurnManager{
         
                 if (this.activePlayer == this.player)
                     EventEmitter.emit(EVENTS.gameEvent.PLAYER_TURN);
+                else 
+                    EventEmitter.emit(EVENTS.gameEvent.OPPONENT_TURN, this.activePlayerIndex);
+            }
+        ).on(
+            EVENTS.gameEvent.END_TURN,
+            ()=>{
+                EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
+            }
+        )
+        .on(
+            EVENTS.gameEvent.OPPONENT_TURN,
+            (playerNumber:number)=>{
+                console.log(`Player ${playerNumber}'s turn...`);
+                console.log(`Player ${playerNumber} is not implemented, so will pass...`);
+                EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
             }
         );
     }

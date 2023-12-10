@@ -110,6 +110,13 @@ export default class Unit {
             }
         )
 
+        EventEmitter.on(
+            EVENTS.unitEvent.MOVE,
+            (targetPosition:Position)=>{
+                console.log(`Move ${this.unitData.name} to (${targetPosition.x},${targetPosition.y})`);
+            }
+        )
+
     }
 
     isActive(){

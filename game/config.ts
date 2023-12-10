@@ -20,6 +20,10 @@ export const CARD_SIZE = {
     height: HAND_UI_SIZE.height
 }
 
+export const PORTRAIT_SIZE = {
+    width: HAND_UI_SIZE.height,
+    height: HAND_UI_SIZE.height
+}
 
 export const config : Phaser.Types.Core.GameConfig= {
     type: Phaser.AUTO,

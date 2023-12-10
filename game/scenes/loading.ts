@@ -7,7 +7,7 @@ import GamePlayer from "../gameobjects/gamePlayer";
 import { getPlayerColor } from "../enums/keys/playerTints";
 import HeroCard from "../gameobjects/cards/heroCard";
 import HeroCardData from "../data/cards/heroCardData";
-import { UNIT_CLASS } from "../enums/keys/unitClass";
+import { ICON_SIZE, UNIT_CLASS } from "../enums/keys/unitClass";
 import UnitCard from "../gameobjects/cards/unitCard";
 import UnitCardData from "../data/cards/unitCardData";
 import { GAME_STATE } from "../enums/keys/gameState";
@@ -26,6 +26,13 @@ export default class LoadingScene extends Phaser.Scene{
 
         // portrait
         this.load.image(ASSETS.UNDEFINED,"assets/portraits/undefined.png");
+
+        // icons
+        this.load.image(ASSETS.HP_ICON,"assets/icons/hp.png")
+        this.load.image(ASSETS.SP_ICON,"assets/icons/sp.png")
+        this.load.image(ASSETS.PWR_ICON,"assets/icons/pwr.png")
+        this.load.image(ASSETS.ATTACK_SELECTOR,"assets/icons/attack.png")
+        this.load.spritesheet(ASSETS.CLASS_ICONS,"assets/icons/class.png",{frameWidth:31,frameHeight:31})
     }
 
     create(){
@@ -36,96 +43,6 @@ export default class LoadingScene extends Phaser.Scene{
         const testPlayer = new GamePlayer(1,testPlayerInfo,getPlayerColor(1));
         const testOpponent = new GamePlayer(2,testPlayer2Info,getPlayerColor(2));
     
-        /*const testPlayerDeck = [
-            new HeroCardData(
-                "1",
-                "test_hero",
-                UNIT_CLASS.SOLDIER,
-                3000,
-                3000,
-                800,
-                500,
-                3,
-                "pwr +50% to all",
-                "+5 pwr to units 1 tile adjacent to this unit",
-                "deal 500 damage to target",
-                ["Soldier","Soldier","Soldier","Ranger", "Ranger", "Guardian"],
-                5
-            ),
-            new UnitCardData(
-                "2",
-                "test_soldier",
-                UNIT_CLASS.SOLDIER,
-                1000,
-                100,
-                500,
-                200,
-                3,
-                1
-            ),
-            new UnitCardData(
-                "2",
-                "test_soldier",
-                UNIT_CLASS.SOLDIER,
-                1000,
-                100,
-                500,
-                200,
-                3,
-                1
-            ),
-            new UnitCardData(
-                "2",
-                "test_soldier",
-                UNIT_CLASS.SOLDIER,
-                1000,
-                100,
-                500,
-                200,
-                3,
-                1
-            ),
-            new UnitCardData(
-                "3",
-                "test_ranger",
-                UNIT_CLASS.RANGER,
-                800,
-                200,
-                600,
-                100,
-                2,
-                2
-            ),
-            new UnitCardData(
-                "3",
-                "test_ranger",
-                UNIT_CLASS.RANGER,
-                1000,
-                200,
-                600,
-                100,
-                2,
-                2
-            ),
-            new UnitCardData(
-                "3",
-                "test_guardian",
-                UNIT_CLASS.GUARDIAN,
-                2000,
-                200,
-                200,
-                500,
-                1,
-                3
-            ),
-            new SpellCardData(
-                "4",
-                "test_fire_spell",
-                5,
-                "Deal 100 burn damage per turn for 3 turns"
-            ),
-        ]*/
-    
         const testPlayerDeck = [
             new HeroCard(
                 "1",
@@ -133,11 +50,12 @@ export default class LoadingScene extends Phaser.Scene{
                     "1",
                     "test_hero",
                     UNIT_CLASS.SOLDIER,
-                    3000,
-                    3000,
-                    800,
-                    500,
+                    30,
+                    10,
+                    5,
+                    5,
                     3,
+                    1,
                     "pwr +50% to all",
                     "+5 pwr to units 1 tile adjacent to this unit",
                     "deal 500 damage to target",
@@ -151,11 +69,12 @@ export default class LoadingScene extends Phaser.Scene{
                     "1",
                     "test_soldier",
                     UNIT_CLASS.SOLDIER,
-                    1000,
-                    100,
-                    500,
-                    200,
+                    10,
+                    0,
+                    1,
+                    1,
                     3,
+                    1,
                     1
                 ),
                 testPlayer),
@@ -165,11 +84,12 @@ export default class LoadingScene extends Phaser.Scene{
                     "1",
                     "test_soldier",
                     UNIT_CLASS.SOLDIER,
-                    1000,
-                    100,
-                    500,
-                    200,
+                    10,
+                    0,
+                    1,
+                    1,
                     3,
+                    1,
                     1
                 ),
                 testPlayer),
@@ -179,11 +99,12 @@ export default class LoadingScene extends Phaser.Scene{
                     "1",
                     "test_soldier",
                     UNIT_CLASS.SOLDIER,
-                    1000,
-                    100,
-                    500,
-                    200,
+                    10,
+                    0,
+                    1,
+                    1,
                     3,
+                    1,
                     1
                 ),
                 testPlayer),
@@ -193,11 +114,12 @@ export default class LoadingScene extends Phaser.Scene{
                     "3",
                     "test_ranger",
                     UNIT_CLASS.RANGER,
-                    800,
-                    200,
-                    600,
-                    100,
+                    8,
+                    0,
                     2,
+                    1,
+                    2,
+                    3,
                     2
                 ),
                 testPlayer),
@@ -207,11 +129,12 @@ export default class LoadingScene extends Phaser.Scene{
                     "3",
                     "test_ranger",
                     UNIT_CLASS.RANGER,
-                    1000,
-                    200,
-                    600,
-                    100,
+                    8,
+                    0,
                     2,
+                    1,
+                    2,
+                    3,
                     2
                 ),
                 testPlayer),
@@ -221,10 +144,11 @@ export default class LoadingScene extends Phaser.Scene{
                     "6",
                     "test_guardian",
                     UNIT_CLASS.GUARDIAN,
-                    2000,
-                    200,
-                    200,
-                    500,
+                    15,
+                    0,
+                    1,
+                    1,
+                    1,
                     1,
                     3
                 ),

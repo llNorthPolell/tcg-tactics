@@ -15,6 +15,7 @@ export default class HeroCardData extends UnitCardData{
         pwr:number,
         def:number,
         mvt:number,
+        rng:number,
         leaderSkill: string,
         passiveSkill: string,
         activeSkill: string,
@@ -30,6 +31,7 @@ export default class HeroCardData extends UnitCardData{
                 pwr,
                 def,
                 mvt,
+                rng,
                 cost,
                 passiveSkill,
                 activeSkill

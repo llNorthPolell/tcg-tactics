@@ -27,8 +27,7 @@ export default class SelectionTile {
             .setOrigin(0)
             .setStrokeStyle(1,color)
             .setName(name)
-            .setInteractive()
-            .setDepth(100);
+            .setInteractive();
         
         this.tile.on(
             Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
@@ -74,7 +73,9 @@ export default class SelectionTile {
         return this.tile;
     }
 
-    show(){
+    show(status?:TileStatus){
+        this.setStatus(status? status: this.initStatus);
+        
         this.tile.setVisible(true);
     }
 

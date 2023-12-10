@@ -19,7 +19,7 @@ import { TileStatus } from "../enums/tileStatus";
 import SelectionTile from "../gameobjects/selectionTile";
 import UnitCardData from "../data/cards/unitCardData";
 import { v4 as uuidv4 } from 'uuid';
-import { getWalkablePositions } from "./util";
+import { getTilesInRange } from "./util";
 
 export type PlayerOwnership = {
     player: GamePlayer,
@@ -151,13 +151,23 @@ export default class FieldManager{
         .on(
             EVENTS.unitEvent.SELECT,
             (unit: Unit)=>{
-                console.log(`Selected ${unit.getUnitData().name}`)
+                this.hideHighlightTiles();
                 const movement = unit.getUnitData().currMvt;
+                const range = unit.getUnitData().currRng;
                 const location = unit.getLocation();
-                const highlightTiles = getWalkablePositions(location,{x:this.tilemap.map.width-1,y:this.tilemap.map.height-1}, movement);
-                console.log(JSON.stringify(highlightTiles));
-                this.showHighlightTiles(highlightTiles);
+                const active = unit.isActive();
+                const highlightTiles = getTilesInRange(
+                    location,
+                    {x:this.tilemap.map.width-1,y:this.tilemap.map.height-1}, 
+                    active? movement:range);
+                this.showHighlightTiles(highlightTiles, (active)? undefined:TileStatus.WARNING);
                 
+            }
+        )
+        .on(
+            EVENTS.unitEvent.CANCEL,
+            ()=>{
+                this.hideHighlightTiles();
             }
         )
     }
@@ -363,12 +373,12 @@ export default class FieldManager{
         );
     }
 
-    showHighlightTiles(locations:Position[]){
+    showHighlightTiles(locations:Position[],status?:TileStatus){
         locations.forEach(
             position=>{
                 const selectionTile = this.selectionTiles![position.y][position.x];
                 this.activeHighlightTiles = [...this.activeHighlightTiles,selectionTile];
-                selectionTile.show();
+                selectionTile.show(status);
             }
         )
     }

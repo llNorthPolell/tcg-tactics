@@ -8,6 +8,7 @@ import UnitData from "../data/unitData";
 import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
 import { EventEmitter } from "../scripts/events";
+import AttackSelector from "./attackSelector";
 import { Card } from "./cards/card";
 import HeroCard from "./cards/heroCard";
 import UnitCard from "./cards/unitCard";
@@ -18,6 +19,7 @@ export default class Unit {
     readonly card: UnitCardData;
     private unitData: UnitData;
     private location: Position;
+    private pixelPosition?: Position;
     private owner: GamePlayer;
     private activeColor: number;
     private inactiveColor:number;
@@ -25,8 +27,9 @@ export default class Unit {
 
     private container?: Phaser.GameObjects.Container;
     private image?: Phaser.GameObjects.Sprite;
-    
+    readonly imageAssetName: string;
 
+    private attackSelector?: AttackSelector;
 
     constructor(id:string,location:Position,card:UnitCardData, owner: GamePlayer){
         this.id=id;
@@ -38,7 +41,8 @@ export default class Unit {
         this.activeColor=this.owner.color;
         const darkColor = Phaser.Display.Color.ValueToColor(this.owner.color).darken(80);
         this.inactiveColor= darkColor.color;
-
+        this.imageAssetName = `${ASSETS.PORTRAIT}_${(this.card instanceof HeroCardData)? "heroes":"units"}_${this.card.id}`;
+        
         EventEmitter.on(
             EVENTS.cardEvent.SELECT,
             (card : Card<CardData>)=>{
@@ -54,17 +58,25 @@ export default class Unit {
 
     setLocation(location:Position){
         this.location=location;
+        const pixelX = location.x * TILESIZE.width;
+        const pixelY = location.y * TILESIZE.height;
+        this.pixelPosition = {x:pixelX, y:pixelY};
+        this.container?.setPosition(pixelX,pixelY);
     }
 
     getLocation(){
         return this.location;
     }
+    
+    getPixelPosition(){
+        return this.pixelPosition;
+    }
 
     render(scene:Phaser.Scene){
-        const pixelX = this.location.x * TILESIZE.width;
-        const pixelY = this.location.y * TILESIZE.height;
+        this.setLocation(this.location);
 
-        this.container = scene.add.container(pixelX,pixelY);
+        if(!this.container)
+            this.container = scene.add.container(this.pixelPosition!.x,this.pixelPosition!.y);
 
         const bg = scene.add.rectangle(
             0,
@@ -73,13 +85,13 @@ export default class Unit {
             TILESIZE.height,
             (this.active)?this.activeColor: this.inactiveColor
         ).setOrigin(0);
-        this.container.add(bg);
+        this.container?.add(bg);
         
-        const assetName=`${ASSETS.PORTRAIT}_${(this.card instanceof HeroCardData)? "heroes":"units"}_${this.card.id}`;
-        this.image = scene.add.sprite(TILESIZE.width*0.5,TILESIZE.height*0.5,assetName)
+        this.image = scene.add.sprite(TILESIZE.width*0.5,TILESIZE.height*0.5,this.imageAssetName)
             .setOrigin(0.5)
             .setDisplaySize(TILESIZE.width*0.9, TILESIZE.height*0.9);
 
+        
             
         this.container.add(this.image);
 
@@ -88,6 +100,8 @@ export default class Unit {
         else
             this.image.setAlpha(0.7);
 
+        this.attackSelector = new AttackSelector(scene,this);
+        this.container.add(this.attackSelector);
         this.container.setInteractive(bg,Phaser.Geom.Rectangle.Contains)
         .on(
             Phaser.Input.Events.GAMEOBJECT_POINTER_UP,

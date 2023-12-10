@@ -39,7 +39,8 @@ export abstract class Card<T extends CardData> {
     abstract render(scene:Phaser.Scene):Phaser.GameObjects.Container;
 
     protected renderGameObject(scene:Phaser.Scene,color:number,cardType:string){
-        this.container=scene.add.container(this.x,this.y);
+        if(!this.container)
+            this.container=scene.add.container(this.x,this.y);
         const bg = scene.add.rectangle(0,0,CARD_SIZE.width, CARD_SIZE.height,color)
             .setOrigin(0,0)
             .setStrokeStyle(1,0x000000);

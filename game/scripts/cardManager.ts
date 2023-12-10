@@ -32,13 +32,8 @@ export default class CardManager{
 
         this.currResource=0;
         this.maxResource=2;
-
-        this.drawCard();
-        this.drawCard();
-        this.drawCard();
-
-        this.handleEvents();
         EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource);
+        this.handleEvents(); 
     }
 
     private handleEvents(){
@@ -139,6 +134,7 @@ export default class CardManager{
         const card = this.deck.splice(roll,1)[0];
         card.setPosition(this.hand.length * CARD_SIZE.width,0);
         this.hand = [...this.hand,card];
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND,this.getHand());
 
         return card;
     }

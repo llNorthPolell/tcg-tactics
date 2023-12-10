@@ -25,7 +25,9 @@ export const EVENTS = {
     unitEvent: Object.freeze({
         CHECK_STANDING_ON_RALLY: "check-standing-on-rally",
         SELECT: "select-unit",
-        CANCEL: "cancel-unit-select"
+        CANCEL: "cancel-unit-select",
+        ATTACK: "attack-unit",
+        WAIT: "wait-unit"
     })
 }
 

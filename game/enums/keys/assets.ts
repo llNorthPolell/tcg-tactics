@@ -1,7 +1,7 @@
 export const ASSETS = Object.freeze({
     // Map
-    TILE_SET: "tileset",
-    MAP_ICONS: "mapIcons",
+    TILE_SET: "tile-set",
+    MAP_ICONS: "map-icons",
     TILE_MAP: "map",
 
     TILE_GROUND_LAYER: "Ground",
@@ -14,4 +14,9 @@ export const ASSETS = Object.freeze({
 
     UNDEFINED: "undefined",
     PORTRAIT: "portrait_",
+    CLASS_ICONS: "class-icons",
+    HP_ICON: "hp-icon",
+    SP_ICON: "sp-icon",
+    PWR_ICON: "pwr-icon",
+    ATTACK_SELECTOR: "attack-selector"
 })

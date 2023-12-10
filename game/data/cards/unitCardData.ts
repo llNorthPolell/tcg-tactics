@@ -12,6 +12,7 @@ export default class UnitCardData implements CardData{
     readonly pwr: number;
     readonly def: number;
     readonly mvt: number;
+    readonly rng: number;
 
     readonly passiveSkill?: string;
     readonly activeSkill?: string;
@@ -27,6 +28,7 @@ export default class UnitCardData implements CardData{
         pwr:number,
         def:number,
         mvt:number,
+        rng:number,
         cost:number,
         passiveSkill?: string,
         activeSkill?: string
@@ -39,6 +41,7 @@ export default class UnitCardData implements CardData{
         this.pwr=pwr;
         this.def=def;
         this.mvt=mvt;
+        this.rng=rng;
         this.passiveSkill=passiveSkill;
         this.activeSkill=activeSkill;
         this.cost=cost;

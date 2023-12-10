@@ -9,6 +9,7 @@ export default class UnitData {
     readonly basePwr:number;
     readonly baseDef:number;
     readonly baseMvt:number;
+    readonly baseRng:number;
 
     maxHP:number;
     maxSP:number;
@@ -18,6 +19,7 @@ export default class UnitData {
     currPwr:number;
     currDef:number;
     currMvt:number;
+    currRng:number;
 
     isStunned:boolean;
     sleepTime:number;
@@ -43,6 +45,9 @@ export default class UnitData {
         this.baseMvt = card.mvt;
         this.currMvt = card.mvt;
 
+        this.baseRng = card.rng;
+        this.currRng = card.rng;
+        
         this.isStunned=false;
         this.sleepTime=0;
     }

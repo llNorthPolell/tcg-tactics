@@ -5,24 +5,23 @@ export function inRange(currentPosition:Position,targetPosition:Position, range:
         Math.abs(currentPosition.x-targetPosition.x) <= range;
 }
 
-export function getWalkablePositions(unitPosition:Position,maxPosition:Position, movement:number):Position[]{
+export function getTilesInRange(unitPosition:Position,maxPosition:Position, range:number):Position[]{
     let accum :Map<string,Position> = new Map();
 
-    function walkablePositionsRecursive(currentPosition:Position,movesLeft:number){
-        if (movesLeft===0)return;
+    function inRangeTilesRecursive(currentPosition:Position,tilesLeft:number){
+        if (tilesLeft===0)return;
         if (currentPosition.x <0 || currentPosition.y<0)return;
         if (currentPosition.x >maxPosition.x || currentPosition.y>maxPosition.y) return;
 
         accum.set(`${currentPosition.x}_${currentPosition.y}`,currentPosition);
 
-        walkablePositionsRecursive({x:currentPosition.x-1,y:currentPosition.y},movesLeft-1);
-        walkablePositionsRecursive({x:currentPosition.x,y:currentPosition.y-1},movesLeft-1);
-        walkablePositionsRecursive({x:currentPosition.x+1,y:currentPosition.y},movesLeft-1);
-        walkablePositionsRecursive({x:currentPosition.x,y:currentPosition.y+1},movesLeft-1);
+        inRangeTilesRecursive({x:currentPosition.x-1,y:currentPosition.y},tilesLeft-1);
+        inRangeTilesRecursive({x:currentPosition.x,y:currentPosition.y-1},tilesLeft-1);
+        inRangeTilesRecursive({x:currentPosition.x+1,y:currentPosition.y},tilesLeft-1);
+        inRangeTilesRecursive({x:currentPosition.x,y:currentPosition.y+1},tilesLeft-1);
     }
 
-    walkablePositionsRecursive(unitPosition,movement+1);
-    console.log(accum);
+    inRangeTilesRecursive(unitPosition,range+1);
     const output = Array.from(accum.values());
     return output;
 }

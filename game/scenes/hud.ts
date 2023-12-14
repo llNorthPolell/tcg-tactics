@@ -67,7 +67,7 @@ export default class HUD extends Phaser.Scene{
             this,
             "cancelCardButton",
             "Cancel",
-            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.4},
+            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.5},
             HUD_BUTTON_SIZE.width,
             HUD_BUTTON_SIZE.height,
             UI_COLORS.cancel,
@@ -103,7 +103,7 @@ export default class HUD extends Phaser.Scene{
             this,
             "cancelUnitButton",
             "Cancel",
-            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.4},
+            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.5},
             HUD_BUTTON_SIZE.width,
             HUD_BUTTON_SIZE.height,
             UI_COLORS.cancel,
@@ -114,10 +114,23 @@ export default class HUD extends Phaser.Scene{
             });
         unitStatDisplay.add(cancelUnitSelectionButton);
 
+        const waitButton = new Button(
+            this,
+            "waitButton",
+            "Wait",
+            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.1},
+            HUD_BUTTON_SIZE.width,
+            HUD_BUTTON_SIZE.height,
+            UI_COLORS.action,
+            ()=>{waitButton?.bg.setFillStyle(UI_COLORS.actionLight)},
+            ()=>{
+                waitButton?.bg.setFillStyle(UI_COLORS.action);
+                EventEmitter.emit(EVENTS.unitEvent.WAIT);
+            });
+        unitStatDisplay.add(waitButton);
 
         unitStatDisplay.hide();
 
-        
         // right panel
         this.resourceDisplay = new ResourceDisplay(
             this, 
@@ -155,10 +168,22 @@ export default class HUD extends Phaser.Scene{
             (unit:Unit)=>{
                 handUIObject.setVisible(false);
                 unitStatDisplay.show(unit);
+
+                if (!unit.isActive())
+                    waitButton.hide();
+                else    
+                    waitButton.show();
             }
         )
         .on(
             EVENTS.unitEvent.CANCEL,
+            ()=>{
+                handUIObject.setVisible(true);
+                unitStatDisplay.hide();
+            }
+        )
+        .on(
+            EVENTS.unitEvent.WAIT,
             ()=>{
                 handUIObject.setVisible(true);
                 unitStatDisplay.hide();

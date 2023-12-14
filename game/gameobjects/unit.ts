@@ -31,6 +31,10 @@ export default class Unit {
 
     private attackSelector?: AttackSelector;
 
+    private targetLocation?: Position;
+    private path: Position[];
+
+
     constructor(id:string,location:Position,card:UnitCardData, owner: GamePlayer){
         this.id=id;
         this.card = card;
@@ -42,14 +46,8 @@ export default class Unit {
         const darkColor = Phaser.Display.Color.ValueToColor(this.owner.color).darken(80);
         this.inactiveColor= darkColor.color;
         this.imageAssetName = `${ASSETS.PORTRAIT}_${(this.card instanceof HeroCardData)? "heroes":"units"}_${this.card.id}`;
-        
-        EventEmitter.on(
-            EVENTS.cardEvent.SELECT,
-            (card : Card<CardData>)=>{
-                if (card instanceof UnitCard || card instanceof HeroCard)
-                    EventEmitter.emit(EVENTS.unitEvent.CHECK_STANDING_ON_RALLY,this);
-            }
-        )
+
+        this.path = [];
     }
 
     getUnitData(){
@@ -110,10 +108,27 @@ export default class Unit {
             }
         )
 
-        EventEmitter.on(
+        EventEmitter
+        .on(
+            EVENTS.cardEvent.SELECT,
+            (card : Card<CardData>)=>{
+                if (card instanceof UnitCard || card instanceof HeroCard)
+                    EventEmitter.emit(EVENTS.unitEvent.CHECK_STANDING_ON_RALLY,this);
+            }
+        )
+        .on(
+            EVENTS.unitEvent.SELECT,
+            (unit:Unit)=>{
+                if(unit != this)
+                    EventEmitter.emit(EVENTS.unitEvent.CHECK_STANDING_ON_RALLY,this);
+            }
+        )
+        .on(
             EVENTS.unitEvent.MOVE,
-            (targetPosition:Position)=>{
+            (unit:Unit,targetPosition:Position)=>{
+                if (unit != this) return;
                 console.log(`Move ${this.unitData.name} to (${targetPosition.x},${targetPosition.y})`);
+                this.move(targetPosition);
             }
         )
 
@@ -131,5 +146,49 @@ export default class Unit {
     sleep(){
         this.active=false;
         this.image!.setAlpha(0.7);
+    }
+
+    move(targetLocation: Position){
+        this.targetLocation = targetLocation;
+        this.container?.setPosition(targetLocation.x * TILESIZE.width, targetLocation.y * TILESIZE.height);
+    }
+
+    confirmMove(){
+        if (this.targetLocation){
+            this.location = this.targetLocation;
+            this.targetLocation=undefined;
+        }
+        this.container?.setPosition(this.location.x * TILESIZE.width, this.location.y * TILESIZE.height);
+        this.sleep();
+    }
+
+    cancelMove(){
+        this.targetLocation=undefined;
+        this.container?.setPosition(this.location.x* TILESIZE.width, this.location.y * TILESIZE.height);
+    }
+
+    // TODO: Slide unit along path
+    updateMove(){
+        if (this.path.length===0) return;
+        const nextTile = this.path[0];
+        if(nextTile.x - (this.container!.x/TILESIZE.width) > 0)
+            this.container!.body!.velocity.x=5;
+        else if (nextTile.x - (this.container!.x/TILESIZE.width) < 0)
+            this.container!.body!.velocity.x=-5;
+        else 
+            this.container!.body!.velocity.x=0;
+
+        if(nextTile.y - (this.container!.y/TILESIZE.height) > 0)
+            this.container!.body!.velocity.y=5;
+        else if (nextTile.y - (this.container!.y/TILESIZE.height) < 0)
+            this.container!.body!.velocity.y=-5;
+        else 
+            this.container!.body!.velocity.y=0;
+
+        this.path = this.path.splice(0,1);
+    }
+
+    update(){
+        this.updateMove();
     }
 }

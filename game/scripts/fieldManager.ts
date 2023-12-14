@@ -60,6 +60,7 @@ export default class FieldManager{
     private activeHighlightTiles: SelectionTile[];
     private tilemap: TilemapData;
     private isPlayerTurn: boolean;
+    private movingUnit?:Unit;
 
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
@@ -142,9 +143,9 @@ export default class FieldManager{
                         );
                     
                     if(this.isPlayerTurn)
-                        this.showHighlightTiles(rallyPointPositions,undefined,TileSelectionType.PLAY_CARD);
+                        this.showHighlightTiles(rallyPointPositions,undefined,undefined,TileSelectionType.PLAY_CARD);
                     else
-                        this.showHighlightTiles(rallyPointPositions,TileStatus.WARNING);
+                        this.showHighlightTiles(rallyPointPositions,undefined,TileStatus.WARNING);
                 }
             }
         )
@@ -169,6 +170,9 @@ export default class FieldManager{
         .on(
             EVENTS.unitEvent.SELECT,
             (unit: Unit)=>{
+                if(this.movingUnit)
+                    this.movingUnit.cancelMove();
+                this.movingUnit=unit;
                 this.hideHighlightTiles();
                 const movement = unit.getUnitData().currMvt;
                 const range = unit.getUnitData().currRng;
@@ -180,9 +184,9 @@ export default class FieldManager{
                     active? movement:range);
                     
                 if (active)
-                    this.showHighlightTiles(highlightTiles,undefined,TileSelectionType.MOVE_UNIT);
+                    this.showHighlightTiles(highlightTiles,unit,undefined,TileSelectionType.MOVE_UNIT);
                 else 
-                    this.showHighlightTiles(highlightTiles,TileStatus.WARNING);
+                    this.showHighlightTiles(highlightTiles,unit,TileStatus.WARNING);
                 
             }
         )
@@ -190,6 +194,16 @@ export default class FieldManager{
             EVENTS.unitEvent.CANCEL,
             ()=>{
                 this.hideHighlightTiles();
+                this.movingUnit?.cancelMove();
+                this.movingUnit=undefined;
+            }
+        )
+        .on(
+            EVENTS.unitEvent.WAIT,
+            ()=>{
+                this.hideHighlightTiles();
+                this.movingUnit?.confirmMove();
+                this.movingUnit=undefined;
             }
         )
         .on(
@@ -401,12 +415,12 @@ export default class FieldManager{
         );
     }
 
-    showHighlightTiles(locations:Position[],status?:TileStatus,tileSelectionType:TileSelectionType=TileSelectionType.NONE){
+    showHighlightTiles(locations:Position[],unit?:Unit,status?:TileStatus,tileSelectionType:TileSelectionType=TileSelectionType.NONE){
         locations.forEach(
             position=>{
                 const selectionTile = this.selectionTiles![position.y][position.x];
                 this.activeHighlightTiles = [...this.activeHighlightTiles,selectionTile];
-                selectionTile.show(status,tileSelectionType);
+                selectionTile.show(status,unit,tileSelectionType);
             }
         )
     }
@@ -438,5 +452,10 @@ export default class FieldManager{
 
     sleep(){
         this.isPlayerTurn=false;
+    }
+
+    update(){
+        if(this.movingUnit)
+            this.movingUnit.update();
     }
 }

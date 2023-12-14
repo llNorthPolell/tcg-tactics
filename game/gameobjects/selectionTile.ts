@@ -12,6 +12,7 @@ export default class SelectionTile {
     private readonly initStatus:TileStatus;
     readonly tilePosition: Position;
     private tileSelectionType: TileSelectionType;
+    private selectedUnit?:Unit;
 
     constructor(
         scene: Phaser.Scene,
@@ -31,6 +32,7 @@ export default class SelectionTile {
             .setName(name)
             .setInteractive();
         this.tileSelectionType=TileSelectionType.NONE;
+        this.selectedUnit=undefined;
 
         this.tile.on(
             Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
@@ -42,7 +44,7 @@ export default class SelectionTile {
                                 EventEmitter.emit(EVENTS.cardEvent.PLAY,{x:tilePosition.x,y:tilePosition.y});
                                 break;
                             case TileSelectionType.MOVE_UNIT:
-                                EventEmitter.emit(EVENTS.unitEvent.MOVE,this.tilePosition);
+                                EventEmitter.emit(EVENTS.unitEvent.MOVE,this.selectedUnit,this.tilePosition);
                                 break;
                             default:
                                 break;
@@ -87,15 +89,16 @@ export default class SelectionTile {
         return this.tile;
     }
 
-    show(status?:TileStatus, tileSelectionType: TileSelectionType = TileSelectionType.NONE){
+    show(status?:TileStatus,unit?:Unit, tileSelectionType: TileSelectionType = TileSelectionType.NONE){
         this.tileSelectionType=tileSelectionType;
         this.setStatus(status? status: this.initStatus);
-        
+        this.selectedUnit=unit? unit: undefined;
         this.tile.setVisible(true);
     }
 
     hide(){
         this.status=this.initStatus;
         this.tile.setVisible(false);
+        this.selectedUnit=undefined;
     }
 }

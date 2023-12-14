@@ -12,6 +12,8 @@ export type Resources={
     max:number
 }
 
+export const RESOURCE_LIMIT=10;
+
 export default class CardManager{
     private player: GamePlayer;
 
@@ -39,9 +41,15 @@ export default class CardManager{
     private handleEvents(){
         EventEmitter
         .on(
+            EVENTS.gameEvent.PLAYER_TURN,
+            ()=>{
+                if (this.maxResource<RESOURCE_LIMIT)
+                    this.maxResource++;
+            }
+        )
+        .on(
             EVENTS.fieldEvent.GENERATE_RESOURCES,
             (income:number)=>{
-                console.log("You've got paid!!");
                 this.generateResources(income);
             }
         )

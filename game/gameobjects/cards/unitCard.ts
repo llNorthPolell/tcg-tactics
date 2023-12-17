@@ -3,11 +3,11 @@ import UnitCardData from "@/game/data/cards/unitCardData";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/position";
-import GamePlayer from "../gamePlayer";
+import Player from "@/game/data/player";
 
 export default class UnitCard extends Card<UnitCardData>{
 
-    constructor(id:string,data:UnitCardData,owner:GamePlayer){
+    constructor(id:string,data:UnitCardData,owner:Player){
         super(id,data,owner);
     }
     

@@ -41,7 +41,7 @@ export default class HUD extends Phaser.Scene{
     create(){
         const player = this.game.registry.get(GAME_STATE.player);
         this.player = player;
-        const deck = this.game.registry.get(GAME_STATE.deck);
+        const deck = player.deck.cards;
         
         this.bottomPanel = this.add.container(0,CANVAS_SIZE.height*0.8);
         this.rightPanel = this.add.container(CANVAS_SIZE.width*0.8,0);
@@ -166,6 +166,7 @@ export default class HUD extends Phaser.Scene{
         .on(
             EVENTS.unitEvent.SELECT,
             (unit:Unit)=>{
+                EventEmitter.emit(EVENTS.cardEvent.CANCEL);
                 handUIObject.setVisible(false);
                 unitStatDisplay.show(unit);
 

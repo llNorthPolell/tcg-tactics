@@ -3,20 +3,21 @@ import { CardData } from "@/game/data/cardData";
 import { Position } from "@/game/data/position";
 import { EVENTS } from "@/game/enums/keys/events";
 import { EventEmitter } from "@/game/scripts/events";
-import GamePlayer from "../gamePlayer";
 import { ASSETS } from "@/game/enums/keys/assets";
+import Player from "@/game/data/player";
+import { loadImage } from "@/game/scripts/imageLoader";
 
 export abstract class Card<T extends CardData> {
     readonly id: string;
     readonly data: T;
-    protected owner: GamePlayer;
+    protected owner: Player;
 
     protected container?: Phaser.GameObjects.Container;
     protected x: number;
     protected y: number;
     protected image?: Phaser.GameObjects.Sprite;
 
-    constructor(id:string, data:T, owner:GamePlayer,x=0, y=0){
+    constructor(id:string, data:T, owner:Player,x=0, y=0){
         this.id=id;
         this.data=data;
         this.x=x;
@@ -67,7 +68,7 @@ export abstract class Card<T extends CardData> {
             .setOrigin(0.5);
 
         this.container.add(this.image);
-        this.loadImage(scene, cardType);
+        loadImage(scene, this.image, cardType, this.data.id,CARD_SIZE.width*0.9, CARD_SIZE.height*0.9);
 
         return this.container;
     }
@@ -85,7 +86,7 @@ export abstract class Card<T extends CardData> {
 
     }
 
-    setOwner(owner:GamePlayer){
+    setOwner(owner:Player){
         this.owner=owner;
     }
 

@@ -13,6 +13,7 @@ import UnitCardData from "../data/cards/unitCardData";
 import { GAME_STATE } from "../enums/keys/gameState";
 import SpellCardData from "../data/cards/spellCardData";
 import SpellCard from "../gameobjects/cards/spellCard";
+import Deck from "../gameobjects/deck";
 
 export default class LoadingScene extends Phaser.Scene{
 
@@ -37,18 +38,59 @@ export default class LoadingScene extends Phaser.Scene{
 
     create(){
         console.log("Now Loading...");
-        const testPlayerInfo = new Player(uuidv4().toString(), "TestPlayer");
-        const testPlayer2Info = new Player(uuidv4().toString(), "Enemy");
+        const testPlayer = new Player(uuidv4().toString(), "TestPlayer");
+        const testPlayer2 = new Player(uuidv4().toString(), "Enemy");
     
-        const testPlayer = new GamePlayer(1,testPlayerInfo,getPlayerColor(1));
-        const testOpponent = new GamePlayer(2,testPlayer2Info,getPlayerColor(2));
-    
-        const testPlayerDeck = [
+        const testPlayerLeader = new HeroCard(
+                "0",
+                new HeroCardData(
+                    "3",
+                    "test_mage_hero",
+                    UNIT_CLASS.MAGE,
+                    20,
+                    30,
+                    3,
+                    0,
+                    2,
+                    2,
+                    "pwr +50% to mages",
+                    "recover 2sp per turn",
+                    "deal 2 damage to targets (radius 1)",
+                    [UNIT_CLASS.MAGE,UNIT_CLASS.MAGE,UNIT_CLASS.MAGE,UNIT_CLASS.MAGE],
+                    5
+                ),
+                testPlayer
+            );
+
+            const testOpponentLeader = new HeroCard(
+                "0",
+                new HeroCardData(
+                    "2",
+                    "test_ranger_hero",
+                    UNIT_CLASS.RANGER,
+                    22,
+                    15,
+                    3,
+                    0,
+                    3,
+                    2,
+                    "pwr +50% to rangers",
+                    "+20% pwr when target is 3 tiles away",
+                    "move unit 2 tiles",
+                    [UNIT_CLASS.RANGER,UNIT_CLASS.RANGER,UNIT_CLASS.RANGER,UNIT_CLASS.ASSASSIN,UNIT_CLASS.ASSASSIN,UNIT_CLASS.SOLDIER],
+                    5
+                ),
+                testPlayer2
+            );
+
+
+
+        const testPlayerDeckCards = [
             new HeroCard(
                 "1",
                 new HeroCardData(
                     "1",
-                    "test_hero",
+                    "test_soldier_hero",
                     UNIT_CLASS.SOLDIER,
                     30,
                     10,
@@ -57,9 +99,9 @@ export default class LoadingScene extends Phaser.Scene{
                     3,
                     1,
                     "pwr +50% to all",
-                    "+5 pwr to units 1 tile adjacent to this unit",
-                    "deal 500 damage to target",
-                    ["Soldier","Soldier","Soldier","Ranger", "Ranger", "Guardian"],
+                    "+2 pwr to units 1 tile adjacent to this unit",
+                    "deal 5 damage to target",
+                    [UNIT_CLASS.SOLDIER,UNIT_CLASS.SOLDIER,UNIT_CLASS.SOLDIER,UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.GUARDIAN],
                     5
                 ),
                 testPlayer),
@@ -173,10 +215,15 @@ export default class LoadingScene extends Phaser.Scene{
                 ]*/,
                 testPlayer),
         ];
+
+        const testPlayerDeck = new Deck(testPlayerDeckCards,testPlayerLeader);
+        const testOpponentDeck = new Deck([],testOpponentLeader);
+
+        const testGamePlayer = new GamePlayer(1,testPlayer,getPlayerColor(1),testPlayerDeck);
+        const testGameOpponent = new GamePlayer(2,testPlayer2,getPlayerColor(2),testOpponentDeck);
     
-        this.game.registry.set(GAME_STATE.player, testPlayer);
-        this.game.registry.set(GAME_STATE.deck, testPlayerDeck);
-        this.game.registry.set(GAME_STATE.opponents, [testOpponent])
+        this.game.registry.set(GAME_STATE.player, testGamePlayer);
+        this.game.registry.set(GAME_STATE.opponents, [testGameOpponent])
     
         this.game.scene.start(SCENES.GAMEPLAY);
     }

@@ -4,15 +4,15 @@ import { Card } from "./card";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/position";
-import GamePlayer from "../gamePlayer";
 import DealDamage from "@/game/scripts/skillEffects/dealDamage";
 import { ValueType } from "@/game/enums/valueType";
+import Player from "@/game/data/player";
 
 export default class SpellCard extends Card<SpellCardData>{
     private skillEffects: SkillEffect[];
 
-    constructor(id:string,data:SpellCardData,owner:GamePlayer){
-        super(id,data,owner/*,image*/);
+    constructor(id:string,data:SpellCardData,owner:Player){
+        super(id,data,owner);
         this.skillEffects=[];
         this.parseSkillEffects(data.effectCode);
     }

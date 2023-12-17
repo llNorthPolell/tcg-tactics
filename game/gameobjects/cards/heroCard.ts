@@ -3,10 +3,10 @@ import { Card } from "./card";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/position";
-import GamePlayer from "../gamePlayer";
+import Player from "@/game/data/player";
 
 export default class HeroCard extends Card<HeroCardData>{
-    constructor(id:string,data:HeroCardData,owner:GamePlayer){
+    constructor(id:string,data:HeroCardData,owner:Player){
         super(id,data,owner);
     }
     

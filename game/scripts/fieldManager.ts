@@ -21,6 +21,7 @@ import UnitCardData from "../data/cards/unitCardData";
 import { v4 as uuidv4 } from 'uuid';
 import { getTilesInRange } from "./util";
 import { TileSelectionType } from "../enums/tileSelectionType";
+import Player from "../data/player";
 
 export type PlayerOwnership = {
     player: GamePlayer,
@@ -50,22 +51,27 @@ export type Landmarks = {
 
 export type Field = {
     mapData: TilemapData,
-    playerOwnership: Map<number,PlayerOwnership>
+    playerOwnership: Map<number,PlayerOwnership>,
+    units: Map<string,Unit>
 }
 
 export default class FieldManager{
     private scene: Phaser.Scene;
     private selectionTiles?: SelectionTile[][];
+    private playerToIDMap:Map<Player,number>;
     private playerOwnershipMap: Map<number,PlayerOwnership>;
     private activeHighlightTiles: SelectionTile[];
     private tilemap: TilemapData;
     private isPlayerTurn: boolean;
+    private units:Map<string,Unit>;
     private movingUnit?:Unit;
 
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
         
         this.playerOwnershipMap = new Map();
+        this.playerToIDMap=new Map();
+
         playersInGame.forEach(
             (player)=>{
                 this.playerOwnershipMap.set(
@@ -82,9 +88,16 @@ export default class FieldManager{
                             rallyPoints: [] 
                         }
                     }
+                );
+
+                this.playerToIDMap.set(
+                    player.playerInfo,
+                    player.id
                 )
             }
         );
+
+        
 
 
         const tilemap = this.generateMap();
@@ -92,12 +105,15 @@ export default class FieldManager{
         this.generateHighlightTiles(tilemap);
         this.activeHighlightTiles=[];
         const landmarks = this.loadLandmarks(tilemap);
+        this.units = new Map();
 
+        
         this.assignInitialLandmarks(tilemap,landmarks);
 
-        const field :Field = {
+        let field :Field = {
             mapData: tilemap,
-            playerOwnership: this.playerOwnershipMap
+            playerOwnership: this.playerOwnershipMap,
+            units: this.units
         }
 
 
@@ -106,6 +122,17 @@ export default class FieldManager{
         this.handleEvents();
 
         this.isPlayerTurn=false;
+
+
+        
+        playersInGame.forEach(
+            player=>{
+                const gamePlayer = this.playerOwnershipMap.get(player.id)!;
+                const stronghold = gamePlayer.landmarksOwned.strongholds[0];
+                const leader = player.deck.getLeader();
+                this.summonUnit({x:stronghold?.x,y:stronghold.y},leader.data,leader.getOwner());
+            }
+        )
     }
 
     private handleEvents(){
@@ -157,8 +184,8 @@ export default class FieldManager{
         )
         .on(
             EVENTS.fieldEvent.SUMMON_UNIT,
-            (location:Position, unitData:UnitCardData,owner:GamePlayer)=>{
-                this.summonUnit(location,unitData,owner);
+            (location:Position, unitData:UnitCardData,cardOwner:Player)=>{
+                this.summonUnit(location,unitData,cardOwner);
             }
         )
         .on(
@@ -170,7 +197,7 @@ export default class FieldManager{
         .on(
             EVENTS.unitEvent.SELECT,
             (unit: Unit)=>{
-                if(this.movingUnit)
+                if(this.movingUnit && this.movingUnit != unit)
                     this.movingUnit.cancelMove();
                 this.movingUnit=unit;
                 this.hideHighlightTiles();
@@ -178,10 +205,13 @@ export default class FieldManager{
                 const range = unit.getUnitData().currRng;
                 const location = unit.getLocation();
                 const active = unit.isActive();
-                const highlightTiles = getTilesInRange(
+                const highlightTiles = this.getTilesInRange(
+                    location,
+                    active? movement:range);
+                /*const highlightTiles = getTilesInRange(
                     location,
                     {x:this.tilemap.map.width-1,y:this.tilemap.map.height-1}, 
-                    active? movement:range);
+                    active? movement:range);*/
                     
                 if (active)
                     this.showHighlightTiles(highlightTiles,unit,undefined,TileSelectionType.MOVE_UNIT);
@@ -202,7 +232,12 @@ export default class FieldManager{
             EVENTS.unitEvent.WAIT,
             ()=>{
                 this.hideHighlightTiles();
-                this.movingUnit?.confirmMove();
+                if (!this.movingUnit) return;
+                const prevLocation = this.movingUnit.getLocation();
+                this.units.delete(`${prevLocation.x}_${prevLocation.y}`);
+                this.movingUnit.confirmMove();
+                const newLocation = this.movingUnit.getLocation();
+                this.units.set(`${newLocation.x}_${newLocation.y}`,this.movingUnit);
                 this.movingUnit=undefined;
             }
         )
@@ -420,7 +455,12 @@ export default class FieldManager{
             position=>{
                 const selectionTile = this.selectionTiles![position.y][position.x];
                 this.activeHighlightTiles = [...this.activeHighlightTiles,selectionTile];
-                selectionTile.show(status,unit,tileSelectionType);
+
+                const unitOnTile = this.units.get(`${position.x}_${position.y}`);
+                if (!status && unitOnTile && unitOnTile != this.movingUnit)
+                    selectionTile.show(TileStatus.DANGER,unit,tileSelectionType);
+                else
+                    selectionTile.show(status,unit,tileSelectionType);
             }
         )
     }
@@ -435,13 +475,16 @@ export default class FieldManager{
         this.activeHighlightTiles= [];
     }
 
-    summonUnit(location:Position,unitData:UnitCardData, owner: GamePlayer){
+    summonUnit(location:Position,unitData:UnitCardData, cardOwner: Player){
+        const owner = this.playerOwnershipMap.get(this.playerToIDMap.get(cardOwner)!)!.player;
         const unit = new Unit(uuidv4().toString(),location,unitData,owner);
         const position = unit.getLocation();
         unit.render(this.scene);
 
         const playerOwnership = this.playerOwnershipMap.get(owner.id)!;
-        playerOwnership.activeUnits=[...playerOwnership.activeUnits,unit]
+        playerOwnership.activeUnits=[...playerOwnership.activeUnits,unit];
+        this.units.set(`${position.x}_${position.y}`,unit);
+        
 
         console.log(`Summoned ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
     }
@@ -457,5 +500,41 @@ export default class FieldManager{
     update(){
         if(this.movingUnit)
             this.movingUnit.update();
+    }
+
+    getTilesInRange(unitPosition:Position,range:number):Position[]{
+        const maxPosition = {x:this.tilemap.map.width-1,y:this.tilemap.map.height-1};
+        const obstacleLayer = this.tilemap.layers.obstacle!;
+        const units = this.units;
+
+        let accum :Map<string,Position> = new Map();
+    
+        function inRangeTilesRecursive(currentPosition:Position,tilesLeft:number){
+            if (tilesLeft===0)return;
+            if (currentPosition.x <0 || currentPosition.y<0)return;
+            if (currentPosition.x >maxPosition.x || currentPosition.y>maxPosition.y) return;
+            
+            accum.set(`${currentPosition.x}_${currentPosition.y}`,currentPosition);
+            if(obstacleLayer.getTileAt(currentPosition.x, currentPosition.y)) return;
+
+            const unitOnTile = units.get(`${currentPosition.x}_${currentPosition.y}`)
+            
+            //console.log(`Unit: ${unitOnTile?.getUnitData().name},unitPosition:${JSON.stringify(unitPosition)}, currentPosition: ${JSON.stringify(currentPosition)}`);
+            console.log()       
+            if(unitOnTile && 
+                currentPosition.x != unitPosition.x && 
+                currentPosition.y != unitPosition.y) 
+                     return;
+                
+
+            inRangeTilesRecursive({x:currentPosition.x-1,y:currentPosition.y},tilesLeft-1);
+            inRangeTilesRecursive({x:currentPosition.x,y:currentPosition.y-1},tilesLeft-1);
+            inRangeTilesRecursive({x:currentPosition.x+1,y:currentPosition.y},tilesLeft-1);
+            inRangeTilesRecursive({x:currentPosition.x,y:currentPosition.y+1},tilesLeft-1);
+        }
+    
+        inRangeTilesRecursive(unitPosition,range+1);
+        const output = Array.from(accum.values());
+        return output;
     }
 }

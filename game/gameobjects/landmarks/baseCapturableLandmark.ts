@@ -7,7 +7,7 @@ export default abstract class BaseCapturableLandmark extends BaseLandmark implem
     protected owner? : GamePlayer;
 
     constructor(id:string, x:number,y:number,tile:Phaser.Tilemaps.Tile){
-        super(id,x,y,tile);
+        super(id,x,y,tile,true);
         this.captureTick=MAX_CAPTURE_TICK;
     }
 

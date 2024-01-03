@@ -34,7 +34,12 @@ export const EVENTS = {
          * Signal HUD to update hand display
          * @Params hand:Card<CardData>[]
          */
-        UPDATE_HAND: "update-hand-ui"
+        UPDATE_HAND: "update-hand-ui",
+
+        /**
+         * Signal HUD to update unit stats display
+         */
+        UPDATE_UNIT_STAT_DISPLAY: "update-unit-stat-display"
     }),
     /**
      * For game events like player turns, game over
@@ -127,7 +132,13 @@ export const EVENTS = {
         /**
          * When player clicks on wait button to confirm unit move
          */
-        WAIT: "wait-unit"
+        WAIT: "wait-unit",
+
+        /**
+         * When a unit is killed
+         * @Params unit:Unit
+         */
+        DEATH: "unit-death"
     })
 }
 

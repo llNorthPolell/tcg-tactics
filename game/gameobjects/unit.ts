@@ -226,4 +226,11 @@ export default class Unit {
     update(){
         this.updateMove();
     }
+
+    killUnit(){
+        console.log(`${this.id} has been slain...`);
+        this.active = false;
+        this.container!.setVisible(false);
+        EventEmitter.emit(EVENTS.unitEvent.DEATH, this);
+    }
 }

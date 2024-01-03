@@ -170,10 +170,16 @@ export default class HUD extends Phaser.Scene{
                 handUIObject.setVisible(false);
                 unitStatDisplay.show(unit);
 
-                if (!unit.isActive())
+                if (!unit.isActive() || unit.getOwner() != this.player)
                     waitButton.hide();
                 else    
                     waitButton.show();
+            }
+        )
+        .on(
+            EVENTS.uiEvent.UPDATE_UNIT_STAT_DISPLAY,
+            ()=>{
+                unitStatDisplay.update();
             }
         )
         .on(

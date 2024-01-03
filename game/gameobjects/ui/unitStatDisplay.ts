@@ -97,6 +97,14 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
         this.setVisible(true);
     }
 
+    update(){
+        if (!this.unitData) return;
+        this.unitHPText.setText(String(this.unitData.currHp));
+        this.unitSPText.setText(String(this.unitData.currSp));
+        this.unitPwrText.setText(String(this.unitData.currPwr));
+        this.setVisible(true);
+    }
+
     hide(){
         this.setVisible(false);
     }

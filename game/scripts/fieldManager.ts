@@ -19,19 +19,19 @@ import { TileStatus } from "../enums/tileStatus";
 import SelectionTile from "../gameobjects/selectionTile";
 import UnitCardData from "../data/cards/unitCardData";
 import { v4 as uuidv4 } from 'uuid';
-import { inRange } from "./util";
 import { TileSelectionType } from "../enums/tileSelectionType";
 import Player from "../data/player";
 import Landmark from "../gameobjects/landmarks/landmark";
-import BaseCapturableLandmark from "../gameobjects/landmarks/baseCapturableLandmark";
 import CapturableLandmark from "../gameobjects/landmarks/capturableLandmark";
+import CombatHandler from "./combatHandler";
 
 export type PlayerOwnership = {
     player: GamePlayer,
     champions: Unit[],
     activeUnits: Unit[],   
     traps: any[], // TODO: Implement trap spell effects 
-    landmarksOwned: Landmarks
+    landmarksOwned: Landmarks,
+    graveyard: Unit[]
 }
 
 export type TilemapData = {
@@ -70,6 +70,7 @@ export default class FieldManager{
     private units:Map<string,Unit>;
     private movingUnit?:Unit;
     private landmarks: Map<string,Landmark>;
+    private combatHandler : CombatHandler;
 
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
@@ -91,7 +92,8 @@ export default class FieldManager{
                             outposts: [],
                             resourceNodes: [],
                             rallyPoints: [] 
-                        }
+                        },
+                        graveyard: []
                     }
                 );
 
@@ -122,6 +124,8 @@ export default class FieldManager{
 
 
         this.scene.game.registry.set(GAME_STATE.field,field);
+
+        this.combatHandler= new CombatHandler();
 
         this.handleEvents();
 
@@ -226,15 +230,22 @@ export default class FieldManager{
                 const range = unit.getUnitData().currRng;
                 const location = unit.getLocation();
                 const active = unit.isActive();
-                const highlightTiles = this.getTilesInRange(
-                    location,
-                    active? movement:range,
-                    !this.movingUnit.isActive());
-                    
-                if (active)
+ 
+                if (active && unit.getOwner()==this.playerOwnershipMap.get(1)!.player){
+                    const highlightTiles = this.getTilesInRange(
+                        location,
+                        movement,
+                        false);
                     this.showHighlightTiles(highlightTiles,unit,undefined,TileSelectionType.MOVE_UNIT);
-                else 
+
+                }
+                else {
+                    const highlightTiles = this.getTilesInRange(
+                        location,
+                        range,
+                        true);
                     this.showHighlightTiles(highlightTiles,unit,TileStatus.WARNING);
+                }
                 
             }
         )
@@ -252,25 +263,33 @@ export default class FieldManager{
                 this.hideHighlightTiles();
                 if (!this.movingUnit) return;
                 const prevLocation = this.movingUnit.getLocation();
+                const prevLandmark = this.landmarks.get(`${prevLocation.x}_${prevLocation.y}`);
+
+                // if unit was capturing a landmark and steps out
+                if (prevLandmark && prevLandmark.capturable) {
+                    prevLandmark.occupant = undefined;
+                    (prevLandmark as CapturableLandmark).resetCaptureTick();
+                }
+
                 this.units.delete(`${prevLocation.x}_${prevLocation.y}`);
                 this.movingUnit.confirmMove();
+
                 const newLocation = this.movingUnit.getLocation();
+                const newLandmark = this.landmarks.get(`${newLocation.x}_${newLocation.y}`);
+
                 this.units.set(`${newLocation.x}_${newLocation.y}`,this.movingUnit);
                 this.movingUnit=undefined;
-
-
+                
+                if (newLandmark)
+                    newLandmark.occupant=this.movingUnit;
             }
         )
         .on(
             EVENTS.unitEvent.ATTACK,
             (attacker:Unit, defender:Unit)=>{
                 if (attacker?.isActive()){
-                    console.log(`${attacker?.getUnitData().name} attacks ${defender.getUnitData().name}`);
-                    console.log(`${defender?.getUnitData().name} takes ${attacker?.getUnitData().currPwr} damage!`);
-
-                    if (attacker.getTargetLocation() && 
-                        inRange(defender.getLocation(),attacker.getTargetLocation()!,defender.getUnitData().currRng))
-                    console.log(`${attacker?.getUnitData().name} takes ${defender?.getUnitData().currPwr} damage!`);
+                    this.combatHandler.fight(attacker,defender);
+                    EventEmitter.emit(EVENTS.unitEvent.WAIT);
                 }
             }
         )
@@ -324,12 +343,26 @@ export default class FieldManager{
                     
                 landmark.capture(unit.getOwner());
                 landmark.tile.tint = playerOwnership.player.color;
+
+                console.log(`${landmark.id} has been captured by ${playerOwnership.player.playerInfo.name}`)
             }
         )
         .on(
             EVENTS.gameEvent.END_TURN,
             ()=>{
                 this.sleep();
+            }
+        )
+        .on(
+            EVENTS.unitEvent.DEATH,
+            (unit:Unit)=>{
+                const playerOwnership = this.playerOwnershipMap.get(unit.getOwner().id)!;
+
+                playerOwnership.activeUnits = playerOwnership.activeUnits.filter(activeUnit => activeUnit != unit);
+                const lastLocation = unit.getLocation();
+                this.units.delete(`${lastLocation.x}_${lastLocation.y}`);
+                unit.setLocation({x:-1,y:-1});
+                playerOwnership.graveyard.push(unit);
             }
         )
     }
@@ -635,14 +668,17 @@ export default class FieldManager{
         const {x:unitX,y:unitY} = unit.getLocation();
         const occupyingLandmark = this.landmarks.get(`${unitX}_${unitY}`);
 
-        if (!(occupyingLandmark instanceof BaseCapturableLandmark) || 
-            occupyingLandmark instanceof RallyPoint ||
-            occupyingLandmark.getOwner() == unit.getOwner()) return;
+        if (!(occupyingLandmark?.capturable)) return;
+        if (occupyingLandmark instanceof RallyPoint) return;
 
-        occupyingLandmark.updateCaptureTick();
-        if (occupyingLandmark.getCaptureTicks() === 0)
+        const occupyingCapturableLandmark = occupyingLandmark as CapturableLandmark;
+        if (occupyingCapturableLandmark.getOwner() == unit.getOwner()) return;
+
+    
+        occupyingCapturableLandmark.updateCaptureTick();
+        if (occupyingCapturableLandmark.getCaptureTicks() === 0)
             EventEmitter.emit(EVENTS.fieldEvent.CAPTURE_LANDMARK,unit,occupyingLandmark);
         else
-            console.log(`${occupyingLandmark.id} will be captured by ${unit.getOwner().id} in ${occupyingLandmark.getCaptureTicks()} turns...`);
+            console.log(`${occupyingLandmark.id} will be captured by ${unit.getOwner().id} in ${occupyingCapturableLandmark.getCaptureTicks()} turns...`);
     }
 }

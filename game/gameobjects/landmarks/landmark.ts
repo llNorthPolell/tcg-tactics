@@ -5,5 +5,6 @@ export default interface Landmark{
     readonly x:number;
     readonly y:number;
     readonly tile: Phaser.Tilemaps.Tile;
+    readonly capturable:boolean;
     occupant?:Unit;
 }

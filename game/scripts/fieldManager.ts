@@ -132,7 +132,6 @@ export default class FieldManager{
         playersInGame.forEach(
             player=>{
                 const gamePlayer = this.playerOwnershipMap.get(player.id)!;
-                if (gamePlayer.player.id!=1) return;
                 const stronghold = gamePlayer.landmarksOwned.strongholds[0];
                 const leader = player.deck.getLeader();
                 if (leader)

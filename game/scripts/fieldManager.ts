@@ -19,9 +19,12 @@ import { TileStatus } from "../enums/tileStatus";
 import SelectionTile from "../gameobjects/selectionTile";
 import UnitCardData from "../data/cards/unitCardData";
 import { v4 as uuidv4 } from 'uuid';
-import { getTilesInRange } from "./util";
+import { inRange } from "./util";
 import { TileSelectionType } from "../enums/tileSelectionType";
 import Player from "../data/player";
+import Landmark from "../gameobjects/landmarks/landmark";
+import BaseCapturableLandmark from "../gameobjects/landmarks/baseCapturableLandmark";
+import CapturableLandmark from "../gameobjects/landmarks/capturableLandmark";
 
 export type PlayerOwnership = {
     player: GamePlayer,
@@ -46,13 +49,14 @@ export type Landmarks = {
     strongholds : Stronghold[],
     outposts: Outpost[],
     resourceNodes: ResourceNode[],
-    rallyPoints?:RallyPoint[]
+    rallyPoints?:RallyPoint[],
 }
 
 export type Field = {
     mapData: TilemapData,
     playerOwnership: Map<number,PlayerOwnership>,
-    units: Map<string,Unit>
+    units: Map<string,Unit>,
+    landmarks: Map<string, Landmark>
 }
 
 export default class FieldManager{
@@ -65,6 +69,7 @@ export default class FieldManager{
     private isPlayerTurn: boolean;
     private units:Map<string,Unit>;
     private movingUnit?:Unit;
+    private landmarks: Map<string,Landmark>;
 
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
@@ -97,14 +102,12 @@ export default class FieldManager{
             }
         );
 
-        
-
-
         const tilemap = this.generateMap();
         this.tilemap=tilemap;
         this.generateHighlightTiles(tilemap);
         this.activeHighlightTiles=[];
-        const landmarks = this.loadLandmarks(tilemap);
+        const {landmarks,landmarkMap} = this.loadLandmarks(tilemap);
+        this.landmarks = landmarkMap;
         this.units = new Map();
 
         
@@ -113,7 +116,8 @@ export default class FieldManager{
         let field :Field = {
             mapData: tilemap,
             playerOwnership: this.playerOwnershipMap,
-            units: this.units
+            units: this.units,
+            landmarks: this.landmarks
         }
 
 
@@ -128,9 +132,11 @@ export default class FieldManager{
         playersInGame.forEach(
             player=>{
                 const gamePlayer = this.playerOwnershipMap.get(player.id)!;
+                if (gamePlayer.player.id!=1) return;
                 const stronghold = gamePlayer.landmarksOwned.strongholds[0];
                 const leader = player.deck.getLeader();
-                this.summonUnit({x:stronghold?.x,y:stronghold.y},leader.data,leader.getOwner());
+                if (leader)
+                    this.summonUnit({x:stronghold?.x,y:stronghold.y},leader.data,leader.getOwner());
             }
         )
     }
@@ -140,6 +146,7 @@ export default class FieldManager{
         .on(
             EVENTS.gameEvent.PLAYER_TURN,
             ()=>{
+                // TODO: Active player is 1 for testing purposes only
                 const playerOwnership = this.playerOwnershipMap.get(1)!;
                 const landmarksOwned = playerOwnership.landmarksOwned;
                 const income = 
@@ -148,12 +155,27 @@ export default class FieldManager{
                     landmarksOwned.resourceNodes.length;
 
                 this.wake();
-                EventEmitter.emit(EVENTS.fieldEvent.GENERATE_RESOURCES,income);
+                EventEmitter.emit(EVENTS.playerEvent.GENERATE_RESOURCES,income);
                 
                 playerOwnership.activeUnits.forEach(
                     (unit:Unit)=>{
                         unit.wake();
-                    }
+
+                        this.attemptCaptureLandmark(unit); 
+                    }   
+                )
+            }
+        )
+        .on(
+            EVENTS.gameEvent.NON_PLAYER_TURN,
+            (playerNumber:number)=>{
+                const playerOwnership = this.playerOwnershipMap.get(playerNumber)!;
+                playerOwnership.activeUnits.forEach(
+                    (unit:Unit)=>{
+                        unit.wake();
+
+                        this.attemptCaptureLandmark(unit); 
+                    }   
                 )
             }
         )
@@ -207,11 +229,8 @@ export default class FieldManager{
                 const active = unit.isActive();
                 const highlightTiles = this.getTilesInRange(
                     location,
-                    active? movement:range);
-                /*const highlightTiles = getTilesInRange(
-                    location,
-                    {x:this.tilemap.map.width-1,y:this.tilemap.map.height-1}, 
-                    active? movement:range);*/
+                    active? movement:range,
+                    !this.movingUnit.isActive());
                     
                 if (active)
                     this.showHighlightTiles(highlightTiles,unit,undefined,TileSelectionType.MOVE_UNIT);
@@ -239,6 +258,73 @@ export default class FieldManager{
                 const newLocation = this.movingUnit.getLocation();
                 this.units.set(`${newLocation.x}_${newLocation.y}`,this.movingUnit);
                 this.movingUnit=undefined;
+
+
+            }
+        )
+        .on(
+            EVENTS.unitEvent.ATTACK,
+            (attacker:Unit, defender:Unit)=>{
+                if (attacker?.isActive()){
+                    console.log(`${attacker?.getUnitData().name} attacks ${defender.getUnitData().name}`);
+                    console.log(`${defender?.getUnitData().name} takes ${attacker?.getUnitData().currPwr} damage!`);
+
+                    if (attacker.getTargetLocation() && 
+                        inRange(defender.getLocation(),attacker.getTargetLocation()!,defender.getUnitData().currRng))
+                    console.log(`${attacker?.getUnitData().name} takes ${defender?.getUnitData().currPwr} damage!`);
+                }
+            }
+        )
+        .on(
+            EVENTS.fieldEvent.CAPTURE_LANDMARK,
+            (unit:Unit, landmark:CapturableLandmark)=>{
+                const playerOwnership = this.playerOwnershipMap.get(unit.getOwner().id)!;
+
+                if (landmark.getOwner()){
+                    const prevPlayerOwnership = this.playerOwnershipMap.get(landmark.getOwner()!.id)!;
+                    console.log(`Remove ${landmark.id} from ${landmark.getOwner()!.id}'s ownership...`);
+
+                    if (landmark instanceof Stronghold){
+                        prevPlayerOwnership.landmarksOwned.strongholds = 
+                            prevPlayerOwnership.landmarksOwned.strongholds.filter(stronghold=> stronghold.id != landmark.id);
+                    }
+                    else if (landmark instanceof Outpost){
+                        prevPlayerOwnership.landmarksOwned.outposts = 
+                            prevPlayerOwnership.landmarksOwned.outposts.filter(outpost=> outpost.id != landmark.id);
+                    }
+                    else if (landmark instanceof ResourceNode)
+                        prevPlayerOwnership.landmarksOwned.resourceNodes = 
+                            prevPlayerOwnership.landmarksOwned.resourceNodes.filter(resourceNode=> resourceNode.id != landmark.id);
+
+                    if (landmark instanceof Stronghold || landmark instanceof Outpost){
+                        const rallyPointsToRemove = landmark.getRallyPoints();
+                        prevPlayerOwnership.landmarksOwned.rallyPoints =
+                            prevPlayerOwnership.landmarksOwned.rallyPoints?.filter(
+                                currRallyPoint=> !rallyPointsToRemove.find(rallyPoint=> rallyPoint = currRallyPoint));
+                    }
+                   
+                    console.log(`Player Ownership after Capture: ${JSON.stringify(prevPlayerOwnership.landmarksOwned.strongholds)}`)
+                }
+                   
+                
+                if (landmark instanceof Stronghold)
+                    playerOwnership.landmarksOwned.strongholds.push(landmark as Stronghold);
+                else if (landmark instanceof Outpost)
+                    playerOwnership.landmarksOwned.outposts.push(landmark as Outpost);
+                else if (landmark instanceof ResourceNode)
+                    playerOwnership.landmarksOwned.resourceNodes.push(landmark as ResourceNode);
+
+
+                if (landmark instanceof Stronghold || landmark instanceof Outpost)
+                    landmark.getRallyPoints().forEach(
+                        rallyPoint=>{
+                            rallyPoint.tile.tint=playerOwnership!.player.color;
+                            playerOwnership.landmarksOwned.rallyPoints = [...playerOwnership.landmarksOwned.rallyPoints!,rallyPoint];
+                        }
+                    )
+                    
+                landmark.capture(unit.getOwner());
+                landmark.tile.tint = playerOwnership.player.color;
             }
         )
         .on(
@@ -311,7 +397,7 @@ export default class FieldManager{
     }
 
 
-    loadLandmarks(tilemapData:TilemapData) : Landmarks{
+    loadLandmarks(tilemapData:TilemapData) : {landmarks:Landmarks, landmarkMap:Map<string,Landmark>}{
         let landmarks :Landmarks = {
             strongholds : [],
             outposts : [],
@@ -319,6 +405,7 @@ export default class FieldManager{
         };
         let rallyPoints: Map<string,RallyPoint> = new Map();
         let parentNodes: Map<string,ParentLandmark> = new Map();
+        let landmarkMap : Map<string, Landmark> = new Map();
 
         const landmarksLayer = tilemapData.layers.landmarks;
 
@@ -363,10 +450,13 @@ export default class FieldManager{
                     default:
                         break;
                 }
+                if (value)
+                    landmarkMap.set(key,value);
+                
             }
         );
         this.linkRalliesToParents(parentNodes, rallyPoints)
-        return landmarks;
+        return {landmarks, landmarkMap};
     }
 
     private linkRalliesToParents(parentNodes:Map<string,ParentLandmark>, rallyPoints:Map<string,RallyPoint>){
@@ -408,41 +498,46 @@ export default class FieldManager{
 
                 const landmarkTile = landmarksLayer.getTileAt(tileX,tileY);
                 const landmarkName = landmarkTile.properties.name;
-                const playerOwnership = this.playerOwnershipMap.get(Number(object.name));
+                const playerOwnership = this.playerOwnershipMap.get(Number(object.name))!;
 
                 switch(landmarkName){
                     case "Stronghold":
                         const stronghold = landmarks.strongholds.find(landmark=>landmark.x==tileX && landmark.y==tileY);
                         if (stronghold){
-                            playerOwnership!.landmarksOwned.strongholds = [...playerOwnership!.landmarksOwned.strongholds, stronghold];
-                            stronghold.tile.tint=playerOwnership!.player.color;
+                            playerOwnership.landmarksOwned.strongholds = [...playerOwnership.landmarksOwned.strongholds, stronghold];
+                            stronghold.tile.tint=playerOwnership.player.color;
                             stronghold.getRallyPoints().forEach(
                                 rallyPoint=>{
-                                    rallyPoint.tile.tint=playerOwnership!.player.color;
-                                    playerOwnership!.landmarksOwned.rallyPoints = [...playerOwnership!.landmarksOwned.rallyPoints!,rallyPoint];
+                                    rallyPoint.tile.tint=playerOwnership.player.color;
+                                    playerOwnership.landmarksOwned.rallyPoints = [...playerOwnership.landmarksOwned.rallyPoints!,rallyPoint];
                                 }
                             )
+                            stronghold.capture(playerOwnership!.player);
                         }
                         break;
                     case "Outpost":
                         const outpost = landmarks.outposts.find(landmark=>landmark.x==tileX && landmark.y==tileY);
                         if (outpost){
-                            playerOwnership!.landmarksOwned.outposts = [...playerOwnership!.landmarksOwned.outposts, outpost];
-                            outpost.tile.tint=playerOwnership!.player.color;
+                            playerOwnership.landmarksOwned.outposts = [...playerOwnership.landmarksOwned.outposts, outpost];
+                            outpost.tile.tint=playerOwnership.player.color;
                             outpost.getRallyPoints().forEach(
                                 rallyPoint=>{
                                     rallyPoint.tile.tint=playerOwnership!.player.color;
-                                    playerOwnership!.landmarksOwned.rallyPoints = [...playerOwnership!.landmarksOwned.rallyPoints!,rallyPoint];
+                                    playerOwnership.landmarksOwned.rallyPoints = [...playerOwnership.landmarksOwned.rallyPoints!,rallyPoint];
                                 }
                             )
+                            outpost.capture(playerOwnership.player);
                         }
                         break;
                     case "Resource Node":
                         const resourceNode = landmarks.resourceNodes.find(landmark=>landmark.x==tileX && landmark.y==tileY);
                         if (resourceNode){
-                            playerOwnership!.landmarksOwned.resourceNodes = [...playerOwnership!.landmarksOwned.resourceNodes, resourceNode];
-                            resourceNode.tile.tint=playerOwnership!.player.color;
+                            playerOwnership.landmarksOwned.resourceNodes = [...playerOwnership!.landmarksOwned.resourceNodes, resourceNode];
+                            resourceNode.tile.tint=playerOwnership.player.color;
+                            resourceNode.capture(playerOwnership.player);
                         }
+                        break;
+                    default:
                         break;
                 }
                 
@@ -502,10 +597,11 @@ export default class FieldManager{
             this.movingUnit.update();
     }
 
-    getTilesInRange(unitPosition:Position,range:number):Position[]{
+    getTilesInRange(unitPosition:Position,range:number, passObstacles: boolean):Position[]{
         const maxPosition = {x:this.tilemap.map.width-1,y:this.tilemap.map.height-1};
         const obstacleLayer = this.tilemap.layers.obstacle!;
         const units = this.units;
+        const movingUnit = this.movingUnit;
 
         let accum :Map<string,Position> = new Map();
     
@@ -515,15 +611,13 @@ export default class FieldManager{
             if (currentPosition.x >maxPosition.x || currentPosition.y>maxPosition.y) return;
             
             accum.set(`${currentPosition.x}_${currentPosition.y}`,currentPosition);
-            if(obstacleLayer.getTileAt(currentPosition.x, currentPosition.y)) return;
+            if(!passObstacles && obstacleLayer.getTileAt(currentPosition.x, currentPosition.y)) return;
 
             const unitOnTile = units.get(`${currentPosition.x}_${currentPosition.y}`)
-            
-            //console.log(`Unit: ${unitOnTile?.getUnitData().name},unitPosition:${JSON.stringify(unitPosition)}, currentPosition: ${JSON.stringify(currentPosition)}`);
-            console.log()       
-            if(unitOnTile && 
-                currentPosition.x != unitPosition.x && 
-                currentPosition.y != unitPosition.y) 
+
+            if(!passObstacles && 
+                unitOnTile && 
+                unitOnTile != movingUnit) 
                      return;
                 
 
@@ -536,5 +630,20 @@ export default class FieldManager{
         inRangeTilesRecursive(unitPosition,range+1);
         const output = Array.from(accum.values());
         return output;
+    }
+
+    attemptCaptureLandmark(unit:Unit){
+        const {x:unitX,y:unitY} = unit.getLocation();
+        const occupyingLandmark = this.landmarks.get(`${unitX}_${unitY}`);
+
+        if (!(occupyingLandmark instanceof BaseCapturableLandmark) || 
+            occupyingLandmark instanceof RallyPoint ||
+            occupyingLandmark.getOwner() == unit.getOwner()) return;
+
+        occupyingLandmark.updateCaptureTick();
+        if (occupyingLandmark.getCaptureTicks() === 0)
+            EventEmitter.emit(EVENTS.fieldEvent.CAPTURE_LANDMARK,unit,occupyingLandmark);
+        else
+            console.log(`${occupyingLandmark.id} will be captured by ${unit.getOwner().id} in ${occupyingLandmark.getCaptureTicks()} turns...`);
     }
 }

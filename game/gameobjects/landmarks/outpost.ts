@@ -1,13 +1,12 @@
 import SkillEffect from "@/game/scripts/skillEffects/skillEffect";
-import CapturableLandmark from "./capturableLandmark";
 import Buff from "@/game/scripts/skillEffects/buff";
 import { ValueType } from "@/game/enums/valueType";
 import { UnitStatField } from "@/game/enums/unitStatField";
 import RallyPoint from "./rallyPoint";
 import ParentLandmark from "./parentLandmark";
-import LandmarkImpl from "./baseLandmark";
+import BaseCapturableLandmark from "./baseCapturableLandmark";
 
-export default class Outpost extends LandmarkImpl implements ParentLandmark,CapturableLandmark{
+export default class Outpost extends BaseCapturableLandmark implements ParentLandmark{
     private rallyPoints: RallyPoint[];
     readonly effects:SkillEffect[]
 

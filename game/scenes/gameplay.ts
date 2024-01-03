@@ -1,6 +1,5 @@
 
 import { HAND_UI_SIZE } from "../config";
-import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
 import { GAME_STATE } from "../enums/keys/gameState";
 import { SCENES } from "../enums/keys/scenes";

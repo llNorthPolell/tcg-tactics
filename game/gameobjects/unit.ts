@@ -8,6 +8,7 @@ import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
 import { EventEmitter } from "../scripts/events";
 import { loadImage } from "../scripts/imageLoader";
+import { inRange } from "../scripts/util";
 import AttackSelector from "./attackSelector";
 import GamePlayer from "./gamePlayer";
 
@@ -67,6 +68,10 @@ export default class Unit {
         return this.pixelPosition;
     }
 
+    getTargetLocation(){
+        return this.targetLocation;
+    }
+
     render(scene:Phaser.Scene){
         this.setLocation(this.location);
 
@@ -113,11 +118,44 @@ export default class Unit {
 
         EventEmitter
         .on(
+            EVENTS.unitEvent.SELECT,
+            (unit:Unit)=>{
+                if(unit==this) return;
+                if (unit.owner.getTeam() != this.owner.getTeam() 
+                    && inRange(unit.getLocation(),this.getLocation(),unit.unitData.currRng))
+                    this.attackSelector?.show(unit);
+                else
+                    this.attackSelector?.hide();
+            }
+        )
+        .on(
             EVENTS.unitEvent.MOVE,
             (unit:Unit,targetPosition:Position)=>{
-                if (unit != this) return;
-                console.log(`Move ${this.unitData.name} to (${targetPosition.x},${targetPosition.y})`);
-                this.move(targetPosition);
+                if (unit == this){
+                    console.log(`Move ${this.unitData.name} to (${targetPosition.x},${targetPosition.y})`);
+                    this.move(targetPosition);
+                    return;
+                }
+
+                if (unit.owner.getTeam() != this.owner.getTeam() 
+                    && inRange(targetPosition,this.getLocation(),unit.unitData.currRng))
+                    this.attackSelector?.show(unit);
+                else    
+                    this.attackSelector?.hide();
+            }
+        )
+        .on(
+            EVENTS.unitEvent.CANCEL,
+            ()=>{
+                if (this.attackSelector?.visible)
+                    this.attackSelector?.hide();
+            }
+        )
+        .on(
+            EVENTS.unitEvent.WAIT,
+            ()=>{
+                if (this.attackSelector?.visible)
+                    this.attackSelector?.hide();
             }
         )
 
@@ -181,6 +219,10 @@ export default class Unit {
         return (this.card instanceof HeroCardData)? "heroes":"units";
     }
 
+    getOwner(){
+        return this.owner;
+    }
+    
     update(){
         this.updateMove();
     }

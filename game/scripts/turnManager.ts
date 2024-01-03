@@ -11,7 +11,7 @@ export default class TurnManager{
 
     constructor(player:GamePlayer, playersInGame:GamePlayer[]){ 
         this.player=player;
-        this.playersInGame = playersInGame;
+        this.playersInGame = [...playersInGame];
         console.log(`Param: ${JSON.stringify(playersInGame)}, Class Property: ${JSON.stringify(this.playersInGame)}`);
         this.activePlayerIndex = -1;
         this.turn = 1;
@@ -19,7 +19,7 @@ export default class TurnManager{
         EventEmitter.on(
             EVENTS.gameEvent.NEXT_TURN,
             ()=>{
-                if (this.activePlayerIndex==this.playersInGame.length){
+                if (this.activePlayerIndex==this.playersInGame.length-1){
                     this.activePlayerIndex=-1;
                     this.turn++;
                 }
@@ -27,10 +27,11 @@ export default class TurnManager{
                 this.activePlayerIndex++;
                 this.activePlayer=this.playersInGame[this.activePlayerIndex];
         
+                console.log(`Active Player: ${JSON.stringify(this.activePlayer)}`);
                 if (this.activePlayer == this.player)
                     EventEmitter.emit(EVENTS.gameEvent.PLAYER_TURN);
                 else 
-                    EventEmitter.emit(EVENTS.gameEvent.OPPONENT_TURN, this.activePlayerIndex);
+                    EventEmitter.emit(EVENTS.gameEvent.NON_PLAYER_TURN, this.activePlayer.id);
             }
         ).on(
             EVENTS.gameEvent.END_TURN,
@@ -39,10 +40,10 @@ export default class TurnManager{
             }
         )
         .on(
-            EVENTS.gameEvent.OPPONENT_TURN,
-            (playerNumber:number)=>{
-                console.log(`Player ${playerNumber}'s turn...`);
-                console.log(`Player ${playerNumber} is not implemented, so will pass...`);
+            EVENTS.gameEvent.NON_PLAYER_TURN,
+            (playerId:number)=>{
+                console.log(`Player ${playerId}'s turn...`);
+                console.log(`Player ${playerId} is not implemented, so will pass...`);
                 EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
             }
         );

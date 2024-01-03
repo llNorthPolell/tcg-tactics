@@ -59,16 +59,6 @@ export default class SelectionTile {
             }
         )
 
-        EventEmitter
-        .on(
-            EVENTS.unitEvent.CHECK_STANDING_ON_RALLY,
-            (unit:Unit)=>{
-                const location = unit.getLocation();
-                if (location.x == this.tilePosition.x && location.y == this.tilePosition.y)
-                    this.setStatus(TileStatus.DANGER);
-            }
-        )
-
         this.tile.setVisible(false);
     }
 

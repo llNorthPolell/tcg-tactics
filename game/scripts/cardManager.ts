@@ -48,7 +48,7 @@ export default class CardManager{
             }
         )
         .on(
-            EVENTS.fieldEvent.GENERATE_RESOURCES,
+            EVENTS.playerEvent.GENERATE_RESOURCES,
             (income:number)=>{
                 this.generateResources(income);
             }

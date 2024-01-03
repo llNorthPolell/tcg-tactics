@@ -6,6 +6,7 @@ import Unit from "./unit";
 
 export default class AttackSelector extends Phaser.GameObjects.Container{
     private unit:Unit;
+    private attacker?: Unit;
 
     constructor(scene:Phaser.Scene,unit:Unit){
         super(scene,0,0);
@@ -22,17 +23,20 @@ export default class AttackSelector extends Phaser.GameObjects.Container{
             .on(
                 Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
                 ()=>{
-                    EventEmitter.emit(EVENTS.unitEvent.ATTACK, unit);
+                    if (!this.attacker) return;
+                    EventEmitter.emit(EVENTS.unitEvent.ATTACK, this.attacker, unit);
                 }
             )
         this.hide();
     }
 
-    show(){
+    show(attacker: Unit){
+        this.attacker=attacker;
         this.setVisible(true);
     }
 
     hide(){
         this.setVisible(false);
+        this.attacker=undefined;
     }
 }

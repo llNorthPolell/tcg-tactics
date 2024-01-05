@@ -1,5 +1,5 @@
 import { CANVAS_SIZE } from "@/game/config";
-import { Position } from "@/game/data/position";
+import { Position } from "@/game/data/types/position";
 import { EVENTS } from "@/game/enums/keys/events";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
 import CardManager from "@/game/scripts/cardManager";

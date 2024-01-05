@@ -46,25 +46,17 @@ export const EVENTS = {
      */
     gameEvent: Object.freeze({
         /**
-         * When it is the player's turn.
+         * When entering a player's turn.
+         * @Params playerNumber:number
+         * @Params index:number
+         * @Params isDevicePlayerTurn:boolean
          */
         PLAYER_TURN: "player-turn",
-
+        
         /**
-         * When entering the next player's turn.
+         * Signals turn manager to go to next player's turn.
          */
         NEXT_TURN:"next-turn",
-
-        /**
-         * When the active player ends their turn.
-         */
-        END_TURN: "end-turn",
-
-        /**
-         * When it is another player's turn.
-         * @Params playerNumber:number
-         */
-        NON_PLAYER_TURN: "another-turn"
     }),
     /**
      * For player-specific events, like generating resources

@@ -1,36 +1,26 @@
 import { CARD_SIZE } from "../config";
 import { CardData } from "../data/cardData";
-import { Position } from "../data/position";
+import { Position } from "../data/types/position";
+import { RESOURCE_LIMIT, Resources } from "../data/types/resources";
 import { EVENTS } from "../enums/keys/events";
 import { Card } from "../gameobjects/cards/card";
 import GamePlayer from "../gameobjects/gamePlayer";
-import Player from "../gameobjects/gamePlayer";
 import { EventEmitter } from "./events";
-
-export type Resources={
-    current:number,
-    max:number
-}
-
-export const RESOURCE_LIMIT=10;
 
 export default class CardManager{
     private player: GamePlayer;
 
     private deck: Card<CardData>[];
     private hand:Card<CardData>[];
-    private graveyard: Card<CardData>[];
-
     private selected?: Card<CardData>;
     
     private currResource: number;
     private maxResource:number;
 
-    constructor(player:Player,deck:Card<CardData>[]){
+    constructor(player:GamePlayer){
         this.player= player;
-        this.deck=deck;
+        this.deck=player.deck.getCards();
         this.hand=[];
-        this.graveyard=[];
 
         this.currResource=0;
         this.maxResource=2;
@@ -42,9 +32,12 @@ export default class CardManager{
         EventEmitter
         .on(
             EVENTS.gameEvent.PLAYER_TURN,
-            ()=>{
+            (_activePlayerId:number,_activePlayerIndex:number, isDevicePlayerTurn:boolean)=>{
+                if (!isDevicePlayerTurn) return;
                 if (this.maxResource<RESOURCE_LIMIT)
                     this.maxResource++;
+
+                this.drawCard();
             }
         )
         .on(

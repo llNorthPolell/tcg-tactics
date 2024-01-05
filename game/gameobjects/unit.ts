@@ -3,7 +3,7 @@ import { TILESIZE } from "../config";
 import { CardData } from "../data/cardData";
 import HeroCardData from "../data/cards/heroCardData";
 import UnitCardData from "../data/cards/unitCardData";
-import { Position } from "../data/position";
+import { Position } from "../data/types/position";
 import UnitData from "../data/unitData";
 import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
@@ -203,7 +203,8 @@ export default class Unit {
                 if (this.spellSelector?.visible)
                     this.spellSelector?.hide();
             }
-        )
+        );
+        
 
     }
 
@@ -212,13 +213,13 @@ export default class Unit {
     }
     
     wake(){
-        this.active=true;
         this.image!.setAlpha(1);
+        this.active=true;
     };
 
     sleep(){
-        this.active=false;
         this.image!.setAlpha(0.7);
+        this.active=false;
     }
 
     move(targetLocation: Position){

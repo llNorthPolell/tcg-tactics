@@ -3,7 +3,7 @@ import SkillEffect from "../../scripts/skillEffects/skillEffect";
 import { Card } from "./card";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
-import { Position } from "@/game/data/position";
+import { Position } from "@/game/data/types/position";
 import DealDamage from "@/game/scripts/skillEffects/dealDamage";
 import Player from "@/game/data/player";
 import { SPELL_EFFECT_TYPE } from "@/game/enums/keys/spellEffectType";

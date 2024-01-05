@@ -1,6 +1,6 @@
 import { CARD_SIZE } from "@/game/config";
 import { CardData } from "@/game/data/cardData";
-import { Position } from "@/game/data/position";
+import { Position } from "@/game/data/types/position";
 import { EVENTS } from "@/game/enums/keys/events";
 import { EventEmitter } from "@/game/scripts/events";
 import { ASSETS } from "@/game/enums/keys/assets";

@@ -39,14 +39,13 @@ export default class HUD extends Phaser.Scene{
     preload(){}
 
     create(){
-        const player = this.game.registry.get(GAME_STATE.player);
+        const player = this.game.registry.get(GAME_STATE.player) as GamePlayer;
         this.player = player;
-        const deck = player.deck.cards;
         
         this.bottomPanel = this.add.container(0,CANVAS_SIZE.height*0.8);
         this.rightPanel = this.add.container(CANVAS_SIZE.width*0.8,0);
 
-        this.cardManager = new CardManager(player,deck);
+        this.cardManager = new CardManager(player);
         
         // bottom panel
         const bg = this.add.rectangle(
@@ -90,7 +89,7 @@ export default class HUD extends Phaser.Scene{
             ()=>{endTurnButton?.bg.setFillStyle(UI_COLORS.actionLight)},
             ()=>{
                 endTurnButton?.bg.setFillStyle(UI_COLORS.action);
-                EventEmitter.emit(EVENTS.gameEvent.END_TURN);
+                EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
             });
         handUIObject.add(endTurnButton);
 
@@ -198,14 +197,14 @@ export default class HUD extends Phaser.Scene{
         )
         .on(
             EVENTS.gameEvent.PLAYER_TURN,
-            ()=>{
+            (_playerId: number, _activePlayerIndex:number, isDevicePlayerTurn: boolean)=>{
+                if (!isDevicePlayerTurn) return;
                 this.wake();
                 endTurnButton.setVisible(true);
-                this.cardManager!.drawCard();
             }
         )
         .on(
-            EVENTS.gameEvent.END_TURN,
+            EVENTS.gameEvent.NEXT_TURN,
             ()=>{
                 this.sleep();
                 endTurnButton.setVisible(false);

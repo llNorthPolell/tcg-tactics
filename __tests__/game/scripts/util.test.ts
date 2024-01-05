@@ -1,4 +1,4 @@
-import { Position } from "@/game/data/position";
+import { Position } from "@/game/data/types/position";
 import { inRange } from "@/game/scripts/util";
 
 // TODO: Diagonal range logic

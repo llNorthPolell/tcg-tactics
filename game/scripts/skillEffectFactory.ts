@@ -1,4 +1,4 @@
-import { Position } from "../data/position";
+import { Position } from "../data/types/position";
 import SkillEffect from "./skillEffects/skillEffect";
 import UnitStats from "@/game/data/unitData";
 

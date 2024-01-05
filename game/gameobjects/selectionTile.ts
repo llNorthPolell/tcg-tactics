@@ -1,4 +1,4 @@
-import { Position } from "../data/position";
+import { Position } from "../data/types/position";
 import { AMITY_COLORS } from "../enums/keys/amityColors";
 import { EVENTS } from "../enums/keys/events";
 import { TileSelectionType } from "../enums/tileSelectionType";

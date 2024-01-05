@@ -1,4 +1,4 @@
-import { Position } from "../data/position";
+import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
 import { UNIT_CLASS } from "../enums/keys/unitClass";
 import Unit from "../gameobjects/unit";

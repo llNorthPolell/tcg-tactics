@@ -2,7 +2,7 @@ import HeroCardData from "../../data/cards/heroCardData";
 import { Card } from "./card";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
-import { Position } from "@/game/data/position";
+import { Position } from "@/game/data/types/position";
 import Player from "@/game/data/player";
 
 export default class HeroCard extends Card<HeroCardData>{

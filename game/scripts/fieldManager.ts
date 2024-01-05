@@ -11,7 +11,7 @@ import ResourceNode from "../gameobjects/landmarks/resourceNode";
 import ParentLandmark from "../gameobjects/landmarks/parentLandmark";
 import PointOfInterest from "../gameobjects/landmarks/pointOfInterest";
 import { Card } from "../gameobjects/cards/card";
-import { Position } from "../data/position";
+import { Position } from "../data/types/position";
 import { CardData } from "../data/cardData";
 import UnitCard from "../gameobjects/cards/unitCard";
 import HeroCard from "../gameobjects/cards/heroCard";
@@ -25,15 +25,8 @@ import Landmark from "../gameobjects/landmarks/landmark";
 import CapturableLandmark from "../gameobjects/landmarks/capturableLandmark";
 import SpellCard from "../gameobjects/cards/spellCard";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
-
-export type PlayerOwnership = {
-    player: GamePlayer,
-    champions: Unit[],
-    activeUnits: Unit[],   
-    traps: any[], // TODO: Implement trap spell effects 
-    landmarksOwned: Landmarks,
-    graveyard: Unit[]
-}
+import HeroCardData from "../data/cards/heroCardData";
+import { LandmarksCollection } from "../data/types/landmarksCollection";
 
 export type TilemapData = {
     map: Phaser.Tilemaps.Tilemap,
@@ -46,63 +39,36 @@ export type TilemapData = {
     }
 }
 
-export type Landmarks = {
-    strongholds : Stronghold[],
-    outposts: Outpost[],
-    resourceNodes: ResourceNode[],
-    rallyPoints?:RallyPoint[],
-}
-
 export type Field = {
     mapData: TilemapData,
-    playerOwnership: Map<number,PlayerOwnership>,
     units: Map<string,Unit>,
     landmarks: Map<string, Landmark>
 }
 
 export default class FieldManager{
     private scene: Phaser.Scene;
+    private playersInGame: GamePlayer[];
+    private playerIdToIndexMap: Map<number,number>;
     private selectionTiles?: SelectionTile[][];
-    private playerToIDMap:Map<Player,number>;
-    private playerOwnershipMap: Map<number,PlayerOwnership>;
     private activeHighlightTiles: SelectionTile[];
     private tilemap: TilemapData;
-    private isPlayerTurn: boolean;
+    private activePlayerId: number;
+    private activePlayerIndex: number;
     private units:Map<string,Unit>;
     private movingUnit?:Unit;
     private landmarks: Map<string,Landmark>;
 
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
-        
-        this.playerOwnershipMap = new Map();
-        this.playerToIDMap=new Map();
+        this.playersInGame = playersInGame;
+        this.playerIdToIndexMap= new Map();
 
         playersInGame.forEach(
-            (player)=>{
-                this.playerOwnershipMap.set(
-                    player.id,
-                    {
-                        player: player,
-                        champions: [],
-                        activeUnits: [],   
-                        traps: [],
-                        landmarksOwned:{
-                            strongholds : [],
-                            outposts: [],
-                            resourceNodes: [],
-                            rallyPoints: [] 
-                        },
-                        graveyard: []
-                    }
-                );
-
-                this.playerToIDMap.set(
-                    player.playerInfo,
-                    player.id
-                )
+            (player:GamePlayer,index:number) => {
+                this.playerIdToIndexMap.set(player.id,index);
             }
         );
+
 
         const tilemap = this.generateMap();
         this.tilemap=tilemap;
@@ -117,7 +83,6 @@ export default class FieldManager{
 
         let field :Field = {
             mapData: tilemap,
-            playerOwnership: this.playerOwnershipMap,
             units: this.units,
             landmarks: this.landmarks
         }
@@ -125,19 +90,18 @@ export default class FieldManager{
 
         this.scene.game.registry.set(GAME_STATE.field,field);
 
+
         this.handleEvents();
 
-        this.isPlayerTurn=false;
+        this.activePlayerIndex=0;
+        this.activePlayerId=0;
 
-
-        
         playersInGame.forEach(
             player=>{
-                const gamePlayer = this.playerOwnershipMap.get(player.id)!;
-                const stronghold = gamePlayer.landmarksOwned.strongholds[0];
+                const stronghold = player.getStartingStronghold();
                 const leader = player.deck.getLeader();
                 if (leader)
-                    this.summonUnit({x:stronghold?.x,y:stronghold.y},leader.data,leader.getOwner());
+                    this.summonUnit({x:stronghold?.x,y:stronghold.y},leader.data,player);
             }
         )
     }
@@ -146,38 +110,35 @@ export default class FieldManager{
         EventEmitter
         .on(
             EVENTS.gameEvent.PLAYER_TURN,
-            ()=>{
-                // TODO: Active player is 1 for testing purposes only
-                const playerOwnership = this.playerOwnershipMap.get(1)!;
-                const landmarksOwned = playerOwnership.landmarksOwned;
+            (_playerId: number, activePlayerIndex:number, isDevicePlayerTurn: boolean)=>{
+                this.activePlayerIndex=activePlayerIndex;
+
+                const player = this.playersInGame[activePlayerIndex];
+                player.getActiveUnits().forEach(unit=> {
+                    unit.wake();
+                    this.attemptCaptureLandmark(unit); 
+                });
+
+                if (!isDevicePlayerTurn) return;
+
+                const landmarksOwned = this.playersInGame[activePlayerIndex].getLandmarksOwned();
                 const income = 
                     (landmarksOwned.strongholds.length*2) + 
                     landmarksOwned.outposts.length + 
                     landmarksOwned.resourceNodes.length;
-
-                this.wake();
                 EventEmitter.emit(EVENTS.playerEvent.GENERATE_RESOURCES,income);
                 
-                playerOwnership.activeUnits.forEach(
-                    (unit:Unit)=>{
-                        unit.wake();
-
-                        this.attemptCaptureLandmark(unit); 
-                    }   
-                )
             }
         )
         .on(
-            EVENTS.gameEvent.NON_PLAYER_TURN,
-            (playerNumber:number)=>{
-                const playerOwnership = this.playerOwnershipMap.get(playerNumber)!;
-                playerOwnership.activeUnits.forEach(
-                    (unit:Unit)=>{
-                        unit.wake();
-
-                        this.attemptCaptureLandmark(unit); 
-                    }   
-                )
+            EVENTS.gameEvent.NEXT_TURN,
+            ()=>{
+                const player = this.playersInGame[this.activePlayerIndex];
+                player.getActiveUnits().forEach(unit=> {
+                    if(!unit.isActive()) return;
+                    unit.sleep();
+                    console.log(`${unit.getUnitData().name} has not moved, so it was set to inactive...`);
+                });
             }
         )
         .on(
@@ -185,17 +146,15 @@ export default class FieldManager{
             (card : Card<CardData>)=>{
                 this.hideHighlightTiles();
                 if (card instanceof UnitCard || card instanceof HeroCard){
-                    const rallyPointPositions : Position[] = this.playerOwnershipMap.get(1)!
-                        .landmarksOwned
+                    const rallyPointPositions : Position[] = 
+                        this.playersInGame[this.activePlayerIndex].getLandmarksOwned()!
                         .rallyPoints!
                         .map(
                             rallyPoint=> {return {x:rallyPoint.x,y:rallyPoint.y}}
                         );
                     
-                    if(this.isPlayerTurn)
-                        this.showHighlightTiles(rallyPointPositions,undefined,undefined,TileSelectionType.PLAY_CARD);
-                    else
-                        this.showHighlightTiles(rallyPointPositions,undefined,TileStatus.WARNING);
+
+                    this.showHighlightTiles(rallyPointPositions,undefined,undefined,TileSelectionType.PLAY_CARD);
                 }
                 else {
                     switch((card as SpellCard).data.targetType){
@@ -224,7 +183,11 @@ export default class FieldManager{
         .on(
             EVENTS.fieldEvent.SUMMON_UNIT,
             (location:Position, unitData:UnitCardData,cardOwner:Player)=>{
-                this.summonUnit(location,unitData,cardOwner);
+                const gamePlayer = this.playersInGame.find(player=> player.playerInfo.id == cardOwner.id);
+
+                if (!gamePlayer) return;
+
+                this.summonUnit(location,unitData,gamePlayer);
             }
         )
         .on(
@@ -239,22 +202,20 @@ export default class FieldManager{
                 const location = unit.getLocation();
                 const active = unit.isActive();
  
-                if (active && unit.getOwner()==this.playerOwnershipMap.get(1)!.player){
+                if (active){
                     const highlightTiles = this.getTilesInRange(
                         location,
                         movement,
                         false);
                     this.showHighlightTiles(highlightTiles,unit,undefined,TileSelectionType.MOVE_UNIT);
+                    return;
+                }
 
-                }
-                else {
-                    const highlightTiles = this.getTilesInRange(
-                        location,
-                        range,
-                        true);
-                    this.showHighlightTiles(highlightTiles,unit,TileStatus.WARNING);
-                }
-                
+                const highlightTiles = this.getTilesInRange(
+                    location,
+                    range,
+                    true);
+                this.showHighlightTiles(highlightTiles,unit,TileStatus.WARNING); 
             }
         )
         .on(
@@ -295,73 +256,20 @@ export default class FieldManager{
         .on(
             EVENTS.fieldEvent.CAPTURE_LANDMARK,
             (unit:Unit, landmark:CapturableLandmark)=>{
-                const playerOwnership = this.playerOwnershipMap.get(unit.getOwner().id)!;
-
-                if (landmark.getOwner()){
-                    const prevPlayerOwnership = this.playerOwnershipMap.get(landmark.getOwner()!.id)!;
-                    console.log(`Remove ${landmark.id} from ${landmark.getOwner()!.id}'s ownership...`);
-
-                    if (landmark instanceof Stronghold){
-                        prevPlayerOwnership.landmarksOwned.strongholds = 
-                            prevPlayerOwnership.landmarksOwned.strongholds.filter(stronghold=> stronghold.id != landmark.id);
-                    }
-                    else if (landmark instanceof Outpost){
-                        prevPlayerOwnership.landmarksOwned.outposts = 
-                            prevPlayerOwnership.landmarksOwned.outposts.filter(outpost=> outpost.id != landmark.id);
-                    }
-                    else if (landmark instanceof ResourceNode)
-                        prevPlayerOwnership.landmarksOwned.resourceNodes = 
-                            prevPlayerOwnership.landmarksOwned.resourceNodes.filter(resourceNode=> resourceNode.id != landmark.id);
-
-                    if (landmark instanceof Stronghold || landmark instanceof Outpost){
-                        const rallyPointsToRemove = landmark.getRallyPoints();
-                        prevPlayerOwnership.landmarksOwned.rallyPoints =
-                            prevPlayerOwnership.landmarksOwned.rallyPoints?.filter(
-                                currRallyPoint=> !rallyPointsToRemove.find(rallyPoint=> rallyPoint = currRallyPoint));
-                    }
-                   
-                    console.log(`Player Ownership after Capture: ${JSON.stringify(prevPlayerOwnership.landmarksOwned.strongholds)}`)
-                }
-                   
-                
-                if (landmark instanceof Stronghold)
-                    playerOwnership.landmarksOwned.strongholds.push(landmark as Stronghold);
-                else if (landmark instanceof Outpost)
-                    playerOwnership.landmarksOwned.outposts.push(landmark as Outpost);
-                else if (landmark instanceof ResourceNode)
-                    playerOwnership.landmarksOwned.resourceNodes.push(landmark as ResourceNode);
-
-
-                if (landmark instanceof Stronghold || landmark instanceof Outpost)
-                    landmark.getRallyPoints().forEach(
-                        rallyPoint=>{
-                            rallyPoint.tile.tint=playerOwnership!.player.color;
-                            playerOwnership.landmarksOwned.rallyPoints = [...playerOwnership.landmarksOwned.rallyPoints!,rallyPoint];
-                        }
-                    )
-                    
-                landmark.capture(unit.getOwner());
-                landmark.tile.tint = playerOwnership.player.color;
-
-                console.log(`${landmark.id} has been captured by ${playerOwnership.player.playerInfo.name}`)
-            }
-        )
-        .on(
-            EVENTS.gameEvent.END_TURN,
-            ()=>{
-                this.sleep();
+                const ownerIndex = this.playerIdToIndexMap.get(unit.getOwner().id);
+                if (ownerIndex === undefined) return;
+                this.playersInGame[ownerIndex].registerLandmark(landmark);
             }
         )
         .on(
             EVENTS.unitEvent.DEATH,
             (unit:Unit)=>{
-                const playerOwnership = this.playerOwnershipMap.get(unit.getOwner().id)!;
-
-                playerOwnership.activeUnits = playerOwnership.activeUnits.filter(activeUnit => activeUnit != unit);
+                const ownerIndex = this.playerIdToIndexMap.get(unit.getOwner().id);
+                if (ownerIndex === undefined) return;
+                this.playersInGame[ownerIndex].moveUnitToGraveyard(unit);
                 const lastLocation = unit.getLocation();
                 this.units.delete(`${lastLocation.x}_${lastLocation.y}`);
                 unit.setLocation({x:-1,y:-1});
-                playerOwnership.graveyard.push(unit);
             }
         )
     }
@@ -428,8 +336,8 @@ export default class FieldManager{
     }
 
 
-    loadLandmarks(tilemapData:TilemapData) : {landmarks:Landmarks, landmarkMap:Map<string,Landmark>}{
-        let landmarks :Landmarks = {
+    loadLandmarks(tilemapData:TilemapData) : {landmarks:LandmarksCollection, landmarkMap:Map<string,Landmark>}{
+        let landmarks :LandmarksCollection = {
             strongholds : [],
             outposts : [],
             resourceNodes : []
@@ -518,7 +426,7 @@ export default class FieldManager{
     }
 
 
-    assignInitialLandmarks(tilemapData:TilemapData, landmarks:Landmarks){
+    assignInitialLandmarks(tilemapData:TilemapData, landmarks:LandmarksCollection){
         const playerStartLayer=tilemapData.layers.playerStarts;
         const landmarksLayer=tilemapData.layers.landmarks;
 
@@ -529,47 +437,35 @@ export default class FieldManager{
 
                 const landmarkTile = landmarksLayer.getTileAt(tileX,tileY);
                 const landmarkName = landmarkTile.properties.name;
-                const playerOwnership = this.playerOwnershipMap.get(Number(object.name))!;
 
-                switch(landmarkName){
-                    case "Stronghold":
-                        const stronghold = landmarks.strongholds.find(landmark=>landmark.x==tileX && landmark.y==tileY);
-                        if (stronghold){
-                            playerOwnership.landmarksOwned.strongholds = [...playerOwnership.landmarksOwned.strongholds, stronghold];
-                            stronghold.tile.tint=playerOwnership.player.color;
-                            stronghold.getRallyPoints().forEach(
-                                rallyPoint=>{
-                                    rallyPoint.tile.tint=playerOwnership.player.color;
-                                    playerOwnership.landmarksOwned.rallyPoints = [...playerOwnership.landmarksOwned.rallyPoints!,rallyPoint];
-                                }
-                            )
-                            stronghold.capture(playerOwnership!.player);
-                        }
-                        break;
-                    case "Outpost":
-                        const outpost = landmarks.outposts.find(landmark=>landmark.x==tileX && landmark.y==tileY);
-                        if (outpost){
-                            playerOwnership.landmarksOwned.outposts = [...playerOwnership.landmarksOwned.outposts, outpost];
-                            outpost.tile.tint=playerOwnership.player.color;
-                            outpost.getRallyPoints().forEach(
-                                rallyPoint=>{
-                                    rallyPoint.tile.tint=playerOwnership!.player.color;
-                                    playerOwnership.landmarksOwned.rallyPoints = [...playerOwnership.landmarksOwned.rallyPoints!,rallyPoint];
-                                }
-                            )
-                            outpost.capture(playerOwnership.player);
-                        }
-                        break;
-                    case "Resource Node":
-                        const resourceNode = landmarks.resourceNodes.find(landmark=>landmark.x==tileX && landmark.y==tileY);
-                        if (resourceNode){
-                            playerOwnership.landmarksOwned.resourceNodes = [...playerOwnership!.landmarksOwned.resourceNodes, resourceNode];
-                            resourceNode.tile.tint=playerOwnership.player.color;
-                            resourceNode.capture(playerOwnership.player);
-                        }
-                        break;
-                    default:
-                        break;
+                const owner = this.playersInGame[Number(object.name)-1];
+
+                if (owner){
+                    switch(landmarkName){
+                        case "Stronghold":
+                            const stronghold = landmarks.strongholds.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                            if (stronghold){
+                                owner.registerLandmark(stronghold);
+                                stronghold.capture(owner);
+                            }
+                            break;
+                        case "Outpost":
+                            const outpost = landmarks.outposts.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                            if (outpost){
+                                owner.registerLandmark(outpost);
+                                outpost.capture(owner);
+                            }
+                            break;
+                        case "Resource Node":
+                            const resourceNode = landmarks.resourceNodes.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                            if (resourceNode){
+                                owner.registerLandmark(resourceNode);
+                                resourceNode.capture(owner);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 
             }
@@ -601,26 +497,22 @@ export default class FieldManager{
         this.activeHighlightTiles= [];
     }
 
-    summonUnit(location:Position,unitData:UnitCardData, cardOwner: Player){
-        const owner = this.playerOwnershipMap.get(this.playerToIDMap.get(cardOwner)!)!.player;
+    // TODO: Should not be looking up by player objects!
+    summonUnit(location:Position,unitData:UnitCardData, owner: GamePlayer){
         const unit = new Unit(uuidv4().toString(),location,unitData,owner);
         const position = unit.getLocation();
         unit.render(this.scene);
 
-        const playerOwnership = this.playerOwnershipMap.get(owner.id)!;
-        playerOwnership.activeUnits=[...playerOwnership.activeUnits,unit];
+        if (unitData instanceof HeroCardData)
+            owner.registerHero(unit);
+        else 
+            owner.registerUnit(unit);
         this.units.set(`${position.x}_${position.y}`,unit);
         
-
-        console.log(`Summoned ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
-    }
-
-    wake(){
-        this.isPlayerTurn=true;
-    }
-
-    sleep(){
-        this.isPlayerTurn=false;
+        if (unitData instanceof HeroCardData)
+            console.log(`Summoned hero unit ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
+        else
+            console.log(`Summoned ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
     }
 
     update(){

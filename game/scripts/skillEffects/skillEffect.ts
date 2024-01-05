@@ -1,4 +1,4 @@
-import { Position } from "@/game/data/position";
+import { Position } from "@/game/data/types/position";
 import UnitStats from "@/game/data/unitData";
 
 export default interface SkillEffect{

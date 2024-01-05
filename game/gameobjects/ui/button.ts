@@ -1,4 +1,4 @@
-import { Position } from "@/game/data/position";
+import { Position } from "@/game/data/types/position";
 
 export default class Button extends Phaser.GameObjects.Container {
     bg: Phaser.GameObjects.Rectangle;

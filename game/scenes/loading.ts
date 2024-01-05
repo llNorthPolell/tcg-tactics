@@ -14,74 +14,78 @@ import { GAME_STATE } from "../enums/keys/gameState";
 import SpellCardData from "../data/cards/spellCardData";
 import SpellCard from "../gameobjects/cards/spellCard";
 import Deck from "../gameobjects/deck";
+import { TARGET_TYPES } from "../enums/keys/targetTypes";
+import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
+import { ValueType } from "../enums/keys/valueType";
 
-export default class LoadingScene extends Phaser.Scene{
+export default class LoadingScene extends Phaser.Scene {
 
 
-    preload(){
+    preload() {
         //map
         this.load.image(ASSETS.TILE_SET, "assets/maps/tilesets/tileset.png");
         this.load.image(ASSETS.MAP_ICONS, "assets/maps/tilesets/mapicons.png");
-        
-        this.load.tilemapTiledJSON(ASSETS.TILE_MAP,"assets/maps/testmap2.json");
+
+        this.load.tilemapTiledJSON(ASSETS.TILE_MAP, "assets/maps/testmap2.json");
 
         // portrait
-        this.load.image(ASSETS.UNDEFINED,"assets/portraits/undefined.png");
+        this.load.image(ASSETS.UNDEFINED, "assets/portraits/undefined.png");
 
         // icons
-        this.load.image(ASSETS.HP_ICON,"assets/icons/hp.png")
-        this.load.image(ASSETS.SP_ICON,"assets/icons/sp.png")
-        this.load.image(ASSETS.PWR_ICON,"assets/icons/pwr.png")
-        this.load.image(ASSETS.ATTACK_SELECTOR,"assets/icons/attack.png")
-        this.load.spritesheet(ASSETS.CLASS_ICONS,"assets/icons/class.png",{frameWidth:31,frameHeight:31})
+        this.load.image(ASSETS.HP_ICON, "assets/icons/hp.png")
+        this.load.image(ASSETS.SP_ICON, "assets/icons/sp.png")
+        this.load.image(ASSETS.PWR_ICON, "assets/icons/pwr.png")
+        this.load.image(ASSETS.ATTACK_SELECTOR, "assets/icons/attack.png")
+        this.load.image(ASSETS.SPELL_SELECTOR, "assets/icons/spell.png")
+        this.load.spritesheet(ASSETS.CLASS_ICONS, "assets/icons/class.png", { frameWidth: 31, frameHeight: 31 })
     }
 
-    create(){
+    create() {
         console.log("Now Loading...");
         const testPlayer = new Player(uuidv4().toString(), "TestPlayer");
         const testPlayer2 = new Player(uuidv4().toString(), "Enemy");
-    
-        const testPlayerLeader = new HeroCard(
-                "0",
-                new HeroCardData(
-                    "3",
-                    "test_mage_hero",
-                    UNIT_CLASS.MAGE,
-                    20,
-                    30,
-                    3,
-                    0,
-                    2,
-                    2,
-                    "pwr +50% to mages",
-                    "recover 2sp per turn",
-                    "deal 2 damage to targets (radius 1)",
-                    [UNIT_CLASS.MAGE,UNIT_CLASS.MAGE,UNIT_CLASS.MAGE,UNIT_CLASS.MAGE],
-                    5
-                ),
-                testPlayer
-            );
 
-            const testOpponentLeader = new HeroCard(
-                "0",
-                new HeroCardData(
-                    "2",
-                    "test_ranger_hero",
-                    UNIT_CLASS.RANGER,
-                    22,
-                    15,
-                    3,
-                    0,
-                    3,
-                    3,
-                    "pwr +50% to rangers",
-                    "+20% pwr when target is 3 tiles away",
-                    "move unit 2 tiles",
-                    [UNIT_CLASS.RANGER,UNIT_CLASS.RANGER,UNIT_CLASS.RANGER,UNIT_CLASS.ASSASSIN,UNIT_CLASS.ASSASSIN,UNIT_CLASS.SOLDIER],
-                    5
-                ),
-                testPlayer2
-            );
+        const testPlayerLeader = new HeroCard(
+            "0",
+            new HeroCardData(
+                "3",
+                "test_mage_hero",
+                UNIT_CLASS.MAGE,
+                20,
+                30,
+                3,
+                0,
+                2,
+                2,
+                "pwr +50% to mages",
+                "recover 2sp per turn",
+                "deal 2 damage to targets (radius 1)",
+                [UNIT_CLASS.MAGE, UNIT_CLASS.MAGE, UNIT_CLASS.MAGE, UNIT_CLASS.MAGE],
+                5
+            ),
+            testPlayer
+        );
+
+        const testOpponentLeader = new HeroCard(
+            "0",
+            new HeroCardData(
+                "2",
+                "test_ranger_hero",
+                UNIT_CLASS.RANGER,
+                22,
+                15,
+                3,
+                0,
+                3,
+                3,
+                "pwr +50% to rangers",
+                "+20% pwr when target is 3 tiles away",
+                "move unit 2 tiles",
+                [UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.ASSASSIN, UNIT_CLASS.ASSASSIN, UNIT_CLASS.SOLDIER],
+                5
+            ),
+            testPlayer2
+        );
 
 
 
@@ -101,7 +105,7 @@ export default class LoadingScene extends Phaser.Scene{
                     "pwr +50% to all",
                     "+2 pwr to units 1 tile adjacent to this unit",
                     "deal 5 damage to target",
-                    [UNIT_CLASS.SOLDIER,UNIT_CLASS.SOLDIER,UNIT_CLASS.SOLDIER,UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.GUARDIAN],
+                    [UNIT_CLASS.SOLDIER, UNIT_CLASS.SOLDIER, UNIT_CLASS.SOLDIER, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.GUARDIAN],
                     5
                 ),
                 testPlayer),
@@ -200,35 +204,53 @@ export default class LoadingScene extends Phaser.Scene{
                 new SpellCardData(
                     "1",
                     "test_fire_spell",
+                    TARGET_TYPES.enemy,
                     5,
-                    "Deal 100 burn damage per turn for 3 turns",
-                    "12345"
-                )/*,
-                [
-                    new DealDamage(
-                        'Burn',
-                        100,
-                        ValueType.VALUE,
-                        3,
-                        true
-                    )
-                ]*/,
+                    "Deal 1 burn damage per turn for 3 turns",
+                    {
+                        name: "Burn",
+                        targetType: TARGET_TYPES.enemy,
+                        effectType: SPELL_EFFECT_TYPE.dealDamage,
+                        amount: 1,
+                        valueType: ValueType.VALUE,
+                        duration: 3,
+                        isRemovable: true
+                    }
+                ),
+                testPlayer),
+            new SpellCard(
+                "9",
+                new SpellCardData(
+                    "2",
+                    "test_heal_spell",
+                    TARGET_TYPES.ally,
+                    2,
+                    "Heal target by 10 hp",
+                    {
+                        name: "Heal",
+                        targetType: TARGET_TYPES.ally,
+                        effectType: SPELL_EFFECT_TYPE.dealDamage,
+                        amount: -10,
+                        valueType: ValueType.VALUE,
+                        isRemovable: true
+                    }
+                ),
                 testPlayer),
         ];
 
-        const testPlayerDeck = new Deck(testPlayerDeckCards,testPlayerLeader);
-        const testOpponentDeck = new Deck([],testOpponentLeader);
+        const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);
+        const testOpponentDeck = new Deck([], testOpponentLeader);
 
-        const testGamePlayer = new GamePlayer(1,testPlayer,1,getPlayerColor(1),testPlayerDeck);
-        const testGameOpponent = new GamePlayer(2,testPlayer2,2,getPlayerColor(2),testOpponentDeck);
-    
+        const testGamePlayer = new GamePlayer(1, testPlayer, 1, getPlayerColor(1), testPlayerDeck);
+        const testGameOpponent = new GamePlayer(2, testPlayer2, 2, getPlayerColor(2), testOpponentDeck);
+
         this.game.registry.set(GAME_STATE.player, testGamePlayer);
         this.game.registry.set(GAME_STATE.opponents, [testGameOpponent])
-    
+
         this.game.scene.start(SCENES.GAMEPLAY);
     }
 
-    update(){
+    update() {
 
     }
 }

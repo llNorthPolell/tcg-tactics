@@ -1,4 +1,4 @@
-import { ValueType } from "@/game/enums/valueType";
+import { ValueType } from "@/game/enums/keys/valueType";
 import DealDamage from "@/game/scripts/skillEffects/dealDamage"
 import { checkEffectEnded, createTestUnit } from "./common";
 

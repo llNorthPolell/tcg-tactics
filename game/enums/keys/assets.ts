@@ -18,5 +18,6 @@ export const ASSETS = Object.freeze({
     HP_ICON: "hp-icon",
     SP_ICON: "sp-icon",
     PWR_ICON: "pwr-icon",
-    ATTACK_SELECTOR: "attack-selector"
+    ATTACK_SELECTOR: "attack-selector",
+    SPELL_SELECTOR: "spell-selector"
 })

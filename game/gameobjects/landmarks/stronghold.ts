@@ -1,7 +1,7 @@
 import SkillEffect from "@/game/scripts/skillEffects/skillEffect";
 import Buff from "@/game/scripts/skillEffects/buff";
-import { ValueType } from "@/game/enums/valueType";
-import { UnitStatField } from "@/game/enums/unitStatField";
+import { ValueType } from "@/game/enums/keys/valueType";
+import { UnitStatField } from "@/game/enums/keys/unitStatField";
 import ParentLandmark from "./parentLandmark";
 import RallyPoint from "./rallyPoint";
 import BaseCapturableLandmark from "./baseCapturableLandmark";

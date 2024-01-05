@@ -1,5 +1,4 @@
-import { ValueType } from "@/game/enums/valueType";
-import {UnitStatField} from "@/game/enums/unitStatField";
+import { ValueType } from "@/game/enums/keys/valueType";
 import StatChange from "./statChange";
 
 export default class Buff extends StatChange{
@@ -12,7 +11,7 @@ export default class Buff extends StatChange{
      * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
-    constructor(name:string, amount: number, valueType=ValueType.VALUE, stat:UnitStatField, duration=0, isRemovable=true){
+    constructor(name:string, amount: number, valueType : string=ValueType.VALUE, stat:string, duration=0, isRemovable=true){
         super(name,amount,valueType,stat,duration,isRemovable)
     }
 }

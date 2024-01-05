@@ -23,7 +23,8 @@ import { TileSelectionType } from "../enums/tileSelectionType";
 import Player from "../data/player";
 import Landmark from "../gameobjects/landmarks/landmark";
 import CapturableLandmark from "../gameobjects/landmarks/capturableLandmark";
-import CombatHandler from "./combatHandler";
+import SpellCard from "../gameobjects/cards/spellCard";
+import { TARGET_TYPES } from "../enums/keys/targetTypes";
 
 export type PlayerOwnership = {
     player: GamePlayer,
@@ -70,7 +71,6 @@ export default class FieldManager{
     private units:Map<string,Unit>;
     private movingUnit?:Unit;
     private landmarks: Map<string,Landmark>;
-    private combatHandler : CombatHandler;
 
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
@@ -124,8 +124,6 @@ export default class FieldManager{
 
 
         this.scene.game.registry.set(GAME_STATE.field,field);
-
-        this.combatHandler= new CombatHandler();
 
         this.handleEvents();
 
@@ -199,6 +197,22 @@ export default class FieldManager{
                     else
                         this.showHighlightTiles(rallyPointPositions,undefined,TileStatus.WARNING);
                 }
+                else {
+                    switch((card as SpellCard).data.targetType){
+                        case TARGET_TYPES.ally:
+                            console.log(`Choose an ally to use ${card.data.name} on...`);
+                            break;
+                        case TARGET_TYPES.enemy:
+                            console.log(`Choose an enemy to use ${card.data.name} on...`);
+                            break;
+                        case TARGET_TYPES.position:
+                            console.log(`Choose a target location to use ${card.data.name} on...`);
+                            break;
+                        default:
+                            console.log(`Applied ${card.data.name}!`);
+                            break;
+                    }
+                }
             }
         )
         .on(
@@ -211,12 +225,6 @@ export default class FieldManager{
             EVENTS.fieldEvent.SUMMON_UNIT,
             (location:Position, unitData:UnitCardData,cardOwner:Player)=>{
                 this.summonUnit(location,unitData,cardOwner);
-            }
-        )
-        .on(
-            EVENTS.fieldEvent.CAST_SPELL,
-            ()=>{
-                console.log(`Played spell... `);
             }
         )
         .on(
@@ -282,15 +290,6 @@ export default class FieldManager{
                 
                 if (newLandmark)
                     newLandmark.occupant=this.movingUnit;
-            }
-        )
-        .on(
-            EVENTS.unitEvent.ATTACK,
-            (attacker:Unit, defender:Unit)=>{
-                if (attacker?.isActive()){
-                    this.combatHandler.fight(attacker,defender);
-                    EventEmitter.emit(EVENTS.unitEvent.WAIT);
-                }
             }
         )
         .on(
@@ -680,5 +679,9 @@ export default class FieldManager{
             EventEmitter.emit(EVENTS.fieldEvent.CAPTURE_LANDMARK,unit,occupyingLandmark);
         else
             console.log(`${occupyingLandmark.id} will be captured by ${unit.getOwner().id} in ${occupyingCapturableLandmark.getCaptureTicks()} turns...`);
+    }
+
+    getUnitsInRange(position:Position){
+
     }
 }

@@ -1,11 +1,33 @@
+import { Position } from "../data/position";
+import { EVENTS } from "../enums/keys/events";
 import { UNIT_CLASS } from "../enums/keys/unitClass";
 import Unit from "../gameobjects/unit";
+import { EventEmitter } from "./events";
+import SkillEffect from "./skillEffects/skillEffect";
 import { inRange } from "./util";
 
 export default class CombatHandler{
-    constructor(){}
+    constructor(){
+
+        EventEmitter.on(
+            EVENTS.unitEvent.ATTACK,
+            (attacker:Unit, defender:Unit)=>{
+                if (attacker?.isActive()){
+                    this.initiateFight(attacker,defender);
+                    EventEmitter.emit(EVENTS.unitEvent.WAIT);
+                }
+            }
+        )
+        .on(
+            EVENTS.fieldEvent.CAST_SPELL,
+            (skillEffects:SkillEffect[], target: Unit | Position)=>{
+                console.log(`Played spell... `);
+            }
+        )
+
+    }
     
-    fight(attacker:Unit,defender:Unit):void{
+    initiateFight(attacker:Unit,defender:Unit):void{
         const attackerStats = attacker.getUnitData();
         const defenderStats = defender.getUnitData();
     

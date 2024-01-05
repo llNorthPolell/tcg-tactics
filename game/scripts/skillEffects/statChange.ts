@@ -1,14 +1,14 @@
-import { ValueType } from "@/game/enums/valueType";
+import { ValueType } from "@/game/enums/keys/valueType";
 import SkillEffect from "./skillEffect";
-import { UnitStatField } from "@/game/enums/unitStatField";
+import { UnitStatField } from "@/game/enums/keys/unitStatField";
 import UnitStats from "@/game/data/unitData";
 
 export default abstract class StatChange implements SkillEffect{
     readonly name:string;
     target?:UnitStats;
     readonly amount:number;
-    readonly valueType: ValueType;  
-    readonly stat: UnitStatField;
+    readonly valueType: string;  
+    readonly stat: string;
     readonly duration:number;
     readonly isRemovable: boolean;
     protected currTime:number;
@@ -26,7 +26,7 @@ export default abstract class StatChange implements SkillEffect{
      * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
-    constructor(name:string, amount: number, valueType=ValueType.VALUE, stat:UnitStatField, duration=0, isRemovable=true){
+    constructor(name:string, amount: number, valueType : string =ValueType.VALUE, stat:string, duration=0, isRemovable=true){
         this.name=name;
         this.amount = amount;
         this.valueType=valueType;

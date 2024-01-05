@@ -1,8 +1,9 @@
+import { Position } from "@/game/data/position";
 import UnitStats from "@/game/data/unitData";
 
 export default interface SkillEffect{
     readonly name: string;
-    target?:UnitStats;
+    target?:UnitStats|Position;
     readonly duration:number;
     readonly isRemovable:boolean;
 

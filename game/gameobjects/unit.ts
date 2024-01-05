@@ -1,16 +1,24 @@
 
 import { TILESIZE } from "../config";
+import { CardData } from "../data/cardData";
 import HeroCardData from "../data/cards/heroCardData";
 import UnitCardData from "../data/cards/unitCardData";
 import { Position } from "../data/position";
 import UnitData from "../data/unitData";
 import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
+import { TARGET_TYPES } from "../enums/keys/targetTypes";
 import { EventEmitter } from "../scripts/events";
 import { loadImage } from "../scripts/imageLoader";
+import SkillEffect from "../scripts/skillEffects/skillEffect";
 import { inRange } from "../scripts/util";
 import AttackSelector from "./attackSelector";
+import { Card } from "./cards/card";
+import HeroCard from "./cards/heroCard";
+import SpellCard from "./cards/spellCard";
+import UnitCard from "./cards/unitCard";
 import GamePlayer from "./gamePlayer";
+import SpellSelector from "./spellSelector";
 
 export default class Unit {
     readonly id: string;
@@ -28,6 +36,12 @@ export default class Unit {
     readonly imageAssetName: string;
 
     private attackSelector?: AttackSelector;
+    private spellSelector?: SpellSelector; 
+
+    private buffs: SkillEffect[];
+    private debuffs: SkillEffect[];
+
+
 
     private targetLocation?: Position;
     private path: Position[];
@@ -46,6 +60,9 @@ export default class Unit {
         this.imageAssetName = `${ASSETS.PORTRAIT}_${this.getUnitType()}_${this.card.id}`;
 
         this.path = [];
+
+        this.buffs=[];
+        this.debuffs=[];
     }
 
     getUnitData(){
@@ -108,6 +125,10 @@ export default class Unit {
 
         this.attackSelector = new AttackSelector(scene,this);
         this.container.add(this.attackSelector);
+
+        this.spellSelector = new SpellSelector(scene,this);
+        this.container.add(this.spellSelector);
+
         this.container.setInteractive(bg,Phaser.Geom.Rectangle.Contains)
         .on(
             Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
@@ -156,6 +177,31 @@ export default class Unit {
             ()=>{
                 if (this.attackSelector?.visible)
                     this.attackSelector?.hide();
+            }
+        )
+        .on(
+            EVENTS.cardEvent.SELECT,
+            (card : Card<CardData>)=>{
+                if (this.spellSelector?.visible)
+                    this.spellSelector?.hide();
+                
+                if (card instanceof UnitCard || card instanceof HeroCard)
+                    return;
+                
+                const spellCard = (card as SpellCard);
+                const targetType = spellCard.data.targetType;
+
+                if(targetType!==TARGET_TYPES.none)
+                    this.spellSelector?.show(spellCard);
+            }
+        )
+        .on(
+            EVENTS.cardEvent.CANCEL,
+            ()=>{
+                if (this.attackSelector?.visible)
+                    this.attackSelector?.hide();
+                if (this.spellSelector?.visible)
+                    this.spellSelector?.hide();
             }
         )
 

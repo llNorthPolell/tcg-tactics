@@ -4,6 +4,7 @@ import { EVENTS } from "../enums/keys/events";
 import { GAME_STATE } from "../enums/keys/gameState";
 import { SCENES } from "../enums/keys/scenes";
 import Player from "../gameobjects/gamePlayer";
+import CombatHandler from "../scripts/combatHandler";
 import { EventEmitter } from "../scripts/events";
 import FieldManager from "../scripts/fieldManager";
 import setupMouseInputs from "../scripts/inputHandler";
@@ -17,6 +18,7 @@ type GamePlayers = {
 export default class GameplayScene extends Phaser.Scene{
     private fieldManager?: FieldManager;
     private turnManager?: TurnManager;
+    private combatHandler? : CombatHandler;
     private started:boolean;
 
     constructor(){
@@ -33,6 +35,7 @@ export default class GameplayScene extends Phaser.Scene{
         this.game.scene.start(SCENES.HUD);
         this.fieldManager = new FieldManager(this,playersInGame);
         this.turnManager = new TurnManager(player,playersInGame);
+        this.combatHandler = new CombatHandler();
 
 
         

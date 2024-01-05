@@ -1,6 +1,6 @@
 import { Position } from "../data/position";
+import { AMITY_COLORS } from "../enums/keys/amityColors";
 import { EVENTS } from "../enums/keys/events";
-import { getColorByStatus } from "../enums/keys/tileColors";
 import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus} from "../enums/tileStatus";
 import { EventEmitter } from "../scripts/events";
@@ -22,7 +22,7 @@ export default class SelectionTile {
         width:number, 
         height:number,
         status=TileStatus.SUCCESS){
-        const color = getColorByStatus(status);
+        const color = this.getColorByTileStatus(status);
         this.status=status;
         this.initStatus=status;
         this.tilePosition=tilePosition;
@@ -64,7 +64,7 @@ export default class SelectionTile {
 
 
     setStatus(status:TileStatus){
-        const color = getColorByStatus(status);
+        const color = this.getColorByTileStatus(status);
         this.status = status;
         this.tile.setFillStyle(color,0.25);
         this.tile.setStrokeStyle(1,color);        
@@ -90,5 +90,18 @@ export default class SelectionTile {
         this.status=this.initStatus;
         this.tile.setVisible(false);
         this.selectedUnit=undefined;
+    }
+
+    private getColorByTileStatus(status:TileStatus){
+        switch (status){
+            case TileStatus.SUCCESS:
+                return AMITY_COLORS.success;
+            case TileStatus.WARNING:
+                return AMITY_COLORS.warning;
+            case TileStatus.DANGER:
+                return AMITY_COLORS.danger;
+            default:
+                return AMITY_COLORS.none;
+        }
     }
 }

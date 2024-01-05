@@ -6,6 +6,7 @@ import { EventEmitter } from "@/game/scripts/events";
 import { ASSETS } from "@/game/enums/keys/assets";
 import Player from "@/game/data/player";
 import { loadImage } from "@/game/scripts/imageLoader";
+import Unit from "../unit";
 
 export abstract class Card<T extends CardData> {
     readonly id: string;
@@ -35,7 +36,7 @@ export abstract class Card<T extends CardData> {
         return {x: this.x, y: this.y}
     }
 
-    abstract play(location:Position) : void;
+    abstract play(target:Unit | Position) : void;
 
     abstract render(scene:Phaser.Scene):Phaser.GameObjects.Container;
 

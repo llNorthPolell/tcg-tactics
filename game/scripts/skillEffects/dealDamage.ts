@@ -1,12 +1,12 @@
 import UnitStats from "@/game/data/unitData";
 import SkillEffect from "./skillEffect";
-import { ValueType } from "@/game/enums/valueType";
+import { ValueType } from "@/game/enums/keys/valueType";
 
 export default class DealDamage implements SkillEffect{
     readonly name;
     target?:UnitStats;
     readonly amount:number;
-    readonly valueType: ValueType;
+    readonly valueType: string;
     readonly isDelayed:boolean;  
     readonly isDoT:boolean;   
     readonly duration:number;
@@ -24,7 +24,7 @@ export default class DealDamage implements SkillEffect{
  * @param isDelayed - If true, will apply damage when time is up
  * @param isRemovable - If true, can be removed by a cleansing effect
  */
-    constructor(name:string,amount: number, valueType=ValueType.VALUE, duration=0, isDoT=false, isDelayed=false, isRemovable=true){
+    constructor(name:string,amount: number, valueType : string=ValueType.VALUE, duration=0, isDoT=false, isDelayed=false, isRemovable=true){
         this.name = name;
         this.amount = amount;
         this.valueType=valueType;

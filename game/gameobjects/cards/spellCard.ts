@@ -1,12 +1,14 @@
-import SpellCardData from "../../data/cards/spellCardData";
+import SpellCardData, { SpellEffectData } from "../../data/cards/spellCardData";
 import SkillEffect from "../../scripts/skillEffects/skillEffect";
 import { Card } from "./card";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/position";
 import DealDamage from "@/game/scripts/skillEffects/dealDamage";
-import { ValueType } from "@/game/enums/valueType";
 import Player from "@/game/data/player";
+import { SPELL_EFFECT_TYPE } from "@/game/enums/keys/spellEffectType";
+import Unit from "../unit";
+import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
 
 export default class SpellCard extends Card<SpellCardData>{
     private skillEffects: SkillEffect[];
@@ -14,25 +16,46 @@ export default class SpellCard extends Card<SpellCardData>{
     constructor(id:string,data:SpellCardData,owner:Player){
         super(id,data,owner);
         this.skillEffects=[];
-        this.parseSkillEffects(data.effectCode);
+        this.parseSkillEffects(data.effectData);
     }
     
-    private parseSkillEffects(effectCode:string){
+    private parseSkillEffects(effectData:SpellEffectData){
 
-        // TODO: This is a placeholder. Make a skillEffect factory. 
-        this.skillEffects = [...this.skillEffects,
-            new DealDamage(
-                'Burn',
-                100,
-                ValueType.VALUE,
-                3,
-                true
-            )
-        ]
+        switch(effectData.effectType){
+            case SPELL_EFFECT_TYPE.dealDamage:
+                if (!effectData.amount) break;
+                if (!effectData.valueType) break;
+                const newEffect = new DealDamage(
+                    (effectData.name? effectData.name: this.data.name),
+                    effectData.amount,
+                    effectData.valueType,
+                    effectData.duration,
+                    effectData.overTime,
+                    effectData.isDelayed,
+                    effectData.isRemovable
+                );
+                this.skillEffects = [...this.skillEffects, newEffect];
+                break;
+            default:
+                break;
+        }
     }
 
-    play(location:Position){
-        EventEmitter.emit(EVENTS.fieldEvent.CAST_SPELL,location);
+    play(target:Unit | Position){
+        switch(this.data.targetType){
+            case TARGET_TYPES.ally:
+            case TARGET_TYPES.enemy:
+                EventEmitter.emit(EVENTS.fieldEvent.CAST_SPELL,this.skillEffects,target as Unit);
+                break;
+            case TARGET_TYPES.position:
+                EventEmitter.emit(EVENTS.fieldEvent.CAST_SPELL,this.skillEffects,target as Position);
+                break;
+            default:
+                EventEmitter.emit(EVENTS.fieldEvent.CAST_SPELL,this.skillEffects);
+                break;
+
+        }
+        
     }
 
     render(scene:Phaser.Scene){

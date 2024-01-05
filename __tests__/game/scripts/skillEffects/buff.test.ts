@@ -1,7 +1,7 @@
 import Buff from "@/game/scripts/skillEffects/buff";
 import { checkEffectEnded, createTestUnit } from "./common";
-import { ValueType } from "@/game/enums/valueType";
-import { UnitStatField } from "@/game/enums/unitStatField";
+import { ValueType } from "@/game/enums/keys/valueType";
+import { UnitStatField } from "@/game/enums/keys/unitStatField";
 
 
 it("should lower target's max HP once for 3 turns, then be disabled immediately after", ()=>{

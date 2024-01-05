@@ -11,8 +11,8 @@ export default class UnitCard extends Card<UnitCardData>{
         super(id,data,owner);
     }
     
-    play(location:Position){
-        EventEmitter.emit(EVENTS.fieldEvent.SUMMON_UNIT,location,this.data,this.owner);
+    play(target:Position){
+        EventEmitter.emit(EVENTS.fieldEvent.SUMMON_UNIT,target,this.data,this.owner);
     }
 
     render(scene:Phaser.Scene){

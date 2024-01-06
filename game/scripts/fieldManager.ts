@@ -52,7 +52,6 @@ export default class FieldManager{
     private selectionTiles?: SelectionTile[][];
     private activeHighlightTiles: SelectionTile[];
     private tilemap: TilemapData;
-    private activePlayerId: number;
     private activePlayerIndex: number;
     private units:Map<string,Unit>;
     private movingUnit?:Unit;
@@ -94,7 +93,6 @@ export default class FieldManager{
         this.handleEvents();
 
         this.activePlayerIndex=0;
-        this.activePlayerId=0;
 
         playersInGame.forEach(
             player=>{
@@ -110,7 +108,7 @@ export default class FieldManager{
         EventEmitter
         .on(
             EVENTS.gameEvent.PLAYER_TURN,
-            (_playerId: number, activePlayerIndex:number, isDevicePlayerTurn: boolean)=>{
+            (playerId: number, activePlayerIndex:number, isDevicePlayerTurn: boolean)=>{
                 this.activePlayerIndex=activePlayerIndex;
 
                 const player = this.playersInGame[activePlayerIndex];
@@ -119,14 +117,12 @@ export default class FieldManager{
                     this.attemptCaptureLandmark(unit); 
                 });
 
-                if (!isDevicePlayerTurn) return;
-
                 const landmarksOwned = this.playersInGame[activePlayerIndex].getLandmarksOwned();
                 const income = 
                     (landmarksOwned.strongholds.length*2) + 
                     landmarksOwned.outposts.length + 
                     landmarksOwned.resourceNodes.length;
-                EventEmitter.emit(EVENTS.playerEvent.GENERATE_RESOURCES,income);
+                EventEmitter.emit(EVENTS.playerEvent.GENERATE_RESOURCES,playerId,income);
                 
             }
         )
@@ -497,7 +493,6 @@ export default class FieldManager{
         this.activeHighlightTiles= [];
     }
 
-    // TODO: Should not be looking up by player objects!
     summonUnit(location:Position,unitData:UnitCardData, owner: GamePlayer){
         const unit = new Unit(uuidv4().toString(),location,unitData,owner);
         const position = unit.getLocation();

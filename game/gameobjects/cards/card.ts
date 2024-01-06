@@ -36,7 +36,7 @@ export abstract class Card<T extends CardData> {
         return {x: this.x, y: this.y}
     }
 
-    abstract play(target:Unit | Position) : void;
+    abstract play(target?:Unit | Position) : void;
 
     abstract render(scene:Phaser.Scene):Phaser.GameObjects.Container;
 

@@ -7,7 +7,7 @@ import GamePlayer from "../gameobjects/gamePlayer";
 import { getPlayerColor } from "../enums/keys/playerTints";
 import HeroCard from "../gameobjects/cards/heroCard";
 import HeroCardData from "../data/cards/heroCardData";
-import { ICON_SIZE, UNIT_CLASS } from "../enums/keys/unitClass";
+import { UNIT_CLASS } from "../enums/keys/unitClass";
 import UnitCard from "../gameobjects/cards/unitCard";
 import UnitCardData from "../data/cards/unitCardData";
 import { GAME_STATE } from "../enums/keys/gameState";
@@ -229,8 +229,8 @@ export default class LoadingScene extends Phaser.Scene {
                     {
                         name: "Heal",
                         targetType: TARGET_TYPES.ally,
-                        effectType: SPELL_EFFECT_TYPE.dealDamage,
-                        amount: -10,
+                        effectType: SPELL_EFFECT_TYPE.heal,
+                        amount: 10,
                         valueType: ValueType.VALUE,
                         isRemovable: true
                     }

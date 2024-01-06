@@ -1,7 +1,7 @@
 import Player from "../data/player";
 import { LandmarksCollection } from "../data/types/landmarksCollection";
 import { Position } from "../data/types/position";
-import { Resources } from "../data/types/resources";
+import { RESOURCE_LIMIT, Resources } from "../data/types/resources";
 import { EVENTS } from "../enums/keys/events";
 import { LandmarkType } from "../enums/landmarkType";
 import { EventEmitter } from "../scripts/events";
@@ -18,6 +18,7 @@ export default class GamePlayer{
     readonly playerInfo: Player;
     readonly color: number;
     readonly deck: Deck;
+    readonly isDevicePlayer:boolean;
     private team: number;
 
     private activeChampions: Unit[];
@@ -29,12 +30,13 @@ export default class GamePlayer{
     private currResource: number;
     private maxResource:number;
 
-    constructor(id:number, playerInfo:Player, team:number, color:number, deck:Deck){
+    constructor(id:number, playerInfo:Player, team:number, color:number, deck:Deck,isDevicePlayer:boolean=false){
         this.id=id;
         this.playerInfo=playerInfo;
         this.team=team;
         this.color=color;
         this.deck = deck;
+        this.isDevicePlayer=isDevicePlayer;
 
         this.activeChampions=[];
         this.activeUnits=[]; 
@@ -49,6 +51,23 @@ export default class GamePlayer{
 
         this.currResource=0;
         this.maxResource=2;
+
+        EventEmitter.on(
+            EVENTS.gameEvent.PLAYER_TURN,
+            (activePlayerId:number,_activePlayerIndex:number)=>{
+                if (activePlayerId!==id) return;
+                if (this.maxResource<RESOURCE_LIMIT)
+                    this.maxResource++;
+
+            }
+        )
+        .on(
+            EVENTS.playerEvent.GENERATE_RESOURCES,
+            (activePlayerId:number,income:number)=>{
+                if (activePlayerId!==id) return;
+                this.generateResources(income);
+            }
+        )
     }
 
     setTeam(team:number){

@@ -82,6 +82,8 @@ export const EVENTS = {
 
         /**
          * Signal field manager to apply spell effects (in progress)
+         * @Params skillEffects: SkillEffect[]
+         * @Params target: Unit | Position | undefined
          */
         CAST_SPELL: "cast-spell",
 

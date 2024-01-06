@@ -1,10 +1,11 @@
 import { CARD_SIZE } from "../config";
 import { CardData } from "../data/cardData";
 import { Position } from "../data/types/position";
-import { RESOURCE_LIMIT, Resources } from "../data/types/resources";
 import { EVENTS } from "../enums/keys/events";
 import { Card } from "../gameobjects/cards/card";
+import SpellCard from "../gameobjects/cards/spellCard";
 import GamePlayer from "../gameobjects/gamePlayer";
+import Unit from "../gameobjects/unit";
 import { EventEmitter } from "./events";
 
 export default class CardManager{
@@ -13,18 +14,12 @@ export default class CardManager{
     private deck: Card<CardData>[];
     private hand:Card<CardData>[];
     private selected?: Card<CardData>;
-    
-    private currResource: number;
-    private maxResource:number;
 
     constructor(player:GamePlayer){
         this.player= player;
         this.deck=player.deck.getCards();
         this.hand=[];
-
-        this.currResource=0;
-        this.maxResource=2;
-        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource);
+        
         this.handleEvents(); 
     }
 
@@ -34,16 +29,8 @@ export default class CardManager{
             EVENTS.gameEvent.PLAYER_TURN,
             (_activePlayerId:number,_activePlayerIndex:number, isDevicePlayerTurn:boolean)=>{
                 if (!isDevicePlayerTurn) return;
-                if (this.maxResource<RESOURCE_LIMIT)
-                    this.maxResource++;
 
                 this.drawCard();
-            }
-        )
-        .on(
-            EVENTS.playerEvent.GENERATE_RESOURCES,
-            (income:number)=>{
-                this.generateResources(income);
             }
         )
         .on(
@@ -66,57 +53,30 @@ export default class CardManager{
         )
         .on(
             EVENTS.cardEvent.PLAY,
-            (location: Position)=>{
+            (target?: Unit | Position)=>{
                 if (!this.selected){
                     console.log("No card is selected...");
                     return;
                 }
-                console.log(`Play the card ${this.selected?.data.name} at ${JSON.stringify(location)}`)
-                this.playCard(location);
+
+                this.playCard(target);
             }
         )
-    }
-
-    generateResources(income: number){
-        let newCurrentResource = this.currResource + income;
-        if (newCurrentResource>this.maxResource)
-            newCurrentResource=this.maxResource;
-
-        this.currResource=newCurrentResource;
-        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource)
-    }
-
-    spendResources(card: Card<CardData>) {
-        const cost = card.data.cost;
-
-        if (cost > this.currResource) 
-            throw new Error("Not enough resources");
-
-        this.currResource -= cost;
-
-        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource)
-    }
-
-    getResources():Resources{
-        return {
-            current: this.currResource,
-            max: this.maxResource
-        }
     }
 
     getHand(){
         return [...this.hand];
     }
 
-    playCard(location:Position){
+    playCard(target?: Unit | Position){
         if (!this.selected){
             console.log("No card is selected...");
             return;
         }
 
         try{
-            this.spendResources(this.selected);
-            this.selected.play(location);
+            this.player.spendResources(this.selected.data.cost);
+            this.selected.play(target);
             this.removeSelected();
         }
         catch(error){
@@ -140,6 +100,9 @@ export default class CardManager{
         return card;
     }
 
+    /**
+     * Deselects card and redraws them
+     */
     removeSelected(){
         this.hand = this.hand.filter(card=> card!==this.selected);
         this.selected!.hide();
@@ -148,6 +111,9 @@ export default class CardManager{
         EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND, this.hand);
     }
 
+    /**
+     * Sets positions and redraws cards in hand
+     */
     repositionCardsInHand(){
         let c=0;
         this.hand.forEach(

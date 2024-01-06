@@ -9,6 +9,7 @@ import Player from "@/game/data/player";
 import { SPELL_EFFECT_TYPE } from "@/game/enums/keys/spellEffectType";
 import Unit from "../unit";
 import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
+import Heal from "@/game/scripts/skillEffects/heal";
 
 export default class SpellCard extends Card<SpellCardData>{
     private skillEffects: SkillEffect[];
@@ -20,12 +21,26 @@ export default class SpellCard extends Card<SpellCardData>{
     }
     
     private parseSkillEffects(effectData:SpellEffectData){
-
+        let newEffect;
         switch(effectData.effectType){
             case SPELL_EFFECT_TYPE.dealDamage:
                 if (!effectData.amount) break;
                 if (!effectData.valueType) break;
-                const newEffect = new DealDamage(
+                newEffect = new DealDamage(
+                    (effectData.name? effectData.name: this.data.name),
+                    effectData.amount,
+                    effectData.valueType,
+                    effectData.duration,
+                    effectData.overTime,
+                    effectData.isDelayed,
+                    effectData.isRemovable
+                );
+                this.skillEffects = [...this.skillEffects, newEffect];
+                break;
+            case SPELL_EFFECT_TYPE.heal:
+                if (!effectData.amount) break;
+                if (!effectData.valueType) break;
+                newEffect = new Heal(
                     (effectData.name? effectData.name: this.data.name),
                     effectData.amount,
                     effectData.valueType,
@@ -41,7 +56,7 @@ export default class SpellCard extends Card<SpellCardData>{
         }
     }
 
-    play(target:Unit | Position){
+    play(target?:Unit | Position){
         switch(this.data.targetType){
             case TARGET_TYPES.ally:
             case TARGET_TYPES.enemy:

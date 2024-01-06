@@ -5,6 +5,11 @@ export const SPELL_EFFECT_TYPE = Object.freeze({
     dealDamage: "deal-damage",   
 
     /**
+     * Heals target instantly, over time, or after specified number of turns
+     */
+    heal: "heal",   
+
+    /**
      * Change a stat on a unit 
      */
     statChange: "stat-change",

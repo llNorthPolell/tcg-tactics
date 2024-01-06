@@ -20,8 +20,16 @@ export default class CombatHandler{
         )
         .on(
             EVENTS.fieldEvent.CAST_SPELL,
-            (skillEffects:SkillEffect[], target: Unit | Position)=>{
-                console.log(`Played spell... `);
+            (skillEffects:SkillEffect[], target?: Unit | Position)=>{
+                skillEffects.forEach(skillEffect=>{
+                    if (!target)
+                        console.log(`Apply ${skillEffect} without a target...`)
+                    else if (target instanceof Unit)
+                        console.log(`Apply ${skillEffect.name} onto ${target.getUnitData().name}..`);
+                    else 
+                        console.log(`Apply ${skillEffect} to (${target.x},${target.y})...`)
+
+                })
             }
         )
 

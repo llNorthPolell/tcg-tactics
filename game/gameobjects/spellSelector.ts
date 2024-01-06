@@ -1,7 +1,9 @@
 import { TILESIZE } from "../config";
 import { AMITY_COLORS } from "../enums/keys/amityColors";
 import { ASSETS } from "../enums/keys/assets";
+import { EVENTS } from "../enums/keys/events";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
+import { EventEmitter } from "../scripts/events";
 import SpellCard from "./cards/spellCard";
 import Unit from "./unit";
 
@@ -26,8 +28,8 @@ export default class SpellSelector extends Phaser.GameObjects.Container{
                 Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
                 ()=>{
                     if (!this.spellCard) return;
-                    //EventEmitter.emit(EVENTS.unitEvent.ATTACK, this.attacker, unit);
                     console.log(`Cast ${this.spellCard.data.name} onto ${this.unit.getUnitData().name}!`)
+                    EventEmitter.emit(EVENTS.cardEvent.PLAY, this.unit);
                 }
             )
         this.hide();

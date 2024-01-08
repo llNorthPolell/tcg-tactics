@@ -3,6 +3,8 @@ import { EVENTS } from "../enums/keys/events";
 import { UNIT_CLASS } from "../enums/keys/unitClass";
 import Unit from "../gameobjects/unit";
 import { EventEmitter } from "./events";
+import DealDamage from "./skillEffects/dealDamage";
+import Heal from "./skillEffects/heal";
 import SkillEffect from "./skillEffects/skillEffect";
 import { inRange } from "./util";
 
@@ -24,8 +26,18 @@ export default class CombatHandler{
                 skillEffects.forEach(skillEffect=>{
                     if (!target)
                         console.log(`Apply ${skillEffect} without a target...`)
-                    else if (target instanceof Unit)
+                    else if (target instanceof Unit){
                         console.log(`Apply ${skillEffect.name} onto ${target.getUnitData().name}..`);
+                        if (!skillEffect.duration){
+                            skillEffect.setTarget(target.getUnitData());
+                            skillEffect.apply();
+                            return;
+                        }
+                        if (skillEffect instanceof Heal)
+                            target.insertBuff(skillEffect);
+                        else if (skillEffect instanceof DealDamage)
+                            target.insertDebuff(skillEffect);
+                    }
                     else 
                         console.log(`Apply ${skillEffect} to (${target.x},${target.y})...`)
 

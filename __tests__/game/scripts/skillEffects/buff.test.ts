@@ -7,7 +7,7 @@ import { UnitStatField } from "@/game/enums/keys/unitStatField";
 it("should lower target's max HP once for 3 turns, then be disabled immediately after", ()=>{
     const target = createTestUnit();
     const maxHPUpSpell = new Buff("Max HP Up",20,ValueType.PERCENTAGE, UnitStatField.HP,3);
-    maxHPUpSpell.target=target;
+    maxHPUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(maxHPUpSpell as any,"applyStatChange");
 
     for(let i=0 ; i < 5; i++){
@@ -28,7 +28,7 @@ it("should lower target's max HP once for 3 turns, then be disabled immediately 
 it("should lower target's max SP once for 3 turns, then be disabled immediately after", ()=>{
     const target = createTestUnit();
     const maxSPUpSpell = new Buff("Max SP Up",50,ValueType.PERCENTAGE, UnitStatField.SP,3);
-    maxSPUpSpell.target=target;
+    maxSPUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(maxSPUpSpell as any,"applyStatChange");
 
     for(let i=0 ; i < 5; i++){
@@ -49,7 +49,7 @@ it("should lower target's max SP once for 3 turns, then be disabled immediately 
 it("should lower target's power once for 3 turns, then be disabled immediately after", ()=>{
     const target = createTestUnit();
     const pwrUpSpell = new Buff("PWR Up",10,ValueType.VALUE, UnitStatField.PWR,3);
-    pwrUpSpell.target=target;
+    pwrUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(pwrUpSpell as any,"applyStatChange");
 
     for(let i=0 ; i < 5; i++){
@@ -71,7 +71,7 @@ it("should lower target's power once for 3 turns, then be disabled immediately a
 it("should lower target's defence once for 3 turns, then be disabled immediately after", ()=>{
     const target = createTestUnit();
     const defUpSpell = new Buff("DEF Up",10,ValueType.VALUE, UnitStatField.DEF,3);
-    defUpSpell.target=target;
+    defUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(defUpSpell as any,"applyStatChange");
 
     for(let i=0 ; i < 5; i++){
@@ -91,7 +91,7 @@ it("should lower target's defence once for 3 turns, then be disabled immediately
 it("should lower target's movement range once for 3 turns, then be disabled immediately after", ()=>{
     const target = createTestUnit();
     const mvtUpSpell = new Buff("Scope",1,ValueType.VALUE, UnitStatField.MVT,3);
-    mvtUpSpell.target=target;
+    mvtUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(mvtUpSpell as any,"applyStatChange");
 
     for(let i=0 ; i < 5; i++){
@@ -112,7 +112,7 @@ it("should lower target's movement range once for 3 turns, then be disabled imme
 it("should raise target's power permanently (in this case just 10 turns)", ()=>{
     const target = createTestUnit();
     const pwrUpSpell = new Buff("Blessing of Might",10,ValueType.PERCENTAGE, UnitStatField.PWR,-1);
-    pwrUpSpell.target=target;
+    pwrUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(pwrUpSpell as any,"applyStatChange");
 
     for(let i=0 ; i < 10; i++){

@@ -113,7 +113,6 @@ export default class FieldManager{
 
                 const player = this.playersInGame[activePlayerIndex];
                 player.getActiveUnits().forEach(unit=> {
-                    unit.wake();
                     this.attemptCaptureLandmark(unit); 
                 });
 

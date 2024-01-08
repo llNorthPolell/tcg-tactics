@@ -203,7 +203,15 @@ export default class Unit {
                 if (this.spellSelector?.visible)
                     this.spellSelector?.hide();
             }
-        );
+        )
+        .on(
+            EVENTS.gameEvent.PLAYER_TURN,
+            (playerId:number)=>{
+                if (playerId != this.owner.id) return;
+                this.wake();    
+            }
+        )
+        ;
         
 
     }
@@ -215,6 +223,8 @@ export default class Unit {
     wake(){
         this.image!.setAlpha(1);
         this.active=true;
+        this.updateEffects();
+        this.clearInactiveEffects();
     };
 
     sleep(){
@@ -269,15 +279,48 @@ export default class Unit {
     getOwner(){
         return this.owner;
     }
-    
-    update(){
-        this.updateMove();
-    }
 
     killUnit(){
         console.log(`${this.id} has been slain...`);
         this.active = false;
         this.container!.setVisible(false);
         EventEmitter.emit(EVENTS.unitEvent.DEATH, this);
+    }
+
+    insertBuff(skillEffect:SkillEffect){
+        skillEffect.setTarget(this.unitData);
+        this.buffs = [...this.buffs,skillEffect];
+    }
+
+    insertDebuff(skillEffect:SkillEffect){
+        skillEffect.setTarget(this.unitData);
+        this.debuffs = [...this.debuffs,skillEffect];
+    }
+
+    removeBuff(skillEffect:SkillEffect){
+        this.buffs = this.buffs.filter(buff=> buff != skillEffect);
+    }
+
+    removeDebuff(skillEffect:SkillEffect){
+        this.debuffs = this.debuffs.filter(debuff=> debuff != skillEffect);
+    }
+    
+    updateEffects(){
+        this.buffs.forEach(buff=>{
+            buff.apply();
+        });
+
+        this.debuffs.forEach(debuff=>{
+            debuff.apply();
+        });
+    }
+
+    clearInactiveEffects(){
+        this.buffs = this.buffs.filter(buff=> buff.isActive());
+        this.debuffs = this.debuffs.filter(debuff=> debuff.isActive());
+    }
+
+    update(){
+        this.updateMove();
     }
 }

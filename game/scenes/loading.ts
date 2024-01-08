@@ -214,6 +214,7 @@ export default class LoadingScene extends Phaser.Scene {
                         amount: 1,
                         valueType: ValueType.VALUE,
                         duration: 3,
+                        overTime: true,
                         isRemovable: true
                     }
                 ),

@@ -5,7 +5,7 @@ import UnitStats from "@/game/data/unitData";
 
 export default abstract class StatChange implements SkillEffect{
     readonly name:string;
-    target?:UnitStats;
+    protected target?:UnitStats;
     readonly amount:number;
     readonly valueType: string;  
     readonly stat: string;
@@ -13,6 +13,10 @@ export default abstract class StatChange implements SkillEffect{
     readonly isRemovable: boolean;
     protected currTime:number;
     protected active:boolean;
+
+    /**
+     * If true, marks this skill effect as already applied (used to stop stacking the same debuff).
+     */
     protected applied:boolean;
     protected delta:number;
 
@@ -37,10 +41,24 @@ export default abstract class StatChange implements SkillEffect{
 
         this.isRemovable=isRemovable;
 
-        this.active=true;
+        this.active=false;
         this.applied=false;
 
         this.delta = 0;
+    }
+
+    setTarget(target: UnitStats): void {
+        this.target=target;
+        this.active=true;
+    }
+
+    getTarget(): UnitStats|undefined {
+        return this.target;
+    }
+
+    reset(): void {
+        if(!this.duration || this.duration <= 0) return;
+        this.currTime = 0;
     }
 
     getAmount(){
@@ -108,9 +126,12 @@ export default abstract class StatChange implements SkillEffect{
             this.applied=true;
         }
 
+        if (!this.duration) 
+            this.remove();
+        
         if (this.currTime < this.duration)
             this.currTime++;
-        else if (this.currTime >= this.duration && this.duration>-1) 
+        else if (this.currTime >= this.duration && this.duration>0) 
             this.remove();
     }
 

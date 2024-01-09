@@ -1,11 +1,10 @@
-import UnitStats from "@/game/data/unitData";
 import SkillEffect from "./skillEffect";
 import { ValueType } from "@/game/enums/keys/valueType";
-import { Position } from "@/game/data/types/position";
+import Unit from "@/game/gameobjects/unit";
 
 export default abstract class HealthChange implements SkillEffect{
     readonly name : string;
-    protected target?:UnitStats;
+    protected target?:Unit;
     readonly amount:number;
     readonly valueType: string;
     readonly isDelayed:boolean;  
@@ -41,12 +40,12 @@ export default abstract class HealthChange implements SkillEffect{
         this.active=false;
     }
 
-    setTarget(target: UnitStats): void {
+    setTarget(target: Unit): void {
         this.target=target;
         this.active=true;
     }
 
-    getTarget(): UnitStats|undefined {
+    getTarget(): Unit|undefined {
         return this.target;
     }
 
@@ -67,13 +66,16 @@ export default abstract class HealthChange implements SkillEffect{
 
 
     private applyChange(){
+        if (!this.target) return;
+        const baseCurrHp = this.target.getUnitData().currHp;
+        const maxHp = this.target.getUnitData().maxHP;
         const deltaCurrHp = (this.valueType===ValueType.VALUE)? 
             this.amount : 
-            Math.ceil(this.target!.currHp*(this.amount/100));
-        this.target!.currHp+=deltaCurrHp;
-        if (this.target!.currHp > this.target!.maxHP)
-            this.target!.currHp = this.target!.maxHP;
-
+            Math.ceil(baseCurrHp*(this.amount/100));
+        let newCurrHp = baseCurrHp + deltaCurrHp;
+        if (newCurrHp > maxHp)
+            newCurrHp = maxHp;
+        this.target.getUnitData().currHp = newCurrHp;
         console.log((deltaCurrHp > 0)?`Heal target by ${deltaCurrHp} health`:`Deal ${deltaCurrHp} damage to target`);
     }
 

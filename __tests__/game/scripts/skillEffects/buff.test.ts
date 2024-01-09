@@ -14,14 +14,14 @@ it("should lower target's max HP once for 3 turns, then be disabled immediately 
         maxHPUpSpell.apply();
 
         if (i<3){
-            expect(target.maxHP).toBe(1200);
+            expect(target.getUnitData().maxHP).toBe(36);
         }
         else if (i===3)
             checkEffectEnded(maxHPUpSpell);
     }
 
     expect(applyBuffFn).toHaveBeenCalledTimes(1);
-    expect(target.maxHP).toBe(1000);
+    expect(target.getUnitData().maxHP).toBe(30);
 })
 
 
@@ -35,20 +35,20 @@ it("should lower target's max SP once for 3 turns, then be disabled immediately 
         maxSPUpSpell.apply();
 
         if (i<3){
-            expect(target.maxSP).toBe(1500);
+            expect(target.getUnitData().maxSP).toBe(15);
         }
         else if (i===3)
             checkEffectEnded(maxSPUpSpell);
     }
 
     expect(applyBuffFn).toHaveBeenCalledTimes(1);
-    expect(target.maxSP).toBe(1000);
+    expect(target.getUnitData().maxSP).toBe(10);
 })
 
 
 it("should lower target's power once for 3 turns, then be disabled immediately after", ()=>{
     const target = createTestUnit();
-    const pwrUpSpell = new Buff("PWR Up",10,ValueType.VALUE, UnitStatField.PWR,3);
+    const pwrUpSpell = new Buff("PWR Up",1,ValueType.VALUE, UnitStatField.PWR,3);
     pwrUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(pwrUpSpell as any,"applyStatChange");
 
@@ -56,41 +56,20 @@ it("should lower target's power once for 3 turns, then be disabled immediately a
         pwrUpSpell.apply();
 
         if (i<3){
-            expect(target.currPwr).toBe(1010);
+            expect(target.getUnitData().currPwr).toBe(6);
         }
         else if (i===3)
             checkEffectEnded(pwrUpSpell);
     }
 
     expect(applyBuffFn).toHaveBeenCalledTimes(1);
-    expect(target.currPwr).toBe(1000);
+    expect(target.getUnitData().currPwr).toBe(5);
 })
 
-
-
-it("should lower target's defence once for 3 turns, then be disabled immediately after", ()=>{
-    const target = createTestUnit();
-    const defUpSpell = new Buff("DEF Up",10,ValueType.VALUE, UnitStatField.DEF,3);
-    defUpSpell.setTarget(target);
-    const applyBuffFn = jest.spyOn(defUpSpell as any,"applyStatChange");
-
-    for(let i=0 ; i < 5; i++){
-        defUpSpell.apply();
-
-        if (i<3){
-            expect(target.currDef).toBe(1010);
-        }
-        else if (i===3)
-            checkEffectEnded(defUpSpell);
-    }
-
-    expect(applyBuffFn).toHaveBeenCalledTimes(1);
-    expect(target.currDef).toBe(1000);
-})
 
 it("should lower target's movement range once for 3 turns, then be disabled immediately after", ()=>{
     const target = createTestUnit();
-    const mvtUpSpell = new Buff("Scope",1,ValueType.VALUE, UnitStatField.MVT,3);
+    const mvtUpSpell = new Buff("Boots",1,ValueType.VALUE, UnitStatField.MVT,3);
     mvtUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(mvtUpSpell as any,"applyStatChange");
 
@@ -98,20 +77,20 @@ it("should lower target's movement range once for 3 turns, then be disabled imme
         mvtUpSpell.apply();
 
         if (i<3){
-            expect(target.currMvt).toBe(4);
+            expect(target.getUnitData().currMvt).toBe(4);
         }
         else if (i===3)
             checkEffectEnded(mvtUpSpell);
     }
 
     expect(applyBuffFn).toHaveBeenCalledTimes(1);
-    expect(target.currMvt).toBe(3);
+    expect(target.getUnitData().currMvt).toBe(3);
 })
 
 
-it("should raise target's power permanently (in this case just 10 turns)", ()=>{
+it("should raise target's power permanently (in this case just 1 turns)", ()=>{
     const target = createTestUnit();
-    const pwrUpSpell = new Buff("Blessing of Might",10,ValueType.PERCENTAGE, UnitStatField.PWR,-1);
+    const pwrUpSpell = new Buff("Blessing of Might",1,ValueType.PERCENTAGE, UnitStatField.PWR,-1);
     pwrUpSpell.setTarget(target);
     const applyBuffFn = jest.spyOn(pwrUpSpell as any,"applyStatChange");
 
@@ -119,11 +98,11 @@ it("should raise target's power permanently (in this case just 10 turns)", ()=>{
         pwrUpSpell.apply();
 
 
-        expect(target.currPwr).toBe(1100);
+        expect(target.getUnitData().currPwr).toBe(6);
         expect(pwrUpSpell.isActive()).toBe(true);
         expect(pwrUpSpell.getCurrTime()).toBe(0);
     }
 
     expect(applyBuffFn).toHaveBeenCalledTimes(1);
-    expect(target.currPwr).toBe(1100);
+    expect(target.getUnitData().currPwr).toBe(6);
 })

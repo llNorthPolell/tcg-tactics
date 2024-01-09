@@ -7,6 +7,7 @@ import { UI_COLORS } from "../enums/keys/uiColors";
 import { Card } from "../gameobjects/cards/card";
 import GamePlayer from "../gameobjects/gamePlayer";
 import Button from "../gameobjects/ui/button";
+import DeckStatDisplay from "../gameobjects/ui/deckStatDisplay";
 import HandUIObject from "../gameobjects/ui/handUIObject";
 import ResourceDisplay from "../gameobjects/ui/resourceDisplay";
 import UnitStatDisplay from "../gameobjects/ui/unitStatDisplay";
@@ -23,6 +24,7 @@ export default class HUD extends Phaser.Scene{
     private rightPanel? :Phaser.GameObjects.Container;
     private bottomPanel? : Phaser.GameObjects.Container;
     private resourceDisplay? : ResourceDisplay;
+    private deckStatDisplay?: DeckStatDisplay;
 
     private player?: GamePlayer;
 
@@ -43,7 +45,7 @@ export default class HUD extends Phaser.Scene{
         this.player = player;
         
         this.bottomPanel = this.add.container(0,CANVAS_SIZE.height*0.8);
-        this.rightPanel = this.add.container(CANVAS_SIZE.width*0.8,0);
+        this.rightPanel = this.add.container(CANVAS_SIZE.width*0.87,0);
 
         this.cardManager = new CardManager(player);
         
@@ -133,11 +135,17 @@ export default class HUD extends Phaser.Scene{
         // right panel
         this.resourceDisplay = new ResourceDisplay(
             this, 
-            "resourceDisplay",
-            {x:0,y:CANVAS_SIZE.height*0.35}
+            {x:0,y:CANVAS_SIZE.height*0.39}
         );
 
         this.rightPanel.add(this.resourceDisplay);
+
+        this.deckStatDisplay = new DeckStatDisplay(
+            this,
+            {x:0,y:CANVAS_SIZE.height*0.15}
+        )
+
+        this.rightPanel.add(this.deckStatDisplay);
 
         EventEmitter
         .on(

@@ -176,6 +176,9 @@ export default class GamePlayer{
         return [...this.activeUnits, ...this.activeChampions];
     }
 
+    getCasualties(){
+        return this.graveyard.length;
+    }
 
     generateResources(income: number){
         let newCurrentResource = this.currResource + income;

@@ -39,7 +39,17 @@ export const EVENTS = {
         /**
          * Signal HUD to update unit stats display
          */
-        UPDATE_UNIT_STAT_DISPLAY: "update-unit-stat-display"
+        UPDATE_UNIT_STAT_DISPLAY: "update-unit-stat-display",
+
+        /**
+         * Signal HUD to update deck count
+         */
+        UPDATE_DECK_COUNTER: "update-deck-counter",
+
+        /**
+         * Signal HUD to update casualty count
+         */
+        UPDATE_CASUALTY_COUNTER: "update-casualty-counter"
     }),
     /**
      * For game events like player turns, game over

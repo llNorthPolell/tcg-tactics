@@ -1,10 +1,10 @@
-import UnitStats from "@/game/data/unitData";
 import SkillEffect from "./skillEffect";
 import { Position } from "@/game/data/types/position";
+import Unit from "@/game/gameobjects/unit";
 
 export default class CreateEffect implements SkillEffect{
     readonly name;
-    private target?: UnitStats | Position;
+    private target?: Unit | Position;
     effectsToInflict:SkillEffect[];
     readonly duration:number;
     readonly isRemovable: boolean;
@@ -36,12 +36,12 @@ export default class CreateEffect implements SkillEffect{
     }
 
 
-    setTarget(target: UnitStats): void {
+    setTarget(target: Unit): void {
         this.target=target;
         this.active=true;
     }
 
-    getTarget(): UnitStats| Position | undefined {
+    getTarget(): Unit| Position | undefined {
         return this.target;
     }
 

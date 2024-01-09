@@ -211,12 +211,12 @@ export default class Unit {
     }
 
     insertBuff(skillEffect:SkillEffect){
-        skillEffect.setTarget(this.unitData);
+        skillEffect.setTarget(this);
         this.buffs = [...this.buffs,skillEffect];
     }
 
     insertDebuff(skillEffect:SkillEffect){
-        skillEffect.setTarget(this.unitData);
+        skillEffect.setTarget(this);
         this.debuffs = [...this.debuffs,skillEffect];
     }
 

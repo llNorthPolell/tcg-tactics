@@ -261,10 +261,12 @@ export default class FieldManager{
             (unit:Unit)=>{
                 const ownerIndex = this.playerIdToIndexMap.get(unit.getOwner().id);
                 if (ownerIndex === undefined) return;
-                this.playersInGame[ownerIndex].moveUnitToGraveyard(unit);
+                const owner = this.playersInGame[ownerIndex];
+                owner.moveUnitToGraveyard(unit);
                 const lastLocation = unit.getLocation();
                 this.units.delete(`${lastLocation.x}_${lastLocation.y}`);
                 unit.setLocation({x:-1,y:-1});
+                EventEmitter.emit(EVENTS.uiEvent.UPDATE_CASUALTY_COUNTER, owner.getCasualties());
             }
         )
     }

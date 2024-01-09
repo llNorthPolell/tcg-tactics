@@ -95,7 +95,7 @@ export default class CardManager{
         card.setPosition({x:this.hand.length * CARD_SIZE.width,y:0});
         this.hand = [...this.hand,card];
         EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND,this.getHand());
-
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_DECK_COUNTER,this.deck.length);
         return card;
     }
 

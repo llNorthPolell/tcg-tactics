@@ -1,11 +1,11 @@
 import { ValueType } from "@/game/enums/keys/valueType";
 import SkillEffect from "./skillEffect";
 import { UnitStatField } from "@/game/enums/keys/unitStatField";
-import UnitStats from "@/game/data/unitData";
+import Unit from "@/game/gameobjects/unit";
 
 export default abstract class StatChange implements SkillEffect{
     readonly name:string;
-    protected target?:UnitStats;
+    protected target?:Unit;
     readonly amount:number;
     readonly valueType: string;  
     readonly stat: string;
@@ -47,12 +47,12 @@ export default abstract class StatChange implements SkillEffect{
         this.delta = 0;
     }
 
-    setTarget(target: UnitStats): void {
+    setTarget(target: Unit): void {
         this.target=target;
         this.active=true;
     }
 
-    getTarget(): UnitStats|undefined {
+    getTarget(): Unit|undefined {
         return this.target;
     }
 
@@ -86,32 +86,32 @@ export default abstract class StatChange implements SkillEffect{
             case UnitStatField.HP:
                 this.delta = (this.valueType===ValueType.VALUE)?
                     this.amount:
-                    Math.floor(this.target!.baseMaxHp * this.amount/100);
-                this.target!.maxHP +=this.delta;
+                    Math.floor(this.target!.getUnitData().baseMaxHp * this.amount/100);
+                this.target!.getUnitData().maxHP +=this.delta;
                 break;
             case UnitStatField.SP:
                 this.delta = (this.valueType===ValueType.VALUE)?
                     this.amount:
-                    Math.floor(this.target!.baseMaxSp * this.amount/100);
-                this.target!.maxSP +=this.delta;
+                    Math.floor(this.target!.getUnitData().baseMaxSp * this.amount/100);
+                this.target!.getUnitData().maxSP +=this.delta;
                 break;
             case UnitStatField.PWR:
                 this.delta = (this.valueType===ValueType.VALUE)?
                     this.amount:
-                    Math.floor(this.target!.basePwr * this.amount/100);
-                this.target!.currPwr +=this.delta;
+                    Math.floor(this.target!.getUnitData().basePwr * this.amount/100);
+                this.target!.getUnitData().currPwr +=this.delta;
                 break;
             case UnitStatField.DEF:
                 this.delta = (this.valueType===ValueType.VALUE)?
                     this.amount:
-                    Math.floor(this.target!.baseDef * this.amount/100);
-                this.target!.currDef +=this.delta;
+                    Math.floor(this.target!.getUnitData().baseDef * this.amount/100);
+                this.target!.getUnitData().currDef +=this.delta;
                 break;
             case UnitStatField.MVT:
                 this.delta = (this.valueType===ValueType.VALUE)?
                     this.amount:
-                    Math.floor(this.target!.baseMvt * this.amount/100);
-                this.target!.currMvt +=this.delta;
+                    Math.floor(this.target!.getUnitData().baseMvt * this.amount/100);
+                this.target!.getUnitData().currMvt +=this.delta;
                 break;
             default:
                 break;
@@ -146,19 +146,19 @@ export default abstract class StatChange implements SkillEffect{
     forceRemove():void{
         switch(this.stat){
             case UnitStatField.HP:
-                this.target!.maxHP -= this.delta;
+                this.target!.getUnitData().maxHP -= this.delta;
                 break;
             case UnitStatField.SP:
-                this.target!.maxSP -= this.delta;
+                this.target!.getUnitData().maxSP -= this.delta;
                 break;
             case UnitStatField.PWR:
-                this.target!.currPwr -=this.delta;
+                this.target!.getUnitData().currPwr -=this.delta;
                 break;
             case UnitStatField.DEF:
-                this.target!.currDef -=this.delta;
+                this.target!.getUnitData().currDef -=this.delta;
                 break;
             case UnitStatField.MVT:
-                this.target!.currMvt -=this.delta;
+                this.target!.getUnitData().currMvt -=this.delta;
                 break;
             default:
                 break;

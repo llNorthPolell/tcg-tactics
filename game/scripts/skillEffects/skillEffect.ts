@@ -1,5 +1,5 @@
 import { Position } from "@/game/data/types/position";
-import UnitStats from "@/game/data/unitData";
+import Unit from "@/game/gameobjects/unit";
 
 export default interface SkillEffect{
     /**
@@ -45,12 +45,12 @@ export default interface SkillEffect{
     /**
      * The unit or position to apply the skill effect to
      */
-    setTarget(target:UnitStats|Position):void;
+    setTarget(target:Unit|Position):void;
 
     /**
      * Returns the current target of this skill effect
      */
-    getTarget():UnitStats|Position|undefined;
+    getTarget():Unit|Position|undefined;
 
     /**
      * Resets this skill effect's timer

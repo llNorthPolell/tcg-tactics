@@ -3,7 +3,6 @@ import { CardData } from "../data/cardData";
 import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
 import { Card } from "../gameobjects/cards/card";
-import SpellCard from "../gameobjects/cards/spellCard";
 import GamePlayer from "../gameobjects/gamePlayer";
 import Unit from "../gameobjects/unit";
 import { EventEmitter } from "./events";
@@ -93,7 +92,7 @@ export default class CardManager{
         
         const roll = Math.floor(Math.random()*this.deck.length);
         const card = this.deck.splice(roll,1)[0];
-        card.setPosition(this.hand.length * CARD_SIZE.width,0);
+        card.setPosition({x:this.hand.length * CARD_SIZE.width,y:0});
         this.hand = [...this.hand,card];
         EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND,this.getHand());
 
@@ -118,7 +117,7 @@ export default class CardManager{
         let c=0;
         this.hand.forEach(
             card=>{
-                card.setPosition(c*CARD_SIZE.width,0);
+                card.setPosition({x:c*CARD_SIZE.width,y:0});
                 c++;
             }
         )
@@ -132,7 +131,7 @@ export default class CardManager{
             ...selectedCurrentPosition,
             y:selectedCurrentPosition.y-(CARD_SIZE.height*0.05)
         }
-        this.selected.setPosition(selectedNewPosition.x,selectedNewPosition.y);
+        this.selected.setPosition({x:selectedNewPosition.x,y:selectedNewPosition.y});
     }
 
     returnCard(){
@@ -143,6 +142,6 @@ export default class CardManager{
             ...selectedCurrentPosition,
             y:0
         }
-        this.selected.setPosition(selectedNewPosition.x,selectedNewPosition.y);
+        this.selected.setPosition({x:selectedNewPosition.x,y:selectedNewPosition.y});
     }
 }

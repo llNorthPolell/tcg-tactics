@@ -1,4 +1,5 @@
 import { CardData } from "../cardData";
+import { EffectData } from "../effectData";
 
 
 export default class UnitCardData implements CardData{
@@ -14,8 +15,10 @@ export default class UnitCardData implements CardData{
     readonly mvt: number;
     readonly rng: number;
 
-    readonly passiveSkill?: string;
-    readonly activeSkill?: string;
+    readonly passiveSkillDesc?: string;
+    readonly passiveSkillData?: EffectData;
+    readonly activeSkillDesc?: string;
+    readonly activeSkillData?: EffectData;
 
     readonly cost:number;
 
@@ -30,8 +33,10 @@ export default class UnitCardData implements CardData{
         mvt:number,
         rng:number,
         cost:number,
-        passiveSkill?: string,
-        activeSkill?: string
+        passiveSkillDesc?: string,
+        passiveSkillData?: EffectData,
+        activeSkillDesc?: string,
+        activeSkillData?: EffectData
         ){
         this.id=id;
         this.name=name;
@@ -42,8 +47,10 @@ export default class UnitCardData implements CardData{
         this.def=def;
         this.mvt=mvt;
         this.rng=rng;
-        this.passiveSkill=passiveSkill;
-        this.activeSkill=activeSkill;
+        this.passiveSkillDesc=passiveSkillDesc;
+        this.passiveSkillData = passiveSkillData;
+        this.activeSkillDesc=activeSkillDesc;
+        this.activeSkillData=activeSkillData;
         this.cost=cost;
     }
     

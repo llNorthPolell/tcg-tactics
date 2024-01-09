@@ -17,6 +17,7 @@ import Deck from "../gameobjects/deck";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
 import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
 import { ValueType } from "../enums/keys/valueType";
+import { UnitStatField } from "../enums/keys/unitStatField";
 
 export default class LoadingScene extends Phaser.Scene {
 
@@ -57,9 +58,39 @@ export default class LoadingScene extends Phaser.Scene {
                 0,
                 2,
                 2,
-                "pwr +50% to mages",
+                "pwr +25% to mages",
+                {
+                    name: "Magic Aura",
+                    targetType: TARGET_TYPES.none,
+                    effectType: SPELL_EFFECT_TYPE.statChange,
+                    childEffects: [],
+                    amount:25,
+                    valueType: ValueType.PERCENTAGE,
+                    stat: UnitStatField.PWR,
+                    duration:-1,
+                    isRemovable:false
+                },
                 "recover 2sp per turn",
+                {
+                    name: "Meditate",
+                    targetType: TARGET_TYPES.none,
+                    effectType: SPELL_EFFECT_TYPE.statChange,
+                    amount:25,
+                    valueType: ValueType.VALUE,
+                    stat: UnitStatField.SP,
+                    duration:-1,
+                    overTime:true,
+                    isRemovable:false
+                },
                 "deal 2 damage to targets (radius 1)",
+                {
+                    name: "Magic Burst",
+                    targetType: TARGET_TYPES.enemy,
+                    effectType: SPELL_EFFECT_TYPE.dealDamage,
+                    childEffects: [],
+                    amount:2,
+                    valueType: ValueType.VALUE
+                },
                 [UNIT_CLASS.MAGE, UNIT_CLASS.MAGE, UNIT_CLASS.MAGE, UNIT_CLASS.MAGE],
                 5
             ),
@@ -78,9 +109,39 @@ export default class LoadingScene extends Phaser.Scene {
                 0,
                 3,
                 3,
-                "pwr +50% to rangers",
+                "pwr +25% to rangers",
+                {
+                    name: "Precision Aura",
+                    targetType: TARGET_TYPES.none,
+                    effectType: SPELL_EFFECT_TYPE.statChange,
+                    childEffects: [],
+                    amount:25,
+                    valueType: ValueType.PERCENTAGE,
+                    stat: UnitStatField.PWR,
+                    duration:-1,
+                    isRemovable:false
+                },
                 "+20% pwr when target is 3 tiles away",
+                {
+                    name: "Snipe",
+                    targetType: TARGET_TYPES.none,
+                    effectType: SPELL_EFFECT_TYPE.statChange,
+                    childEffects: [],
+                    amount:25,
+                    valueType: ValueType.PERCENTAGE,
+                    stat: UnitStatField.PWR,
+                    duration:-1,
+                    isRemovable:false
+                },
                 "move unit 2 tiles",
+                {
+                    name: "Chase",
+                    targetType: TARGET_TYPES.none,
+                    effectType: SPELL_EFFECT_TYPE.statChange,
+                    amount:0,
+                    valueType: ValueType.PERCENTAGE,
+                    stat: UnitStatField.PWR
+                },
                 [UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.ASSASSIN, UNIT_CLASS.ASSASSIN, UNIT_CLASS.SOLDIER],
                 5
             ),
@@ -102,9 +163,39 @@ export default class LoadingScene extends Phaser.Scene {
                     5,
                     3,
                     1,
-                    "pwr +50% to all",
+                    "pwr +25% to all",
+                    {
+                        name: "Assault Aura",
+                        targetType: TARGET_TYPES.none,
+                        effectType: SPELL_EFFECT_TYPE.statChange,
+                        childEffects: [],
+                        amount:25,
+                        valueType: ValueType.PERCENTAGE,
+                        stat: UnitStatField.PWR,
+                        duration:-1,
+                        isRemovable:false
+                    },
                     "+2 pwr to units 1 tile adjacent to this unit",
+                    {
+                        name: "Charisma",
+                        targetType: TARGET_TYPES.none,
+                        effectType: SPELL_EFFECT_TYPE.statChange,
+                        childEffects: [],
+                        amount:2,
+                        valueType: ValueType.VALUE,
+                        stat: UnitStatField.PWR,
+                        duration:-1,
+                        isRemovable:false
+                    },
                     "deal 5 damage to target",
+                    {
+                        name: "Cleave",
+                        targetType: TARGET_TYPES.none,
+                        effectType: SPELL_EFFECT_TYPE.dealDamage,
+                        amount:5,
+                        valueType: ValueType.VALUE,
+                        stat: UnitStatField.PWR
+                    },
                     [UNIT_CLASS.SOLDIER, UNIT_CLASS.SOLDIER, UNIT_CLASS.SOLDIER, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.GUARDIAN],
                     5
                 ),

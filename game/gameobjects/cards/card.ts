@@ -1,90 +1,41 @@
-import { CARD_SIZE } from "@/game/config";
 import { CardData } from "@/game/data/cardData";
 import { Position } from "@/game/data/types/position";
-import { EVENTS } from "@/game/enums/keys/events";
-import { EventEmitter } from "@/game/scripts/events";
-import { ASSETS } from "@/game/enums/keys/assets";
 import Player from "@/game/data/player";
-import { loadImage } from "@/game/scripts/imageLoader";
 import Unit from "../unit";
+import CardGO from "./cardGO";
 
 export abstract class Card<T extends CardData> {
     readonly id: string;
     readonly data: T;
     protected owner: Player;
 
-    protected container?: Phaser.GameObjects.Container;
-    protected x: number;
-    protected y: number;
-    protected image?: Phaser.GameObjects.Sprite;
+    protected position: Position;
 
-    constructor(id:string, data:T, owner:Player,x=0, y=0){
+    protected gameObject? : CardGO;
+    
+    constructor(id:string, data:T, owner:Player){
         this.id=id;
         this.data=data;
-        this.x=x;
-        this.y=y;
         this.owner=owner;
+        this.position = {x:0,y:0};
     }
 
-    setPosition(x:number,y:number){
-        this.x=x;
-        this.y=y;
-        this.container?.setPosition(x,y);
+    setPosition(position:Position){
+        this.position=position;
+        this.gameObject?.setPosition(position.x,position.y);
     }
 
     getPosition(){
-        return {x: this.x, y: this.y}
+        return this.position;
     }
 
     abstract play(target?:Unit | Position) : void;
 
-    abstract render(scene:Phaser.Scene):Phaser.GameObjects.Container;
+    render(scene : Phaser.Scene){
+        if (!this.gameObject) 
+            this.gameObject=new CardGO(scene,this);
 
-    protected renderGameObject(scene:Phaser.Scene,color:number,cardType:string){
-        if(!this.container)
-            this.container=scene.add.container(this.x,this.y);
-        const bg = scene.add.rectangle(0,0,CARD_SIZE.width, CARD_SIZE.height,color)
-            .setOrigin(0,0)
-            .setStrokeStyle(1,0x000000);
-
-        this.container?.add(bg);
-        this.container.add(
-            scene.add.text(
-                CARD_SIZE.width*0.1,CARD_SIZE.height*0.5,this.data.name,
-                {
-                    fontFamily:'"Averia Serif Libre",serif',
-                    fontSize:16
-                }
-            )
-        );
-        this.container.setInteractive(bg,Phaser.Geom.Rectangle.Contains).on(
-            Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
-            ()=>{
-                EventEmitter.emit(EVENTS.cardEvent.SELECT,this);
-            }
-        );
-
-        this.image = scene.add.sprite(CARD_SIZE.width*0.5,CARD_SIZE.height*0.5,ASSETS.UNDEFINED)
-            .setDisplaySize(CARD_SIZE.width*0.9, CARD_SIZE.height*0.9)
-            .setOrigin(0.5);
-
-        this.container.add(this.image);
-        loadImage(scene, this.image, cardType, this.data.id,CARD_SIZE.width*0.9, CARD_SIZE.height*0.9);
-
-        return this.container;
-    }
-
-    protected loadImage(scene:Phaser.Scene,cardType:string){
-        const assetName=`${ASSETS.PORTRAIT}_${cardType}_${this.data.id}`;
-        scene.load.image(assetName, `assets/portraits/${cardType}/${this.data.id}.png`);
-        scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
-            this.image?.setTexture(assetName)
-            .setOrigin(0.5)
-            .setPosition(CARD_SIZE.width*0.5,CARD_SIZE.height*0.5)
-            .setDisplaySize(CARD_SIZE.width*0.9, CARD_SIZE.height*0.9);
-        });
-        scene.load.start();
-
+        return this.gameObject;
     }
 
     setOwner(owner:Player){
@@ -95,7 +46,11 @@ export abstract class Card<T extends CardData> {
         return this.owner;
     }
     
+    getGameObject(){
+        return this.gameObject;
+    }
+    
     hide(){
-        this.container?.setVisible(false);
+        this.gameObject?.setVisible(false);
     }
 }

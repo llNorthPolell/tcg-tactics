@@ -13,8 +13,4 @@ export default class HeroCard extends Card<HeroCardData>{
     play(target:Position){
         EventEmitter.emit(EVENTS.fieldEvent.SUMMON_UNIT,target,this.data,this.owner);
     }
-
-    render(scene:Phaser.Scene){
-        return this.renderGameObject(scene,0x770000,"heroes");
-    }
 }

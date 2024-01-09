@@ -15,7 +15,4 @@ export default class UnitCard extends Card<UnitCardData>{
         EventEmitter.emit(EVENTS.fieldEvent.SUMMON_UNIT,target,this.data,this.owner);
     }
 
-    render(scene:Phaser.Scene){
-        return this.renderGameObject(scene,0x777700,"units");
-    }
 }

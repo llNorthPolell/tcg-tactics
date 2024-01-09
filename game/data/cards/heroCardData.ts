@@ -1,8 +1,10 @@
+import { EffectData } from "../effectData";
 import UnitCardData from "./unitCardData";
 
 
 export default class HeroCardData extends UnitCardData{
-    readonly leaderSkill: string;
+    readonly leaderSkillDesc: string;
+    readonly leaderSkillData: EffectData;
     readonly minions: string[];
 
 
@@ -16,9 +18,12 @@ export default class HeroCardData extends UnitCardData{
         def:number,
         mvt:number,
         rng:number,
-        leaderSkill: string,
-        passiveSkill: string,
-        activeSkill: string,
+        leaderSkillDesc: string,
+        leaderSkillData: EffectData,
+        passiveSkillDesc: string,
+        passiveSkillData: EffectData,
+        activeSkillDesc: string,
+        activeSkillData: EffectData,
         minions: string[],
         cost:number
         ){
@@ -33,11 +38,14 @@ export default class HeroCardData extends UnitCardData{
                 mvt,
                 rng,
                 cost,
-                passiveSkill,
-                activeSkill
+                passiveSkillDesc,
+                passiveSkillData,
+                activeSkillDesc,
+                activeSkillData
             );
 
-        this.leaderSkill=leaderSkill;
+        this.leaderSkillDesc=leaderSkillDesc;
+        this.leaderSkillData=leaderSkillData;
         this.minions=minions;
         
     }

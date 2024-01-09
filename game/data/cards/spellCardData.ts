@@ -1,29 +1,16 @@
 import { CardData } from "../cardData";
-
-export interface SpellEffectData {
-	name?: string,
-	targetType: string,
-	effectType: string,
-	childEffects?: SpellEffectData[],
-    amount?:number,
-    valueType?: string,
-    stat?: string,
-    duration?:number,
-    overTime?:boolean,
-    isDelayed?:boolean,
-    isRemovable?:boolean
-}
+import { EffectData } from "../effectData";
 
 export default class SpellCardData implements CardData{
     readonly id:string;
     readonly name:string;
     readonly cost:number;
     readonly description:string;
-    readonly effectData:SpellEffectData;
+    readonly effectData:EffectData;
     readonly targetType:string;
 
     // TODO: create skill effect objects with undefined targets
-    constructor(id:string, name:string, targetType: string, cost:number,description: string,effectData:SpellEffectData){
+    constructor(id:string, name:string, targetType: string, cost:number,description: string,effectData:EffectData){
         this.id=id;
         this.name=name;
         this.cost=cost;

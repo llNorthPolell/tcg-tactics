@@ -1,59 +1,20 @@
-import SpellCardData, { SpellEffectData } from "../../data/cards/spellCardData";
+import SpellCardData from "../../data/cards/spellCardData";
 import SkillEffect from "../../scripts/skillEffects/skillEffect";
 import { Card } from "./card";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/types/position";
-import DealDamage from "@/game/scripts/skillEffects/dealDamage";
 import Player from "@/game/data/player";
-import { SPELL_EFFECT_TYPE } from "@/game/enums/keys/spellEffectType";
 import Unit from "../unit";
 import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
-import Heal from "@/game/scripts/skillEffects/heal";
+import SkillEffectFactory from "@/game/scripts/skillEffectFactory";
 
 export default class SpellCard extends Card<SpellCardData>{
     private skillEffects: SkillEffect[];
 
     constructor(id:string,data:SpellCardData,owner:Player){
         super(id,data,owner);
-        this.skillEffects=[];
-        this.parseSkillEffects(data.effectData);
-    }
-    
-    private parseSkillEffects(effectData:SpellEffectData){
-        let newEffect;
-        switch(effectData.effectType){
-            case SPELL_EFFECT_TYPE.dealDamage:
-                if (!effectData.amount) break;
-                if (!effectData.valueType) break;
-                newEffect = new DealDamage(
-                    (effectData.name? effectData.name: this.data.name),
-                    effectData.amount,
-                    effectData.valueType,
-                    effectData.duration,
-                    effectData.overTime,
-                    effectData.isDelayed,
-                    effectData.isRemovable
-                );
-                this.skillEffects = [...this.skillEffects, newEffect];
-                break;
-            case SPELL_EFFECT_TYPE.heal:
-                if (!effectData.amount) break;
-                if (!effectData.valueType) break;
-                newEffect = new Heal(
-                    (effectData.name? effectData.name: this.data.name),
-                    effectData.amount,
-                    effectData.valueType,
-                    effectData.duration,
-                    effectData.overTime,
-                    effectData.isDelayed,
-                    effectData.isRemovable
-                );
-                this.skillEffects = [...this.skillEffects, newEffect];
-                break;
-            default:
-                break;
-        }
+        this.skillEffects=SkillEffectFactory.getSkillEffect(this.data.name,data.effectData);
     }
 
     play(target?:Unit | Position){
@@ -71,9 +32,5 @@ export default class SpellCard extends Card<SpellCardData>{
 
         }
         
-    }
-
-    render(scene:Phaser.Scene){
-        return this.renderGameObject(scene,0x000077,"spells");
     }
 }

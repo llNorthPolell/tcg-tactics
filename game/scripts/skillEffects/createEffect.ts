@@ -1,9 +1,10 @@
 import UnitStats from "@/game/data/unitData";
 import SkillEffect from "./skillEffect";
+import { Position } from "@/game/data/types/position";
 
 export default class CreateEffect implements SkillEffect{
     readonly name;
-    target?:UnitStats;
+    private target?: UnitStats | Position;
     effectsToInflict:SkillEffect[];
     readonly duration:number;
     readonly isRemovable: boolean;
@@ -12,7 +13,7 @@ export default class CreateEffect implements SkillEffect{
     readonly spreadRange:number;
 
 /**
- * This effect will create other effects on a target (i.e. auras, diseases)
+ * This effect will create other effects globally or around a target (i.e. auras, diseases)
  * @param name - Name of the skill effect
  * @param friendlyEffects - List of effects to give surrounding allies
  * @param enemyEffects - List of effects to inflict enemies
@@ -32,6 +33,21 @@ export default class CreateEffect implements SkillEffect{
         this.spreadRange=spreadRange;
 
         this.active=true;
+    }
+
+
+    setTarget(target: UnitStats): void {
+        this.target=target;
+        this.active=true;
+    }
+
+    getTarget(): UnitStats| Position | undefined {
+        return this.target;
+    }
+
+    reset(): void {
+        if(!this.duration || this.duration <= 0) return;
+        this.currTime = 0;
     }
     
 

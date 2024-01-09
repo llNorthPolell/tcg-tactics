@@ -88,7 +88,7 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
 
     show(unit:Unit){
         this.unitData = unit.getUnitData();
-        this.image.setTexture(unit.imageAssetName);
+        this.image.setTexture(unit.getGameObject()!.imageAssetName);
         this.unitNameText.setText(this.unitData.name);
         this.classIcon.setTexture(ASSETS.CLASS_ICONS, getClassIcon(this.unitData.unitClass));
         this.unitHPText.setText(String(this.unitData.currHp));

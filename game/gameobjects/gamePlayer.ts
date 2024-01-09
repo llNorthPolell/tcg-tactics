@@ -186,7 +186,7 @@ export default class GamePlayer{
             newCurrentResource=this.maxResource;
 
         this.currResource=newCurrentResource;
-        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource)
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource, income);
     }
 
     spendResources(cost:number) {
@@ -195,7 +195,7 @@ export default class GamePlayer{
 
         this.currResource -= cost;
 
-        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource)
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource);
     }
 
     getResources():Resources{

@@ -26,7 +26,9 @@ export const EVENTS = {
     uiEvent: Object.freeze({
         /**
          * Signal HUD to update resource display
-         * @Params unit:Unit
+         * @Params currResource:number
+         * @Params maxResource:number
+         * @Params incomeRate?:number
          */
         UPDATE_RESOURCE_DISPLAY: "update-resource-display",
 

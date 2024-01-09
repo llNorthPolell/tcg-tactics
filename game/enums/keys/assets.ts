@@ -20,6 +20,7 @@ export const ASSETS = Object.freeze({
     PWR_ICON: "pwr-icon",
     DECK_COUNT: "deck-count",
     DEATH_COUNT: "death-count",
+    INCOME_RATE: "income-rate",
     ATTACK_SELECTOR: "attack-selector",
     SPELL_SELECTOR: "spell-selector"
 })

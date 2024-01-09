@@ -38,6 +38,7 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.image(ASSETS.PWR_ICON, "assets/icons/pwr.png");
         this.load.image(ASSETS.ATTACK_SELECTOR, "assets/icons/attack.png");
         this.load.image(ASSETS.SPELL_SELECTOR, "assets/icons/spell.png");
+        this.load.image(ASSETS.INCOME_RATE,"assets/icons/incomeRate.png");
         this.load.image(ASSETS.DECK_COUNT, "assets/icons/deckCount.png");
         this.load.image(ASSETS.DEATH_COUNT, "assets/icons/deathCount.png");
         this.load.spritesheet(ASSETS.CLASS_ICONS, "assets/icons/class.png", { frameWidth: 31, frameHeight: 31 });

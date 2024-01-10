@@ -8,7 +8,7 @@ export function loadImage(scene:Phaser.Scene,
     height:number
     ){
     const assetName=`${ASSETS.PORTRAIT}_${cardType}_${cardId}`;
-    scene.load.image(assetName, `assets/portraits/${cardType}/${cardId}.png`);
+    scene.load.image(assetName, `./assets/portraits/${cardType}/${cardId}.png`);
     scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
         imageObj?.setTexture(assetName)
         .setOrigin(0.5)

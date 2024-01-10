@@ -15,8 +15,8 @@ export default class CombatHandler{
             EVENTS.unitEvent.ATTACK,
             (attacker:Unit, defender:Unit)=>{
                 if (attacker?.isActive()){
-                    this.initiateFight(attacker,defender);
                     EventEmitter.emit(EVENTS.unitEvent.WAIT);
+                    this.initiateFight(attacker,defender);
                 }
             }
         )
@@ -29,7 +29,7 @@ export default class CombatHandler{
                     else if (target instanceof Unit){
                         console.log(`Apply ${skillEffect.name} onto ${target.getUnitData().name}..`);
                         if (!skillEffect.duration){
-                            skillEffect.setTarget(target.getUnitData());
+                            skillEffect.setTarget(target);
                             skillEffect.apply();
                             return;
                         }
@@ -59,8 +59,8 @@ export default class CombatHandler{
         if (defenderStats.currHp <=0) 
             defender.killUnit();
 
-        if ((attacker.getTargetLocation() && 
-            !inRange(defender.getLocation(),attacker.getTargetLocation()!,defender.getUnitData().currRng)) ||
+        if ((attacker.getDestination() && 
+            !inRange(defender.getLocation(),attacker.getDestination()!,defender.getUnitData().currRng)) ||
             !inRange(defender.getLocation(),attacker.getLocation()!,defender.getUnitData().currRng)) 
             return;
 

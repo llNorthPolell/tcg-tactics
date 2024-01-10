@@ -43,8 +43,9 @@ export default class CardGO extends Phaser.GameObjects.Container{
         let image = this.scene.add.sprite(CARD_SIZE.width*0.5,CARD_SIZE.height*0.5,ASSETS.UNDEFINED)
             .setDisplaySize(CARD_SIZE.width*0.9, CARD_SIZE.height*0.9)
             .setOrigin(0.5);
-
-        this.add(image);
+            
         loadImage(scene, image, cardType, card.data.id,CARD_SIZE.width*0.9, CARD_SIZE.height*0.9);
+        this.add(image);
+        
     }
 }

@@ -15,8 +15,8 @@ export default class CombatHandler{
             EVENTS.unitEvent.ATTACK,
             (attacker:Unit, defender:Unit)=>{
                 if (attacker?.isActive()){
-                    this.initiateFight(attacker,defender);
                     EventEmitter.emit(EVENTS.unitEvent.WAIT);
+                    this.initiateFight(attacker,defender);
                 }
             }
         )
@@ -29,7 +29,7 @@ export default class CombatHandler{
                     else if (target instanceof Unit){
                         console.log(`Apply ${skillEffect.name} onto ${target.getUnitData().name}..`);
                         if (!skillEffect.duration){
-                            skillEffect.setTarget(target.getUnitData());
+                            skillEffect.setTarget(target);
                             skillEffect.apply();
                             return;
                         }
@@ -59,9 +59,12 @@ export default class CombatHandler{
         if (defenderStats.currHp <=0) 
             defender.killUnit();
 
-        if ((attacker.getTargetLocation() && 
-            !inRange(defender.getLocation(),attacker.getTargetLocation()!,defender.getUnitData().currRng)) ||
-            !inRange(defender.getLocation(),attacker.getLocation()!,defender.getUnitData().currRng)) 
+        const attackerDestination = attacker.getDestination();
+        if (attackerDestination && 
+            !inRange(defender.getLocation(),attackerDestination,defender.getUnitData().currRng))
+                return;
+        // TODO: Issue with this is if target has moved and is not in range, will trigger below condition since attacker.location has not been updated yet.   
+        else if (!inRange(defender.getLocation(),attacker.getLocation(),defender.getUnitData().currRng)) 
             return;
 
         const attackerDmgTaken = this.calcDamage(defender, attacker);

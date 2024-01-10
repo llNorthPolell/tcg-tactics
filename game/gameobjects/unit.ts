@@ -31,7 +31,7 @@ export default class Unit {
     private buffs: SkillEffect[];
     private debuffs: SkillEffect[];
 
-    private targetLocation?: Position;
+    private destination?: Position;
 
     constructor(id:string,location:Position,card:UnitCardData, owner: GamePlayer){
         this.id=id;
@@ -142,8 +142,8 @@ export default class Unit {
         return this.pixelPosition;
     }
 
-    getTargetLocation(){
-        return this.targetLocation;
+    getDestination(){
+        return this.destination;
     }
 
     render(scene:Phaser.Scene){
@@ -172,22 +172,22 @@ export default class Unit {
         this.active=false;
     }
 
-    move(targetLocation: Position){
-        this.targetLocation = targetLocation;
-        this.gameObject?.setPosition(targetLocation.x * TILESIZE.width, targetLocation.y * TILESIZE.height);
+    move(destination: Position){
+        this.destination = destination;
+        this.gameObject?.setPosition(destination.x * TILESIZE.width, destination.y * TILESIZE.height);
     }
 
     confirmMove(){
-        if (this.targetLocation){
-            this.location = this.targetLocation;
-            this.targetLocation=undefined;
+        if (this.destination){
+            this.location = this.destination;
+            this.destination=undefined;
         }
         this.gameObject?.setPosition(this.location.x * TILESIZE.width, this.location.y * TILESIZE.height);
         this.sleep();
     }
 
     cancelMove(){
-        this.targetLocation=undefined;
+        this.destination=undefined;
         this.gameObject?.setPosition(this.location.x* TILESIZE.width, this.location.y * TILESIZE.height);
     }
 

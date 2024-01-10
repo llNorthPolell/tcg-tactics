@@ -78,7 +78,7 @@ export default class LoadingScene extends Phaser.Scene {
                     name: "Meditate",
                     targetType: TARGET_TYPES.none,
                     effectType: SPELL_EFFECT_TYPE.statChange,
-                    amount:25,
+                    amount:2,
                     valueType: ValueType.VALUE,
                     stat: UnitStatField.SP,
                     duration:-1,
@@ -190,7 +190,7 @@ export default class LoadingScene extends Phaser.Scene {
                         duration:-1,
                         isRemovable:false
                     },
-                    "deal 5 damage to target",
+                    "deal 3 damage to target within 3 tiles",
                     {
                         name: "Cleave",
                         targetType: TARGET_TYPES.none,

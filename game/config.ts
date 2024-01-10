@@ -28,6 +28,8 @@ export const PORTRAIT_SIZE = {
 export const config : Phaser.Types.Core.GameConfig= {
     type: Phaser.AUTO,
     scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
         width:CANVAS_SIZE.width,
         height:CANVAS_SIZE.height,
     },

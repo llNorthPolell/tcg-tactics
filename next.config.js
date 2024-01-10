@@ -10,7 +10,8 @@ const nextConfig = {
                 pathname: '**'
             },
         ]
-    }
+    },
+    distDir: "out", //this line will tell the build to create a file with this name
 
 }
 

@@ -1,6 +1,9 @@
 import SkillEffect from "./skillEffect";
 import { ValueType } from "@/game/enums/keys/valueType";
 import Unit from "@/game/gameobjects/unit";
+import { EventEmitter } from "../events";
+import { EVENTS } from "@/game/enums/keys/events";
+import { UI_COLORS } from "@/game/enums/keys/uiColors";
 
 export default abstract class HealthChange implements SkillEffect{
     readonly name : string;
@@ -76,6 +79,7 @@ export default abstract class HealthChange implements SkillEffect{
         if (newCurrHp > maxHp)
             newCurrHp = maxHp;
         this.target.getUnitData().currHp = newCurrHp;
+        EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,this.target,deltaCurrHp,(deltaCurrHp>0)? UI_COLORS.heal:UI_COLORS.damage);
         console.log((deltaCurrHp > 0)?`Heal target by ${deltaCurrHp} health`:`Deal ${deltaCurrHp} damage to target`);
     }
 

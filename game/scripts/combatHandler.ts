@@ -1,5 +1,6 @@
 import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
+import { UI_COLORS } from "../enums/keys/uiColors";
 import { UNIT_CLASS } from "../enums/keys/unitClass";
 import Unit from "../gameobjects/unit";
 import { EventEmitter } from "./events";
@@ -53,6 +54,9 @@ export default class CombatHandler{
     
         const defenderDmgTaken = this.calcDamage(attacker, defender);
         defenderStats.currHp -= defenderDmgTaken;
+        EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,defender,-defenderDmgTaken,UI_COLORS.damage);
+
+
         console.log(`${attacker?.getUnitData().name} attacks ${defender.getUnitData().name}`);
         console.log(`${defender?.getUnitData().name} takes ${defenderDmgTaken} damage!`);
 
@@ -66,6 +70,7 @@ export default class CombatHandler{
 
         const attackerDmgTaken = this.calcDamage(defender, attacker);
         attackerStats.currHp -= attackerDmgTaken;
+        EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,attacker,-attackerDmgTaken,UI_COLORS.damage);
         console.log(`${defender?.getUnitData().name} retaliates and ${attacker?.getUnitData().name} takes ${attackerDmgTaken} damage!`);
 
         if (attackerStats.currHp <=0) 

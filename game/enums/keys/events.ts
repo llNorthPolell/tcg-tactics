@@ -51,7 +51,12 @@ export const EVENTS = {
         /**
          * Signal HUD to update casualty count
          */
-        UPDATE_CASUALTY_COUNTER: "update-casualty-counter"
+        UPDATE_CASUALTY_COUNTER: "update-casualty-counter",
+
+        /**
+         * Signal for damage numbers, healing numbers, status ailments etc.
+         */
+        PLAY_FLOATING_TEXT: "play-floating-text"
     }),
     /**
      * For game events like player turns, game over

@@ -27,11 +27,11 @@ export default class TurnManager{
                 if (playerId == this.devicePlayer.id) return;
 
                 // TODO: Currently make other players pass after 3 seconds for testing purposes. Add AI later.
-                scene.time.addEvent({
-                    delay: 3000, callback: ()=>{
+                /*scene.time.addEvent({
+                    delay: 3000, callback: ()=>{*/
                         this.pass(playerId);
-                    }
-                })
+                /*    }
+                })*/
             }
         );
     }

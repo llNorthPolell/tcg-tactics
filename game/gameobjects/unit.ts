@@ -121,7 +121,14 @@ export default class Unit {
                 this.wake();    
             }
         )
-        ;
+        .on(
+            EVENTS.uiEvent.PLAY_FLOATING_TEXT,
+            (unit:Unit,text:string,color:number)=>{
+                if(unit !== this) return;
+                
+                this.gameObject?.floatingText.play(text,color);
+            }
+        );
     }
 
     getUnitData(){

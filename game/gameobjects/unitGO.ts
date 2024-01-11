@@ -5,6 +5,7 @@ import { EVENTS } from "../enums/keys/events";
 import { EventEmitter } from "../scripts/events";
 import { loadImage } from "../scripts/imageLoader";
 import AttackSelector from "./attackSelector";
+import FloatingText from "./floatingText";
 import SpellSelector from "./spellSelector";
 import Unit from "./unit";
 
@@ -17,6 +18,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
 
     readonly attackSelector: AttackSelector;
     readonly spellSelector: SpellSelector; 
+    readonly floatingText: FloatingText;
 
     constructor(scene : Phaser.Scene, unit:Unit){
         super(scene,unit.getPixelPosition().x,unit.getPixelPosition().y);
@@ -61,6 +63,9 @@ export default class UnitGO extends Phaser.GameObjects.Container{
 
         this.spellSelector = new SpellSelector(scene,unit);
         this.add(this.spellSelector);
+
+        this.floatingText = new FloatingText(scene).setOrigin(0.5).setPosition(TILESIZE.width/2,TILESIZE.height/2);
+        this.add(this.floatingText);
 
         this.setInteractive(bg,Phaser.Geom.Rectangle.Contains)
         .on(

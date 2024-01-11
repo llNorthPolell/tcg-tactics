@@ -33,6 +33,7 @@ export default class CardGO extends Phaser.GameObjects.Container{
                 }
             )
         );
+        
         this.setInteractive(bg,Phaser.Geom.Rectangle.Contains).on(
             Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
             ()=>{

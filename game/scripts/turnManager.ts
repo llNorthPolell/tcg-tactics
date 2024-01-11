@@ -9,7 +9,7 @@ export default class TurnManager{
     private activePlayerIndex: number;
     private activePlayer?:GamePlayer;
 
-    constructor(devicePlayer:GamePlayer, playersInGame:GamePlayer[]){ 
+    constructor(scene:Phaser.Scene, devicePlayer:GamePlayer, playersInGame:GamePlayer[]){ 
         this.devicePlayer=devicePlayer;
         this.playersInGame = [...playersInGame];
         this.activePlayerIndex = -1;
@@ -25,7 +25,13 @@ export default class TurnManager{
             EVENTS.gameEvent.PLAYER_TURN,
             (playerId:number)=>{
                 if (playerId == this.devicePlayer.id) return;
-                this.pass(playerId);
+
+                // TODO: Currently make other players pass after 3 seconds for testing purposes. Add AI later.
+                scene.time.addEvent({
+                    delay: 3000, callback: ()=>{
+                        this.pass(playerId);
+                    }
+                })
             }
         );
     }

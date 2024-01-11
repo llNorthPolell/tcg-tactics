@@ -33,8 +33,9 @@ export default class GameplayScene extends Phaser.Scene{
     create(){
         const {player,playersInGame} = this.loadPlayers();
         this.game.scene.start(SCENES.HUD);
+        this.game.scene.start(SCENES.TURN_TRANSITION);
         this.fieldManager = new FieldManager(this,playersInGame);
-        this.turnManager = new TurnManager(player,playersInGame);
+        this.turnManager = new TurnManager(this,player,playersInGame);
         this.combatHandler = new CombatHandler();
 
 

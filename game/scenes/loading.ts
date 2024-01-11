@@ -24,24 +24,28 @@ export default class LoadingScene extends Phaser.Scene {
 
     preload() {
         //map
-        this.load.image(ASSETS.TILE_SET, "assets/maps/tilesets/tileset.png");
-        this.load.image(ASSETS.MAP_ICONS, "assets/maps/tilesets/mapicons.png");
+        this.load.image(ASSETS.TILE_SET, "./assets/maps/tilesets/tileset.png");
+        this.load.image(ASSETS.MAP_ICONS, "./assets/maps/tilesets/mapicons.png");
 
-        this.load.tilemapTiledJSON(ASSETS.TILE_MAP, "assets/maps/testmap2.json");
+        this.load.tilemapTiledJSON(ASSETS.TILE_MAP, "./assets/maps/testmap2.json");
 
         // portrait
-        this.load.image(ASSETS.UNDEFINED, "assets/portraits/undefined.png");
+        this.load.image(ASSETS.UNDEFINED, "./assets/portraits/undefined.png");
 
         // icons
-        this.load.image(ASSETS.HP_ICON, "assets/icons/hp.png");
-        this.load.image(ASSETS.SP_ICON, "assets/icons/sp.png");
-        this.load.image(ASSETS.PWR_ICON, "assets/icons/pwr.png");
-        this.load.image(ASSETS.ATTACK_SELECTOR, "assets/icons/attack.png");
-        this.load.image(ASSETS.SPELL_SELECTOR, "assets/icons/spell.png");
-        this.load.image(ASSETS.INCOME_RATE,"assets/icons/incomeRate.png");
-        this.load.image(ASSETS.DECK_COUNT, "assets/icons/deckCount.png");
-        this.load.image(ASSETS.DEATH_COUNT, "assets/icons/deathCount.png");
-        this.load.spritesheet(ASSETS.CLASS_ICONS, "assets/icons/Class.png", { frameWidth: 31, frameHeight: 31 });
+        this.load.image(ASSETS.HP_ICON, "./assets/icons/hp.png");
+        this.load.image(ASSETS.SP_ICON, "./assets/icons/sp.png");
+        this.load.image(ASSETS.PWR_ICON, "./assets/icons/pwr.png");
+        this.load.image(ASSETS.ATTACK_SELECTOR, "./assets/icons/attack.png");
+        this.load.image(ASSETS.SPELL_SELECTOR, "./assets/icons/spell.png");
+        this.load.image(ASSETS.INCOME_RATE,"./assets/icons/incomeRate.png");
+        this.load.image(ASSETS.DECK_COUNT, "./assets/icons/deckCount.png");
+        this.load.image(ASSETS.DEATH_COUNT, "./assets/icons/deathCount.png");
+        this.load.spritesheet(ASSETS.CLASS_ICONS, "./assets/icons/Class.png", { frameWidth: 31, frameHeight: 31 });
+
+        // ui
+        this.load.image(ASSETS.YOUR_TURN, "./assets/ui/your_turn.png");
+        this.load.image(ASSETS.OPPONENT_TURN, "./assets/ui/opponent_turn.png");
     }
 
     create() {

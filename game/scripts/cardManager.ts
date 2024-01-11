@@ -27,6 +27,15 @@ export default class CardManager{
         .on(
             EVENTS.gameEvent.PLAYER_TURN,
             (_activePlayerId:number,_activePlayerIndex:number, isDevicePlayerTurn:boolean)=>{
+                this.hand.forEach(
+                    (card: Card<CardData>)=>{
+                        if (isDevicePlayerTurn)
+                            card.getGameObject()?.setInteractive();
+                        else
+                            card.getGameObject()?.disableInteractive();
+                    }
+                );
+
                 if (!isDevicePlayerTurn) return;
 
                 this.drawCard();

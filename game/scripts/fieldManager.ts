@@ -123,6 +123,8 @@ export default class FieldManager{
                     (landmarksOwned.strongholds.length*2) + 
                     landmarksOwned.outposts.length + 
                     landmarksOwned.resourceNodes.length;
+
+
                 EventEmitter.emit(EVENTS.playerEvent.GENERATE_RESOURCES,playerId,income);
             }
         )

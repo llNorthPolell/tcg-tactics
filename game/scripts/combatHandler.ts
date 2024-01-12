@@ -1,6 +1,5 @@
 import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
-import { UI_COLORS } from "../enums/keys/uiColors";
 import { UNIT_CLASS } from "../enums/keys/unitClass";
 import Unit from "../gameobjects/unit";
 import { EventEmitter } from "./events";
@@ -48,20 +47,11 @@ export default class CombatHandler{
 
     }
     
-    initiateFight(attacker:Unit,defender:Unit):void{
-        const attackerStats = attacker.getUnitData();
-        const defenderStats = defender.getUnitData();
-    
+    initiateFight(attacker:Unit,defender:Unit):void{    
         const defenderDmgTaken = this.calcDamage(attacker, defender);
-        defenderStats.currHp -= defenderDmgTaken;
-        EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,defender,-defenderDmgTaken,UI_COLORS.damage);
-
-
         console.log(`${attacker?.getUnitData().name} attacks ${defender.getUnitData().name}`);
-        console.log(`${defender?.getUnitData().name} takes ${defenderDmgTaken} damage!`);
+        defender.takeDamage(defenderDmgTaken);
 
-        if (defenderStats.currHp <=0) 
-            defender.killUnit();
 
         if ((attacker.getDestination() && 
             !inRange(defender.getLocation(),attacker.getDestination()!,defender.getUnitData().currRng)) ||
@@ -69,12 +59,8 @@ export default class CombatHandler{
             return;
 
         const attackerDmgTaken = this.calcDamage(defender, attacker);
-        attackerStats.currHp -= attackerDmgTaken;
-        EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,attacker,-attackerDmgTaken,UI_COLORS.damage);
-        console.log(`${defender?.getUnitData().name} retaliates and ${attacker?.getUnitData().name} takes ${attackerDmgTaken} damage!`);
-
-        if (attackerStats.currHp <=0) 
-            attacker.killUnit();
+        console.log(`${defender?.getUnitData().name} retaliates!`);
+        attacker.takeDamage(attackerDmgTaken);
     }
 
 

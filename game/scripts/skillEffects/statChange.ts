@@ -63,6 +63,7 @@ export default abstract class StatChange extends BaseSkillEffect{
                     this.amount:
                     Math.floor(this.target!.getUnitData().basePwr * this.amount/100);
                 this.target!.getUnitData().currPwr +=this.delta;
+                this.target!.getGameObject()?.updatePwrText();
                 break;
             case UnitStatField.DEF:
                 this.delta = (this.valueType===ValueType.VALUE)?
@@ -108,6 +109,7 @@ export default abstract class StatChange extends BaseSkillEffect{
                 break;
             case UnitStatField.PWR:
                 this.target!.getUnitData().currPwr -=this.delta;
+                this.target!.getGameObject()?.updatePwrText();
                 break;
             case UnitStatField.DEF:
                 this.target!.getUnitData().currDef -=this.delta;

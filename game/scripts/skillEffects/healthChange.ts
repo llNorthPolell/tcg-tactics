@@ -43,9 +43,14 @@ export default abstract class HealthChange extends BaseSkillEffect{
         let newCurrHp = baseCurrHp + deltaCurrHp;
         if (newCurrHp > maxHp)
             newCurrHp = maxHp;
-        this.target.getUnitData().currHp = newCurrHp;
-        EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,this.target,deltaCurrHp,(deltaCurrHp>0)? UI_COLORS.heal:UI_COLORS.damage);
-        console.log((deltaCurrHp > 0)?`Heal target by ${deltaCurrHp} health`:`Deal ${deltaCurrHp} damage to target`);
+
+        if(this.amount>0) 
+            this.target!.heal(this.amount);
+        else
+            this.target!.takeDamage(-this.amount);
+
+        if (this.target.getUnitData().currHp > 0)return;
+        this.forceRemove();
     }
 
     apply(): void {

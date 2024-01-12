@@ -40,7 +40,8 @@ export default class Unit {
         this.location=location;
         this.pixelPosition = {x:location.x * TILESIZE.width, y:location.y * TILESIZE.height};
         this.owner = owner;
-        this.active=false;
+
+        this.active=this.unitData.rush;
 
         this.buffs=[];
         this.debuffs=[];

@@ -21,6 +21,7 @@ export default class UnitData {
     currMvt:number;
     currRng:number;
 
+    rush:boolean;
     isStunned:boolean;
     sleepTime:number;
 
@@ -50,6 +51,7 @@ export default class UnitData {
         
         this.isStunned=false;
         this.sleepTime=0;
+        this.rush=false;
     }
     
 

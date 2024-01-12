@@ -340,7 +340,7 @@ export default class LoadingScene extends Phaser.Scene {
         const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);
         const testOpponentDeck = new Deck([], testOpponentLeader);
 
-        const testGamePlayer = new GamePlayer(1, testPlayer, 1, getPlayerColor(1), testPlayerDeck);
+        const testGamePlayer = new GamePlayer(1, testPlayer, 1, getPlayerColor(1), testPlayerDeck,true);
         const testGameOpponent = new GamePlayer(2, testPlayer2, 2, getPlayerColor(2), testOpponentDeck);
 
         this.game.registry.set(GAME_STATE.player, testGamePlayer);

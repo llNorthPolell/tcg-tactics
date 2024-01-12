@@ -252,21 +252,20 @@ export default class FieldManager{
         .on(
             EVENTS.fieldEvent.CAPTURE_LANDMARK,
             (unit:Unit, landmark:CapturableLandmark)=>{
-                const ownerIndex = this.playerIdToIndexMap.get(unit.getOwner().id);
-                if (ownerIndex === undefined) return;
-                this.playersInGame[ownerIndex].registerLandmark(landmark);
+                unit.getOwner().registerLandmark(landmark);
             }
         )
         .on(
             EVENTS.unitEvent.DEATH,
             (unit:Unit)=>{
-                const ownerIndex = this.playerIdToIndexMap.get(unit.getOwner().id);
-                if (ownerIndex === undefined) return;
-                const owner = this.playersInGame[ownerIndex];
+                const owner = unit.getOwner();
                 owner.moveUnitToGraveyard(unit);
                 const lastLocation = unit.getLocation();
                 this.units.delete(`${lastLocation.x}_${lastLocation.y}`);
                 unit.setLocation({x:-1,y:-1});
+
+                if (!unit.getOwner().isDevicePlayer)return;
+                
                 EventEmitter.emit(EVENTS.uiEvent.UPDATE_CASUALTY_COUNTER, owner.getCasualties());
             }
         )

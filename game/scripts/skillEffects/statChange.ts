@@ -1,18 +1,13 @@
 import { ValueType } from "@/game/enums/keys/valueType";
-import SkillEffect from "./skillEffect";
 import { UnitStatField } from "@/game/enums/keys/unitStatField";
 import Unit from "@/game/gameobjects/unit";
+import BaseSkillEffect from "./baseSkillEffect";
 
-export default abstract class StatChange implements SkillEffect{
-    readonly name:string;
+export default abstract class StatChange extends BaseSkillEffect{
     protected target?:Unit;
     readonly amount:number;
     readonly valueType: string;  
     readonly stat: string;
-    readonly duration:number;
-    readonly isRemovable: boolean;
-    protected currTime:number;
-    protected active:boolean;
 
     /**
      * If true, marks this skill effect as already applied (used to stop stacking the same debuff).
@@ -31,34 +26,14 @@ export default abstract class StatChange implements SkillEffect{
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
     constructor(name:string, amount: number, valueType : string =ValueType.VALUE, stat:string, duration=0, isRemovable=true){
-        this.name=name;
+        super(name,duration,isRemovable);
         this.amount = amount;
         this.valueType=valueType;
         this.stat = stat;
 
-        this.duration = duration;
-        this.currTime = 0;
-
-        this.isRemovable=isRemovable;
-
-        this.active=false;
         this.applied=false;
 
         this.delta = 0;
-    }
-
-    setTarget(target: Unit): void {
-        this.target=target;
-        this.active=true;
-    }
-
-    getTarget(): Unit|undefined {
-        return this.target;
-    }
-
-    reset(): void {
-        if(!this.duration || this.duration <= 0) return;
-        this.currTime = 0;
     }
 
     getAmount(){
@@ -67,18 +42,6 @@ export default abstract class StatChange implements SkillEffect{
 
     getStat(){
         return this.stat;
-    }
-
-    getDuration(){
-        return this.duration;
-    }
-
-    getCurrTime(){
-        return this.currTime;
-    }
-
-    isActive(){
-        return this.active;
     }
 
     private applyStatChange(){
@@ -133,14 +96,6 @@ export default abstract class StatChange implements SkillEffect{
             this.currTime++;
         else if (this.currTime >= this.duration && this.duration>0) 
             this.remove();
-    }
-
-    remove(): void {
-        if (!this.isRemovable){
-            console.log("This spell effect cannot be removed.");
-            return;
-        }
-        this.forceRemove();
     }
 
     forceRemove():void{

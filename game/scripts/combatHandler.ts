@@ -100,10 +100,11 @@ export default class CombatHandler{
 
         switch (defenderStats.unitClass){
             case UNIT_CLASS.GUARDIAN:
-                damage = Math.ceil(damage * 0.8);
+                damage = Math.floor(damage * 0.8);
                 break;
         }
 
+        if (damage < 1) damage = 1;
         return damage;
     }
 

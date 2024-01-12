@@ -1,4 +1,5 @@
 import { TILESIZE } from "../config";
+import HeroCardData from "../data/cards/heroCardData";
 import { Position } from "../data/types/position";
 import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
@@ -38,25 +39,25 @@ export default class UnitGO extends Phaser.GameObjects.Container{
         this.imageAssetName = `${ASSETS.PORTRAIT}_${unitType}_${unit.card.id}`;
 
         const bg = scene.add.rectangle(
-            0,
-            0,
-            TILESIZE.width,
-            TILESIZE.height,
+            TILESIZE.width/2,
+            TILESIZE.height/2,
+            TILESIZE.width*0.95,
+            TILESIZE.height*0.95,
             baseColor
-        ).setOrigin(0);
+        ).setOrigin(0.5);
         this.add(bg);
 
         this.image = scene.add.sprite(TILESIZE.width*0.5,TILESIZE.height*0.5,this.imageAssetName)
             .setOrigin(0.5)
-            .setDisplaySize(TILESIZE.width*0.9, TILESIZE.height*0.9);
+            .setDisplaySize(TILESIZE.width*0.85, TILESIZE.height*0.85);
 
         if (!scene.textures.exists(this.imageAssetName)){
             loadImage(scene, 
                 this.image, 
                 unitType, 
                 unit.card.id,
-                TILESIZE.width*0.9, 
-                TILESIZE.height*0.9);
+                TILESIZE.width*0.85, 
+                TILESIZE.height*0.85);
         }
         this.add(this.image);
 
@@ -77,7 +78,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
 
         const healthBg = this.scene.add.image(
             TILESIZE.width-1,
-            TILESIZE.height,
+            TILESIZE.height*0.95,
             ASSETS.HP_ICON
         )
         .setDisplaySize(TILESIZE.height*0.3,TILESIZE.height*0.3)
@@ -86,7 +87,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
 
         this.hpText = this.scene.add.text(
             TILESIZE.width-1,
-            TILESIZE.height,
+            TILESIZE.height*0.95,
             String(unit.getUnitData().currHp),{
             color:'#FFF',
             fontFamily:'"Sansita",sans-serif',
@@ -98,7 +99,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
 
         const pwrBg = this.scene.add.image(
             1,
-            TILESIZE.height - (TILESIZE.height*0.3),
+            (TILESIZE.height*0.95) - (TILESIZE.height*0.3),
             ASSETS.PWR_ICON
         )
         .setDisplaySize(TILESIZE.height*0.3,TILESIZE.height*0.3)
@@ -108,7 +109,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
 
         this.pwrText = this.scene.add.text(
             TILESIZE.width*0.1,
-            TILESIZE.height,
+            TILESIZE.height*0.95,
             String(unit.getUnitData().currPwr),{
             color:'#FFF',
             fontFamily:'"Sansita",sans-serif',
@@ -116,6 +117,33 @@ export default class UnitGO extends Phaser.GameObjects.Container{
             resolution:3.125
         }).setOrigin(0,1);
         this.add(this.pwrText);
+
+        if (unit.card instanceof HeroCardData){
+            const heroGlow = scene.add.rectangle(
+                TILESIZE.width/2,
+                TILESIZE.height/2,
+                TILESIZE.width,
+                TILESIZE.height,
+                baseColor
+            ).setOrigin(0.5);
+            this.add(heroGlow);
+            heroGlow.preFX?.addGlow(undefined,undefined,undefined,true);
+            heroGlow.postFX?.addGlow(undefined,undefined,undefined,true);
+
+            const heroGlowTween = scene.tweens.add(
+                {
+                    targets: heroGlow,
+                    alpha: { from: 0, to: 0.1 },
+                    scale: { from: 1, to: 1.1 },
+                    ease: 'Quartic.Out',
+                    duration: 2000,
+                    repeat: -1,
+                    yoyo: true,
+                    persist: true
+                }
+            )
+        }
+
 
         this.attackSelector = new AttackSelector(scene,unit);
         this.add(this.attackSelector);
@@ -126,7 +154,8 @@ export default class UnitGO extends Phaser.GameObjects.Container{
         this.floatingText = new FloatingText(scene).setOrigin(0.5).setPosition(TILESIZE.width/2,TILESIZE.height/2);
         this.add(this.floatingText);
 
-        this.setInteractive(bg,Phaser.Geom.Rectangle.Contains)
+        this.setInteractive(new Phaser.Geom.Rectangle(TILESIZE.width*0.05, TILESIZE.height*0.05,TILESIZE.width,TILESIZE.height),
+            Phaser.Geom.Rectangle.Contains)
         .on(
             Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
             ()=>{

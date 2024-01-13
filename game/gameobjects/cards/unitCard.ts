@@ -7,7 +7,6 @@ import Player from "@/game/data/player";
 import UnitCardGO from "./unitCardGO";
 
 export default class UnitCard extends Card<UnitCardData>{
-
     constructor(id:string,data:UnitCardData,owner:Player){
         super(id,data,owner);
     }

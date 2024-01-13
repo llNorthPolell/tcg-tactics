@@ -7,6 +7,7 @@ import { UI_COLORS } from "../enums/keys/uiColors";
 import { Card } from "../gameobjects/cards/card";
 import GamePlayer from "../gameobjects/gamePlayer";
 import Button from "../gameobjects/ui/button";
+import CardDetailsDisplay from "../gameobjects/ui/cardDetailsDisplay";
 import DeckStatDisplay from "../gameobjects/ui/deckStatDisplay";
 import HandUIObject from "../gameobjects/ui/handUIObject";
 import ResourceDisplay from "../gameobjects/ui/resourceDisplay";
@@ -132,6 +133,11 @@ export default class HUD extends Phaser.Scene{
 
         unitStatDisplay.hide();
 
+        // Card Details
+        const cardDetails = new CardDetailsDisplay(this);
+        cardDetails.hide();
+        this.add.existing(cardDetails);
+
         // right panel
         this.resourceDisplay = new ResourceDisplay(
             this, 
@@ -150,10 +156,12 @@ export default class HUD extends Phaser.Scene{
         EventEmitter
         .on(
             EVENTS.cardEvent.SELECT,
-            ()=>{
+            (card:Card<CardData>)=>{
+                cardDetails.hide();
                 cancelCardButton.show();
                 if(this.isPlayerTurn) 
                     endTurnButton.hide();
+                cardDetails.show(card);
             }
         )
         .on(
@@ -162,6 +170,7 @@ export default class HUD extends Phaser.Scene{
                 cancelCardButton.hide();
                 if(this.isPlayerTurn) 
                     endTurnButton.show();
+                cardDetails.hide();
             }
         )
         .on(

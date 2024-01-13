@@ -42,10 +42,11 @@ export default class GameplayScene extends Phaser.Scene{
         
         const map = this.game.registry.get(GAME_STATE.field).mapData.map;
         const camera = this.cameras.main;
+
+        const bounds = {x:map.widthInPixels*1.3, y: (map.heightInPixels)+(HAND_UI_SIZE.height/3.125)}
         this.cameras.main
-            .setBounds(0,0,map.widthInPixels+(map.widthInPixels*0.2),(map.heightInPixels)+(HAND_UI_SIZE.height/3.125))
-            .setZoom(3.125)
-            .setOrigin(0.5);
+            .setBounds(0,0,bounds.x,bounds.y)
+            .setZoom(3.125);
         
         setupMouseInputs(this.input,camera);  
 

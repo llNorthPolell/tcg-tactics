@@ -12,5 +12,10 @@ export const SCENES = Object.freeze({
     /**
      * Loading screen, preloads
      */
-    LOADING: 'Loading'
+    LOADING: 'Loading',
+
+    /**
+     * For showing the "Your Turn" and "Opponent's Turn" animations
+     */
+    TURN_TRANSITION: 'TurnTransition'
 })

@@ -56,11 +56,13 @@ export default class FieldManager{
     private units:Map<string,Unit>;
     private movingUnit?:Unit;
     private landmarks: Map<string,Landmark>;
+    private isDevicePlayerTurn:boolean;
 
     constructor(scene:Phaser.Scene,playersInGame:GamePlayer[]){
         this.scene=scene;
         this.playersInGame = playersInGame;
         this.playerIdToIndexMap= new Map();
+        this.isDevicePlayerTurn=false;
 
         playersInGame.forEach(
             (player:GamePlayer,index:number) => {
@@ -89,7 +91,6 @@ export default class FieldManager{
 
         this.scene.game.registry.set(GAME_STATE.field,field);
 
-
         this.handleEvents();
 
         this.activePlayerIndex=0;
@@ -110,6 +111,7 @@ export default class FieldManager{
             EVENTS.gameEvent.PLAYER_TURN,
             (playerId: number, activePlayerIndex:number, isDevicePlayerTurn: boolean)=>{
                 this.activePlayerIndex=activePlayerIndex;
+                this.isDevicePlayerTurn=isDevicePlayerTurn;
 
                 const player = this.playersInGame[activePlayerIndex];
                 player.getActiveUnits().forEach(unit=> {
@@ -121,8 +123,9 @@ export default class FieldManager{
                     (landmarksOwned.strongholds.length*2) + 
                     landmarksOwned.outposts.length + 
                     landmarksOwned.resourceNodes.length;
+
+
                 EventEmitter.emit(EVENTS.playerEvent.GENERATE_RESOURCES,playerId,income);
-                
             }
         )
         .on(
@@ -148,8 +151,8 @@ export default class FieldManager{
                             rallyPoint=> {return {x:rallyPoint.x,y:rallyPoint.y}}
                         );
                     
-
-                    this.showHighlightTiles(rallyPointPositions,undefined,undefined,TileSelectionType.PLAY_CARD);
+                    
+                    this.showHighlightTiles(rallyPointPositions,undefined,(this.isDevicePlayerTurn)?undefined:TileStatus.WARNING,TileSelectionType.PLAY_CARD);
                 }
                 else {
                     switch((card as SpellCard).data.targetType){
@@ -197,7 +200,7 @@ export default class FieldManager{
                 const location = unit.getLocation();
                 const active = unit.isActive();
  
-                if (active){
+                if (active && this.isDevicePlayerTurn){
                     const highlightTiles = this.getTilesInRange(
                         location,
                         movement,
@@ -251,21 +254,20 @@ export default class FieldManager{
         .on(
             EVENTS.fieldEvent.CAPTURE_LANDMARK,
             (unit:Unit, landmark:CapturableLandmark)=>{
-                const ownerIndex = this.playerIdToIndexMap.get(unit.getOwner().id);
-                if (ownerIndex === undefined) return;
-                this.playersInGame[ownerIndex].registerLandmark(landmark);
+                unit.getOwner().registerLandmark(landmark);
             }
         )
         .on(
             EVENTS.unitEvent.DEATH,
             (unit:Unit)=>{
-                const ownerIndex = this.playerIdToIndexMap.get(unit.getOwner().id);
-                if (ownerIndex === undefined) return;
-                const owner = this.playersInGame[ownerIndex];
+                const owner = unit.getOwner();
                 owner.moveUnitToGraveyard(unit);
                 const lastLocation = unit.getLocation();
                 this.units.delete(`${lastLocation.x}_${lastLocation.y}`);
                 unit.setLocation({x:-1,y:-1});
+
+                if (!unit.getOwner().isDevicePlayer)return;
+                
                 EventEmitter.emit(EVENTS.uiEvent.UPDATE_CASUALTY_COUNTER, owner.getCasualties());
             }
         )

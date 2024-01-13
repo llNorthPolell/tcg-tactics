@@ -47,32 +47,20 @@ export default class CombatHandler{
 
     }
     
-    initiateFight(attacker:Unit,defender:Unit):void{
-        const attackerStats = attacker.getUnitData();
-        const defenderStats = defender.getUnitData();
-    
+    initiateFight(attacker:Unit,defender:Unit):void{    
         const defenderDmgTaken = this.calcDamage(attacker, defender);
-        defenderStats.currHp -= defenderDmgTaken;
         console.log(`${attacker?.getUnitData().name} attacks ${defender.getUnitData().name}`);
-        console.log(`${defender?.getUnitData().name} takes ${defenderDmgTaken} damage!`);
+        defender.takeDamage(defenderDmgTaken);
 
-        if (defenderStats.currHp <=0) 
-            defender.killUnit();
 
-        const attackerDestination = attacker.getDestination();
-        if (attackerDestination && 
-            !inRange(defender.getLocation(),attackerDestination,defender.getUnitData().currRng))
-                return;
-        // TODO: Issue with this is if target has moved and is not in range, will trigger below condition since attacker.location has not been updated yet.   
-        else if (!inRange(defender.getLocation(),attacker.getLocation(),defender.getUnitData().currRng)) 
+        if ((attacker.getDestination() && 
+            !inRange(defender.getLocation(),attacker.getDestination()!,defender.getUnitData().currRng)) ||
+            !inRange(defender.getLocation(),attacker.getLocation()!,defender.getUnitData().currRng)) 
             return;
 
         const attackerDmgTaken = this.calcDamage(defender, attacker);
-        attackerStats.currHp -= attackerDmgTaken;
-        console.log(`${defender?.getUnitData().name} retaliates and ${attacker?.getUnitData().name} takes ${attackerDmgTaken} damage!`);
-
-        if (attackerStats.currHp <=0) 
-            attacker.killUnit();
+        console.log(`${defender?.getUnitData().name} retaliates!`);
+        attacker.takeDamage(attackerDmgTaken);
     }
 
 
@@ -98,10 +86,11 @@ export default class CombatHandler{
 
         switch (defenderStats.unitClass){
             case UNIT_CLASS.GUARDIAN:
-                damage = Math.ceil(damage * 0.8);
+                damage = Math.floor(damage * 0.8);
                 break;
         }
 
+        if (damage < 1) damage = 1;
         return damage;
     }
 

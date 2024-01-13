@@ -42,6 +42,10 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.image(ASSETS.DECK_COUNT, "./assets/icons/deckCount.png");
         this.load.image(ASSETS.DEATH_COUNT, "./assets/icons/deathCount.png");
         this.load.spritesheet(ASSETS.CLASS_ICONS, "./assets/icons/Class.png", { frameWidth: 31, frameHeight: 31 });
+
+        // ui
+        this.load.image(ASSETS.YOUR_TURN, "./assets/ui/your_turn.png");
+        this.load.image(ASSETS.OPPONENT_TURN, "./assets/ui/opponent_turn.png");
     }
 
     create() {
@@ -78,7 +82,7 @@ export default class LoadingScene extends Phaser.Scene {
                     name: "Meditate",
                     targetType: TARGET_TYPES.none,
                     effectType: SPELL_EFFECT_TYPE.statChange,
-                    amount:2,
+                    amount:25,
                     valueType: ValueType.VALUE,
                     stat: UnitStatField.SP,
                     duration:-1,
@@ -190,7 +194,7 @@ export default class LoadingScene extends Phaser.Scene {
                         duration:-1,
                         isRemovable:false
                     },
-                    "deal 3 damage to target within 3 tiles",
+                    "deal 5 damage to target",
                     {
                         name: "Cleave",
                         targetType: TARGET_TYPES.none,
@@ -336,7 +340,7 @@ export default class LoadingScene extends Phaser.Scene {
         const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);
         const testOpponentDeck = new Deck([], testOpponentLeader);
 
-        const testGamePlayer = new GamePlayer(1, testPlayer, 1, getPlayerColor(1), testPlayerDeck);
+        const testGamePlayer = new GamePlayer(1, testPlayer, 1, getPlayerColor(1), testPlayerDeck,true);
         const testGameOpponent = new GamePlayer(2, testPlayer2, 2, getPlayerColor(2), testOpponentDeck);
 
         this.game.registry.set(GAME_STATE.player, testGamePlayer);

@@ -12,8 +12,7 @@ export const ASSETS = Object.freeze({
     TILE_MAP_TILE_SET_IMG: "tileset",
     TILE_MAP_ICON_SET_IMG: "mapicons",
 
-    UNDEFINED: "undefined",
-    PORTRAIT: "portrait_",
+    // Icons
     CLASS_ICONS: "class-icons",
     HP_ICON: "hp-icon",
     SP_ICON: "sp-icon",
@@ -22,5 +21,12 @@ export const ASSETS = Object.freeze({
     DEATH_COUNT: "death-count",
     INCOME_RATE: "income-rate",
     ATTACK_SELECTOR: "attack-selector",
-    SPELL_SELECTOR: "spell-selector"
+    SPELL_SELECTOR: "spell-selector",
+
+    // Other
+    UNDEFINED: "undefined",
+    PORTRAIT: "portrait_",
+    YOUR_TURN: "your-turn",
+    OPPONENT_TURN: "opponent-turn"
+
 })

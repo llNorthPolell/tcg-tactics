@@ -27,6 +27,15 @@ export default class CardManager{
         .on(
             EVENTS.gameEvent.PLAYER_TURN,
             (_activePlayerId:number,_activePlayerIndex:number, isDevicePlayerTurn:boolean)=>{
+                this.hand.forEach(
+                    (card: Card<CardData>)=>{
+                        if (isDevicePlayerTurn)
+                            card.getGameObject()?.setInteractive();
+                        else
+                            card.getGameObject()?.disableInteractive();
+                    }
+                );
+
                 if (!isDevicePlayerTurn) return;
 
                 this.drawCard();
@@ -38,7 +47,6 @@ export default class CardManager{
                 this.returnCard();
                 this.selected = card;
                 this.pullOutCard();                
-                console.log(`Selected card#${this.selected.id}`);
             }
         )
         .on(
@@ -47,7 +55,6 @@ export default class CardManager{
                 if (!this.selected) return;
                 this.returnCard();
                 this.selected=undefined;
-                console.log(`Deselected card`);
             }
         )
         .on(
@@ -125,23 +132,20 @@ export default class CardManager{
 
     pullOutCard(){
         if(!this.selected) return;
-        const selectedCurrentPosition = this.selected.getPosition();
-        if (selectedCurrentPosition.y !== 0) return;
-        const selectedNewPosition = {
-            ...selectedCurrentPosition,
-            y:selectedCurrentPosition.y-(CARD_SIZE.height*0.05)
-        }
-        this.selected.setPosition({x:selectedNewPosition.x,y:selectedNewPosition.y});
+        this.changeSelectedCardPosition(
+            this.selected?.getPosition().x,
+            this.selected?.getPosition().y-(CARD_SIZE.height*0.05));
     }
 
     returnCard(){
+        if(!this.selected) return;
+        this.changeSelectedCardPosition(this.selected?.getPosition().x,0);
+    }
+
+    private changeSelectedCardPosition(x:number,y:number){
         if (!this.selected) return;
         const selectedCurrentPosition = this.selected.getPosition();
-        if (selectedCurrentPosition.y===0) return;
-        const selectedNewPosition = {
-            ...selectedCurrentPosition,
-            y:0
-        }
-        this.selected.setPosition({x:selectedNewPosition.x,y:selectedNewPosition.y});
+        if (selectedCurrentPosition.y===y) return;
+        this.selected.setPosition({x,y});
     }
 }

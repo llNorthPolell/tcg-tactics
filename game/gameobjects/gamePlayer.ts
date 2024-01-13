@@ -186,6 +186,9 @@ export default class GamePlayer{
             newCurrentResource=this.maxResource;
 
         this.currResource=newCurrentResource;
+
+        if (!this.isDevicePlayer) return;
+        
         EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource, income);
     }
 
@@ -194,6 +197,8 @@ export default class GamePlayer{
             throw new Error("Not enough resources");
 
         this.currResource -= cost;
+
+        if (!this.isDevicePlayer) return;
 
         EventEmitter.emit(EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY, this.currResource, this.maxResource);
     }

@@ -1,4 +1,5 @@
 import { Position } from "@/game/data/types/position";
+import { FONT } from "@/game/enums/keys/font";
 
 export default class Button extends Phaser.GameObjects.Container {
     bg: Phaser.GameObjects.Rectangle;
@@ -29,10 +30,15 @@ export default class Button extends Phaser.GameObjects.Container {
         ).setOrigin(0);
 
         this.display = scene.add.text(
-            0,
-            0,
-            display
-        );
+            width/2,
+            height/2,
+            display,
+            {
+                color:'#FFF',
+                fontFamily:FONT.main,
+                fontSize:32
+            }
+        ).setOrigin(0.5);
 
         this.add(this.bg);
         this.add(this.display);

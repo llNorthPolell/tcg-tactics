@@ -46,7 +46,7 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
             this.setupDescBox(
                 scene,
                 "Leader Skill",
-                {x:TEXT_START_X,y:CARD_DETAILS_SIZE.height*0.17}, 
+                {x:TEXT_START_X,y:CARD_DETAILS_SIZE.height*0.18}, 
                 CARD_DETAILS_SIZE.width*0.9,
                 CARD_DETAILS_SIZE.height*0.15
             )
@@ -56,7 +56,7 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
             this.setupDescBox(
                 scene,
                 "Passive Skill",
-                {x:TEXT_START_X,y:CARD_DETAILS_SIZE.height*0.38}, 
+                {x:TEXT_START_X,y:CARD_DETAILS_SIZE.height*0.4}, 
                 CARD_DETAILS_SIZE.width*0.9,
                 CARD_DETAILS_SIZE.height*0.15
             )
@@ -66,7 +66,7 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
             this.setupDescBox(
                 scene,
                 "Active Skill",
-                {x:TEXT_START_X,y:CARD_DETAILS_SIZE.height*0.59}, 
+                {x:TEXT_START_X,y:CARD_DETAILS_SIZE.height*0.62}, 
                 CARD_DETAILS_SIZE.width*0.9,
                 CARD_DETAILS_SIZE.height*0.3
             )
@@ -106,6 +106,11 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
     private setupDescBox (scene:Phaser.Scene, heading:string, position:Position, width:number,height:number){
         const container = scene.add.container(position.x,position.y);
 
+        const headingBorder = scene.add.rectangle(
+            0,0,CARD_DETAILS_SIZE.width*0.4,CARD_DETAILS_SIZE.height*0.05)
+            .setStrokeStyle(1,0xFFFFFF)
+            .setOrigin(0);
+
         const headingText = scene.add.text(
             0,0,heading,{
                 fontFamily: FONT.main,
@@ -120,7 +125,8 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
             width,
             height,
             0)
-            .setOrigin(0);
+            .setOrigin(0)
+            .setStrokeStyle(1,0xFFFFFF);
 
         const desc = scene.add.text(
             0,CARD_DETAILS_SIZE.height*0.06,"",{
@@ -130,6 +136,7 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
             })
             .setOrigin(0);
 
+        container.add(headingBorder);
         container.add(headingText);    
         container.add(bg);
         container.add(desc);

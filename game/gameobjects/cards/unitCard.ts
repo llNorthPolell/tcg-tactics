@@ -5,7 +5,6 @@ import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/types/position";
 import Player from "@/game/data/player";
 import UnitCardGO from "./unitCardGO";
-import UnitCardGO from "./unitCardGO";
 
 export default class UnitCard extends Card<UnitCardData>{
 

@@ -8,6 +8,7 @@ import Player from "@/game/data/player";
 import Unit from "../unit";
 import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
 import SkillEffectFactory from "@/game/scripts/skillEffectFactory";
+import SpellCardGO from "./spellCardGO";
 
 export default class SpellCard extends Card<SpellCardData>{
     private skillEffects: SkillEffect[];
@@ -33,4 +34,12 @@ export default class SpellCard extends Card<SpellCardData>{
         }
         
     }
+
+    render(scene : Phaser.Scene) : SpellCardGO{
+        if (!this.gameObject) 
+            this.gameObject=new SpellCardGO(scene,this);
+
+        return this.gameObject;
+    }
+
 }

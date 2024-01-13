@@ -11,7 +11,7 @@ export abstract class Card<T extends CardData> {
 
     protected position: Position;
 
-    protected gameObject? : CardGO;
+    protected gameObject? : CardGO<T>;
     
     constructor(id:string, data:T, owner:Player){
         this.id=id;
@@ -31,12 +31,7 @@ export abstract class Card<T extends CardData> {
 
     abstract play(target?:Unit | Position) : void;
 
-    render(scene : Phaser.Scene){
-        if (!this.gameObject) 
-            this.gameObject=new CardGO(scene,this);
-
-        return this.gameObject;
-    }
+    abstract render(scene : Phaser.Scene) : CardGO<T>;
 
     setOwner(owner:Player){
         this.owner=owner;

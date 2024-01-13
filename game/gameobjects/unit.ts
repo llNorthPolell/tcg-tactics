@@ -7,6 +7,7 @@ import { Position } from "../data/types/position";
 import UnitData from "../data/unitData";
 import { EVENTS } from "../enums/keys/events";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
+import { UI_COLORS } from "../enums/keys/uiColors";
 import { EventEmitter } from "../scripts/events";
 import SkillEffect from "../scripts/skillEffects/skillEffect";
 import { inRange } from "../scripts/util";
@@ -40,7 +41,8 @@ export default class Unit {
         this.location=location;
         this.pixelPosition = {x:location.x * TILESIZE.width, y:location.y * TILESIZE.height};
         this.owner = owner;
-        this.active=false;
+
+        this.active=this.unitData.rush;
 
         this.buffs=[];
         this.debuffs=[];
@@ -121,7 +123,14 @@ export default class Unit {
                 this.wake();    
             }
         )
-        ;
+        .on(
+            EVENTS.uiEvent.PLAY_FLOATING_TEXT,
+            (unit:Unit,text:string,color:number)=>{
+                if(unit !== this) return;
+                
+                this.gameObject?.floatingText.play(text,color);
+            }
+        );
     }
 
     getUnitData(){
@@ -241,6 +250,29 @@ export default class Unit {
     clearInactiveEffects(){
         this.buffs = this.buffs.filter(buff=> buff.isActive());
         this.debuffs = this.debuffs.filter(debuff=> debuff.isActive());
+    }
+
+    takeDamage(damage:number){
+        this.unitData.currHp -= damage;
+        console.log(`${this.unitData.name} takes ${damage} damage!`);
+
+        this.getGameObject()?.updateHpText();
+        
+        if (this.unitData.currHp <=0) 
+            this.killUnit();
+
+        EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,this,-damage,UI_COLORS.damage);    
+    }
+
+    heal(amount:number){
+        this.unitData.currHp += amount;
+
+        if (this.unitData.currHp >= this.unitData.maxHP) 
+            this.unitData.currHp = this.unitData.maxHP;
+        
+        this.getGameObject()?.updateHpText();
+        console.log(`${this.unitData.name} heals ${amount} hp!`);
+        EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,this,amount,UI_COLORS.heal);
     }
 
     update(){

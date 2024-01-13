@@ -1,7 +1,14 @@
 import UnitCardData from "./cards/unitCardData";
 
 export default class UnitData {
+    /**
+     * The name of this unit
+     */
     readonly name: string;
+
+    /**
+     * The class of this unit (e.g. Soldier, Ranger, Mage etc.)
+     */
     readonly unitClass:string;
 
     readonly baseMaxHp:number;
@@ -21,7 +28,19 @@ export default class UnitData {
     currMvt:number;
     currRng:number;
 
-    isStunned:boolean;
+    /**
+     * If true, can be moved on the same turn this unit was summoned
+     */
+    rush:boolean;
+
+    /**
+     * If > 0, unit is not able to act on that turn. 
+     */
+    stunTime:number;
+
+    /**
+     * If > 0, unit is not able to act on that turn. Breaks on damage.
+     */
     sleepTime:number;
 
     constructor(card:UnitCardData){
@@ -48,8 +67,9 @@ export default class UnitData {
         this.baseRng = card.rng;
         this.currRng = card.rng;
         
-        this.isStunned=false;
+        this.stunTime=0;
         this.sleepTime=0;
+        this.rush=false;
     }
     
 

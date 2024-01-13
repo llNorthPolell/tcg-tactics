@@ -22,5 +22,4 @@ export default class HeroCard extends UnitCard{
 
         return this.gameObject;
     }
-
 }

@@ -3,6 +3,7 @@ import HeroCardData from "../data/cards/heroCardData";
 import { Position } from "../data/types/position";
 import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
+import { FONT } from "../enums/keys/font";
 import { CLASS_ICON_MAPPING, getClassIcon } from "../enums/keys/unitClass";
 import { EventEmitter } from "../scripts/events";
 import { loadImage } from "../scripts/imageLoader";
@@ -89,8 +90,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
             TILESIZE.width-1,
             TILESIZE.height*0.95,
             String(unit.getUnitData().currHp),{
-            color:'#FFF',
-            fontFamily:'"Sansita",sans-serif',
+            fontFamily:FONT.secondary,
             fontSize:8,
             resolution:3.125
         })
@@ -111,8 +111,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
             TILESIZE.width*0.1,
             TILESIZE.height*0.95,
             String(unit.getUnitData().currPwr),{
-            color:'#FFF',
-            fontFamily:'"Sansita",sans-serif',
+            fontFamily:FONT.secondary,
             fontSize:8,
             resolution:3.125
         }).setOrigin(0,1);

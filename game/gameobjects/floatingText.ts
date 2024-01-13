@@ -1,11 +1,12 @@
 import { TILESIZE } from "../config";
+import { FONT } from "../enums/keys/font";
 
 export default class FloatingText extends Phaser.GameObjects.Text{
     private animation:Phaser.Tweens.Tween;
 
     constructor(scene:Phaser.Scene){
         super(scene,0,0,"",{
-            fontFamily:'"Averia Serif Libre",serif',
+            fontFamily:FONT.main,/*'"Averia Serif Libre",serif',*/
             fontSize:16
         });
 

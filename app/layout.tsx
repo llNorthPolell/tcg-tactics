@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Roboto, Averia_Serif_Libre } from 'next/font/google'
+import { Roboto, Averia_Serif_Libre, Noto_Sans } from 'next/font/google'
 import Head from 'next/head'
 import Script from 'next/script'
 
@@ -17,6 +17,12 @@ const font2 = Averia_Serif_Libre({
   display: 'swap',
 })
 
+const font3 = Noto_Sans({
+  weight:['100','300','400','500','700'],
+  style: ['normal'],
+  subsets: ['latin'],
+  display:'swap'
+})
 
 export const metadata: Metadata = {
   title: 'TCG-Tactics',
@@ -36,7 +42,7 @@ export default function RootLayout({
       <Head>
         <Script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></Script>
       </Head>
-      <body className={font2.className}>{children}</body>
+      <body className={font1.className}>{children}</body>
     </html>
   )
 }

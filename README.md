@@ -1,6 +1,26 @@
 # TCG Tactics
 A trading card tactics game created using PhaserJS. 
 
+**Disclaimer**
+I do not own the artwork in this project. The artwork in this project is meant to allow me to temporarily work on the game logic. Reusing the artwork directly from this project is strictly prohibited. Please support the original creators:
+
+- Tilemaps - IrishTorch (https://opengameart.org/content/16x16-pixel-art-tiles)
+- Class Icons - Clint Bellanger (https://opengameart.org/content/powers-icons) 
+- Misc Icons - Lorc / Slipyx (https://opengameart.org/content/700-rpg-icons)
+- Spell Cards Images - eleazzaar / Manveru (https://opengameart.org/content/attack-icons-wesnoth)
+- Portraits 
+    - Corax Digital Art (https://coraxdigitalart.itch.io/500-fantasy-character-portraits-realistic-human-heroes)
+    - jacksonnevins (https://jacksonnevins.itch.io/rpg-character-portraits-megapack-1)
+
+
+
+Images Created By Me:
+- Tower class icon 
+- Your Turn / Opponent's Turn transition images 
+- Landmarks
+
+
+
 ## Live Demo
 A live demo can be found in the following link on Github Pages:
 https://llnorthpolell.github.io/tcg-tactics/ 

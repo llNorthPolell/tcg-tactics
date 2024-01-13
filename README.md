@@ -14,7 +14,7 @@ I do not own the artwork in this project. The artwork in this project is meant t
 
 
 
-**Images Created By Me**
+**Images Created By Me:**
 - Tower class icon 
 - Your Turn / Opponent's Turn transition images 
 - Landmarks

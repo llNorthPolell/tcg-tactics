@@ -1,13 +1,12 @@
 import HeroCardData from "../../data/cards/heroCardData";
-import { Card } from "./card";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/types/position";
 import Player from "@/game/data/player";
 import HeroCardGO from "./heroCardGO";
-import UnitCard from "./unitCard";
+import { Card } from "./card";
 
-export default class HeroCard extends UnitCard{
+export default class HeroCard extends Card<HeroCardData>{
     constructor(id:string,data:HeroCardData,owner:Player){
         super(id,data,owner);
     }

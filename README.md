@@ -2,7 +2,7 @@
 A trading card tactics game created using PhaserJS. 
 
 ### Disclaimer
-I do not own the artwork in this project. The artwork in this project is meant to allow me to temporarily work on the game logic. Reusing the artwork directly from this project is strictly prohibited. Please support the original creators:
+I do not own most of the artwork in this project. The artwork in this project is meant to allow me to temporarily work on the game logic. Reusing the artwork directly from this project is strictly prohibited. Please support the original creators:
 
 - Tilemaps - IrishTorch (https://opengameart.org/content/16x16-pixel-art-tiles)
 - Class Icons - Clint Bellanger (https://opengameart.org/content/powers-icons) 

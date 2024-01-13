@@ -5,7 +5,7 @@ import { ASSETS } from "@/game/enums/keys/assets";
 import UnitCardData from "@/game/data/cards/unitCardData";
 import { getClassIcon } from "@/game/enums/keys/unitClass";
 
-export default class UnitCardGO<T extends UnitCardData> extends CardGO<UnitCardData>{
+export default class UnitCardGO extends CardGO<UnitCardData>{
     constructor(scene : Phaser.Scene, card:UnitCard){
         super(scene,card);
 

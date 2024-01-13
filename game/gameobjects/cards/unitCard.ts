@@ -16,7 +16,7 @@ export default class UnitCard extends Card<UnitCardData>{
         EventEmitter.emit(EVENTS.fieldEvent.SUMMON_UNIT,target,this.data,this.owner);
     }
 
-    render(scene : Phaser.Scene) : UnitCardGO<UnitCardData>{
+    render(scene : Phaser.Scene) : UnitCardGO{
         if (!this.gameObject) 
             this.gameObject=new UnitCardGO(scene,this);
 

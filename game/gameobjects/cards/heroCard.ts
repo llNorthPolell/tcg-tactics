@@ -4,10 +4,10 @@ import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/types/position";
 import Player from "@/game/data/player";
-import UnitCardGO from "./unitCardGO";
 import HeroCardGO from "./heroCardGO";
+import UnitCard from "./unitCard";
 
-export default class HeroCard extends Card<HeroCardData>{
+export default class HeroCard extends UnitCard{
     constructor(id:string,data:HeroCardData,owner:Player){
         super(id,data,owner);
     }

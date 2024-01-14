@@ -13,6 +13,7 @@ export default abstract class HealthChange extends BaseSkillEffect{
      * @param name - Name of the skill effect
      * @param amount - Amount of damage to deal to target. Positive to heal, negative to damage.
      * @param valueType - Actual value or percentage
+     * @param targetType - Should this skill hit allies or enemies? See TARGET_TYPES enum.
      * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
      * @param applyOverTime - If true, will apply heal/damage over time
      * @param isDelayed - If true, will apply damage when time is up
@@ -21,11 +22,12 @@ export default abstract class HealthChange extends BaseSkillEffect{
     constructor(name:string, 
             amount: number, 
             valueType : string=ValueType.VALUE, 
+            targetType : string,
             duration=0, 
             applyOverTime=false, 
             isDelayed=false, 
             isRemovable=true){
-        super(name,((applyOverTime || isDelayed) && duration > 0)?duration:0,isRemovable);
+        super(name,((applyOverTime || isDelayed) && duration > 0)?duration:0,targetType,isRemovable);
 
         this.amount = amount;
         this.valueType=valueType;

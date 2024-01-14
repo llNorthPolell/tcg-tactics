@@ -9,11 +9,9 @@ import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
 
 export default class AreaOfEffect extends CreateEffect{
     caster?:Unit|GamePlayer;
-    readonly targetType:string;
     
     constructor(name:string,effectsToApply:SkillEffect[], splashRange:number, duration:number=0, targetType:string = TARGET_TYPES.enemy, isRemovable:boolean=false){
-        super(name,effectsToApply, duration, splashRange, isRemovable);
-        this.targetType=targetType;
+        super(name,effectsToApply, duration, splashRange,targetType, isRemovable);
     }
    
     apply(): void {

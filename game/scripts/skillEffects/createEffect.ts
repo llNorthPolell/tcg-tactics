@@ -22,10 +22,11 @@ export default abstract class CreateEffect extends BaseSkillEffect{
  * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
  * @param spreadRange - Range of spread. Set to -1 if intended to be global.
  * @param sequential - If true, will apply effects in order one after another.
+ * @param targetType - Should this skill hit allies or enemies? See TARGET_TYPES enum.
  * @param isRemovable - If true, can be removed by a cleansing effect
  */
-    constructor(name:string,effectsToApply:SkillEffect[],duration:number,range:number,isRemovable=true){
-        super(name,duration,isRemovable);
+    constructor(name:string,effectsToApply:SkillEffect[],duration:number,range:number,targetType:string,isRemovable=true){
+        super(name,duration,targetType,isRemovable);
         this.name = name;
         this.effectsToApply = effectsToApply;
 

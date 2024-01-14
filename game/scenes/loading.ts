@@ -341,7 +341,7 @@ export default class LoadingScene extends Phaser.Scene {
                     "3",
                     "Magic Bomb",
                     TARGET_TYPES.position,
-                    1,
+                    5,
                     testPlayer,
                     "Deal 2 damage to enemies within 1 tile at a target location",
                     [{
@@ -362,7 +362,33 @@ export default class LoadingScene extends Phaser.Scene {
                         ]
                     }]
                 )),
-
+            new SpellCard(
+                "10",
+                new SpellCardData(
+                    "4",
+                    "Nature's Blessing",
+                    TARGET_TYPES.position,
+                    1,
+                    testPlayer,
+                    "Restore 2hp to allies within 2 tiles at a target location",
+                    [{
+                        name: "Nature's Blessing",
+                        targetType: TARGET_TYPES.position,
+                        effectType: SPELL_EFFECT_TYPE.areaOfEffect,
+                        range: 2,
+                        isRemovable: true,
+                        childEffects: [
+                            {
+                                name: "Heal",
+                                targetType: TARGET_TYPES.ally,
+                                effectType: SPELL_EFFECT_TYPE.heal,
+                                amount: 10,
+                                valueType: ValueType.VALUE,
+                                isRemovable: true
+                            }
+                        ]
+                    }]
+                )),
         ];
 
         const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);

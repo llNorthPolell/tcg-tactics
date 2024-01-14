@@ -23,6 +23,7 @@ export default class SkillEffectFactory{
                             effect.amount,
                             effect.valueType,
                             effect.duration,
+                            effect.targetType,
                             effect.overTime,
                             effect.isDelayed,
                             effect.isRemovable
@@ -36,6 +37,7 @@ export default class SkillEffectFactory{
                             effect.amount,
                             effect.valueType,
                             effect.duration,
+                            effect.targetType,
                             effect.overTime,
                             effect.isDelayed,
                             effect.isRemovable

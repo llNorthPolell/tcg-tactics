@@ -20,6 +20,11 @@ export default interface SkillEffect{
     readonly isRemovable:boolean;
 
     /**
+     * Should this skill hit allies or enemies? See TARGET_TYPES enum.
+     */
+    readonly targetType:string;
+
+    /**
      * If true, will run apply() method.
      */
     isActive() :boolean;

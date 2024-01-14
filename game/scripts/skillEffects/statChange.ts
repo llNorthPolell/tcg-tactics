@@ -22,11 +22,12 @@ export default abstract class StatChange extends BaseSkillEffect{
      * @param amount - Amount to change
      * @param valueType - Actual value or percentage
      * @param stat - Which stat to change (one of Max HP, Max SP, Power, Defence, Movement)
+     * @param targetType - Should this skill hit allies or enemies? See TARGET_TYPES enum.
      * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
-    constructor(name:string, amount: number, valueType : string =ValueType.VALUE, stat:string, duration=0, isRemovable=true){
-        super(name,duration,isRemovable);
+    constructor(name:string, amount: number, valueType : string =ValueType.VALUE, stat:string,targetType:string, duration=0, isRemovable=true){
+        super(name,duration,targetType,isRemovable);
         this.amount = amount;
         this.valueType=valueType;
         this.stat = stat;

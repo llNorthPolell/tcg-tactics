@@ -1,5 +1,6 @@
 import { ValueType } from "@/game/enums/keys/valueType";
 import HealthChange from "./healthChange";
+import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
 
 export default class DealDamage extends HealthChange{
 
@@ -14,11 +15,11 @@ export default class DealDamage extends HealthChange{
  * @param isDelayed - If true, will apply damage when time is up
  * @param isRemovable - If true, can be removed by a cleansing effect
  */
-    constructor(name:string,amount: number, valueType : string=ValueType.VALUE, duration=0, applyOverTime=false, isDelayed=false, isRemovable=true){
-        super(name,-amount, valueType, duration, applyOverTime, isDelayed, isRemovable);
+    constructor(name:string,amount: number, valueType : string=ValueType.VALUE, duration=0, targetType:string=TARGET_TYPES.enemy,applyOverTime=false, isDelayed=false, isRemovable=true){
+        super(name,-amount, valueType, targetType, duration, applyOverTime, isDelayed, isRemovable);
     }
     
     clone():DealDamage{
-        return new DealDamage(this.name,-this.amount,this.valueType,this.duration,this.applyOverTime,this.isDelayed,this.isRemovable);
+        return new DealDamage(this.name,-this.amount,this.valueType,this.duration,this.targetType,this.applyOverTime,this.isDelayed,this.isRemovable);
     }
 }

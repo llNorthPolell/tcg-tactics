@@ -143,13 +143,13 @@ export default class Unit {
                 const isInRange = inRange((target instanceof Unit)?target.getLocation():target,this.getLocation(),effect.range);
                 const isAllied = (caster instanceof Unit)? caster.getOwner() == this.owner : caster == this.owner;
                 if (isInRange){
-                    if (isAllied && effect.targetType !== TARGET_TYPES.ally) return;
-                    if (!isAllied && effect.targetType === TARGET_TYPES.ally) return;
                     console.log(`${this.unitData.name} was hit by ${effect.name}`);
 
                     const effectsToApply = effect.createEffects();
                     effectsToApply.forEach(
                         childEffect=>{
+                            if (isAllied && childEffect.targetType === TARGET_TYPES.enemy) return;
+                            if (!isAllied && childEffect.targetType === TARGET_TYPES.ally) return;
                             childEffect.setCaster(caster);
                             childEffect.setTarget(this);
 

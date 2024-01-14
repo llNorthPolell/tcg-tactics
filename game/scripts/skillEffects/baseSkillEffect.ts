@@ -11,15 +11,17 @@ export default abstract class BaseSkillEffect implements SkillEffect{
     protected caster?:GamePlayer|Unit;
     protected currTime:number;
     protected active:boolean;
+    readonly targetType:string;
 
     /**
      * 
      * Base skill effect class.
      * @param name - Name of the skill effect
      * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
+     * @param targetType - Should this skill hit allies or enemies? See TARGET_TYPES enum.
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
-    constructor(name:string,duration=0, isRemovable=true){
+    constructor(name:string,duration=0, targetType:string, isRemovable=true){
         this.name = name;
         
         this.duration=duration;
@@ -28,6 +30,8 @@ export default abstract class BaseSkillEffect implements SkillEffect{
         this.isRemovable=isRemovable;
 
         this.active=false;
+
+        this.targetType=targetType;
     }
     
 

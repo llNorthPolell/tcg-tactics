@@ -1,4 +1,5 @@
 import { EffectData } from "../effectData";
+import Player from "../player";
 import UnitCardData from "./unitCardData";
 
 
@@ -25,7 +26,8 @@ export default class HeroCardData extends UnitCardData{
         activeSkillDesc: string,
         activeSkillData: EffectData,
         minions: string[],
-        cost:number
+        cost:number,
+        owner:Player
         ){
             super(
                 id,
@@ -38,6 +40,7 @@ export default class HeroCardData extends UnitCardData{
                 mvt,
                 rng,
                 cost,
+                owner,
                 passiveSkillDesc,
                 passiveSkillData,
                 activeSkillDesc,

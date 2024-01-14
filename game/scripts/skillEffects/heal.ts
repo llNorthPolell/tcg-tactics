@@ -17,4 +17,7 @@ export default class Heal extends HealthChange{
         super(name,amount, valueType, duration, applyOverTime, isDelayed, isRemovable);
     }
     
+    clone():Heal{
+        return new Heal(this.name,this.amount,this.valueType,this.duration,this.applyOverTime,this.isDelayed,this.isRemovable);
+    }
 }

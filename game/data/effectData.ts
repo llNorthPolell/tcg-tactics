@@ -7,6 +7,7 @@ export type EffectData = {
     valueType?: string,
     stat?: string,
     duration?:number,
+    range?:number,
     overTime?:boolean,
     isDelayed?:boolean,
     isRemovable?:boolean

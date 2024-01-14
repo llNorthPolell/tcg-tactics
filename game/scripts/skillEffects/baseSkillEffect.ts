@@ -1,25 +1,27 @@
 import { Position } from "@/game/data/types/position";
 import Unit from "@/game/gameobjects/unit";
 import SkillEffect from "./skillEffect";
+import GamePlayer from "@/game/gameobjects/gamePlayer";
 
 export default abstract class BaseSkillEffect implements SkillEffect{
     readonly name: string;
     readonly duration: number;
     readonly isRemovable: boolean;
     protected target?:Unit|Position;
+    protected caster?:GamePlayer|Unit;
     protected currTime:number;
     protected active:boolean;
 
-    
     /**
+     * 
      * Base skill effect class.
      * @param name - Name of the skill effect
      * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
-    constructor(name:string, duration=0, isRemovable=true){
+    constructor(name:string,duration=0, isRemovable=true){
         this.name = name;
-
+        
         this.duration=duration;
         this.currTime=0;
 
@@ -27,6 +29,7 @@ export default abstract class BaseSkillEffect implements SkillEffect{
 
         this.active=false;
     }
+    
 
     /**
      * Runs apply method if true
@@ -73,12 +76,20 @@ export default abstract class BaseSkillEffect implements SkillEffect{
         return this.target;
     }
 
+    setCaster(caster:GamePlayer|Unit):void{
+        this.caster = caster;
+    }
+
+    getCaster():GamePlayer|Unit|undefined{
+        return this.caster;
+    }
+
     reset(): void {
         if(!this.duration || this.duration <= 0) return;
         this.currTime = 0;
     }
     
-
+    abstract clone():SkillEffect;
 
 
 }

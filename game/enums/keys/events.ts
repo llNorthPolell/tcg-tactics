@@ -93,12 +93,13 @@ export const EVENTS = {
          * Signal field manager to create a unit at the specified location on the field and assign it to the specified player
          * @Params location:Position
          * @Params unitData:UnitCardData
-         * @Params cardOwner:Player
+         * @Params cardOwner:GamePlayer
          */
         SUMMON_UNIT: "summon-unit",
 
         /**
          * Signal field manager to apply spell effects (in progress)
+         * @Params caster?:  GamePlayer
          * @Params skillEffects: SkillEffect[]
          * @Params target: Unit | Position | undefined
          */
@@ -109,7 +110,13 @@ export const EVENTS = {
          * @Params unit:Unit
          * @Params landmark:CapturableLandmark
          */
-        CAPTURE_LANDMARK: "capture-landmark"
+        CAPTURE_LANDMARK: "capture-landmark",
+
+        /**
+         * Signal to apply area of effect
+         * @Params effect: AreaOfEffect
+         */
+        AREA_OF_EFFECT: "area-of-effect"
     }),
     /**
      * For unit-specific events, like moving a unit, attacking another unit, unit waiting

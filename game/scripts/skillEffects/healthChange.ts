@@ -1,8 +1,5 @@
 import { ValueType } from "@/game/enums/keys/valueType";
 import Unit from "@/game/gameobjects/unit";
-import { EventEmitter } from "../events";
-import { EVENTS } from "@/game/enums/keys/events";
-import { UI_COLORS } from "@/game/enums/keys/uiColors";
 import BaseSkillEffect from "./baseSkillEffect";
 
 export default abstract class HealthChange extends BaseSkillEffect{
@@ -11,7 +8,6 @@ export default abstract class HealthChange extends BaseSkillEffect{
     readonly valueType: string;
     readonly isDelayed:boolean;  
     readonly applyOverTime:boolean;   
-
     /**
      * This effect will deal damage to the target. Can be used for instant damage, damage over time or delayed damage.
      * @param name - Name of the skill effect
@@ -22,7 +18,13 @@ export default abstract class HealthChange extends BaseSkillEffect{
      * @param isDelayed - If true, will apply damage when time is up
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
-    constructor(name:string,amount: number, valueType : string=ValueType.VALUE, duration=0, applyOverTime=false, isDelayed=false, isRemovable=true){
+    constructor(name:string, 
+            amount: number, 
+            valueType : string=ValueType.VALUE, 
+            duration=0, 
+            applyOverTime=false, 
+            isDelayed=false, 
+            isRemovable=true){
         super(name,((applyOverTime || isDelayed) && duration > 0)?duration:0,isRemovable);
 
         this.amount = amount;

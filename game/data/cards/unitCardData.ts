@@ -1,5 +1,6 @@
 import { CardData } from "../cardData";
 import { EffectData } from "../effectData";
+import Player from "../player";
 
 
 export default class UnitCardData implements CardData{
@@ -21,6 +22,7 @@ export default class UnitCardData implements CardData{
     readonly activeSkillData?: EffectData;
 
     readonly cost:number;
+    readonly owner:Player;
 
     constructor(
         id : string, 
@@ -33,6 +35,7 @@ export default class UnitCardData implements CardData{
         mvt:number,
         rng:number,
         cost:number,
+        owner:Player,
         passiveSkillDesc?: string,
         passiveSkillData?: EffectData,
         activeSkillDesc?: string,
@@ -47,6 +50,7 @@ export default class UnitCardData implements CardData{
         this.def=def;
         this.mvt=mvt;
         this.rng=rng;
+        this.owner=owner;
         this.passiveSkillDesc=passiveSkillDesc;
         this.passiveSkillData = passiveSkillData;
         this.activeSkillDesc=activeSkillDesc;

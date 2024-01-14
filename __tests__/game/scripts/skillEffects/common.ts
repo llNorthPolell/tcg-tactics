@@ -62,8 +62,8 @@ export const createTestUnit : ()=>Unit = () =>{
             5
         ),
         testPlayer);
-    
-    return new Unit("test",{x:0,y:0},card.data,new GamePlayer(1,testPlayer,1,0x0000ff,new Deck([], card)))
+    const testGamePlayer = new GamePlayer(1,testPlayer,1,0x0000ff,new Deck([], card));
+    return new Unit("test",{x:0,y:0},card.data,testGamePlayer)
 }
 
 export const checkEffectEnded = (effect :SkillEffect)=>{

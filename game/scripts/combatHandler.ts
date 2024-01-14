@@ -1,6 +1,7 @@
 import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
 import { UNIT_CLASS } from "../enums/keys/unitClass";
+import GamePlayer from "../gameobjects/gamePlayer";
 import Unit from "../gameobjects/unit";
 import { EventEmitter } from "./events";
 import DealDamage from "./skillEffects/dealDamage";
@@ -22,8 +23,9 @@ export default class CombatHandler{
         )
         .on(
             EVENTS.fieldEvent.CAST_SPELL,
-            (skillEffects:SkillEffect[], target?: Unit | Position)=>{
+            (caster:GamePlayer,skillEffects:SkillEffect[], target?: Unit | Position)=>{
                 skillEffects.forEach(skillEffect=>{
+                    skillEffect.setCaster(caster);
                     if (!target)
                         console.log(`Apply ${skillEffect} without a target...`)
                     else if (target instanceof Unit){
@@ -38,8 +40,14 @@ export default class CombatHandler{
                         else if (skillEffect instanceof DealDamage)
                             target.insertDebuff(skillEffect);
                     }
-                    else 
-                        console.log(`Apply ${skillEffect} to (${target.x},${target.y})...`)
+                    else {
+                        console.log(`Apply ${skillEffect.name} onto (${target.x},${target.y})..`);
+                        if (!skillEffect.duration){
+                            skillEffect.setTarget(target);
+                            skillEffect.apply();
+                            return;
+                        }
+                    }
 
                 })
             }

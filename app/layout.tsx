@@ -38,11 +38,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <Head>
-        <Script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></Script>
-      </Head>
-      <body className={font1.className}>{children}</body>
+    <html lang="en" className={`${font1.className} ${font2.className} ${font3.className}`} >
+      <Script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></Script>
+      <body >{children}</body>
     </html>
   )
 }

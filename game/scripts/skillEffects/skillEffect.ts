@@ -1,7 +1,9 @@
 import { Position } from "@/game/data/types/position";
+import GamePlayer from "@/game/gameobjects/gamePlayer";
 import Unit from "@/game/gameobjects/unit";
 
 export default interface SkillEffect{
+    
     /**
      * Name of the skill effect
      */
@@ -45,7 +47,7 @@ export default interface SkillEffect{
     /**
      * The unit or position to apply the skill effect to
      */
-    setTarget(target:Unit|Position):void;
+    setTarget(target:Unit|Position):void; 
 
     /**
      * Returns the current target of this skill effect
@@ -53,7 +55,22 @@ export default interface SkillEffect{
     getTarget():Unit|Position|undefined;
 
     /**
+     * Sets the caster of this skill effect
+     */
+    setCaster(caster:GamePlayer | Unit):void;
+
+    /**
+     * Returns the caster of this skill effect
+     */
+    getCaster():GamePlayer | Unit | undefined;
+
+    /**
      * Resets this skill effect's timer
      */
     reset():void;
+
+    /**
+     * Creates a copy of this effect
+     */
+    clone():SkillEffect;
 }

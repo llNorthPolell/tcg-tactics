@@ -18,4 +18,7 @@ export default class DealDamage extends HealthChange{
         super(name,-amount, valueType, duration, applyOverTime, isDelayed, isRemovable);
     }
     
+    clone():DealDamage{
+        return new DealDamage(this.name,-this.amount,this.valueType,this.duration,this.applyOverTime,this.isDelayed,this.isRemovable);
+    }
 }

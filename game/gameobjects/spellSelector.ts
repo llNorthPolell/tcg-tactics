@@ -36,8 +36,8 @@ export default class SpellSelector extends Phaser.GameObjects.Container{
     }
 
     show(spellCard:SpellCard){
-        const spellCardOwnerId = spellCard.getOwner().id;
-        const unitOwnerId = this.unit.getOwner().playerInfo.id;
+        const spellCardOwnerId = spellCard.getOwner()!.id;
+        const unitOwnerId = this.unit.getOwner().id;
         const targetType = spellCard.data.targetType;
 
         if (spellCardOwnerId===unitOwnerId && targetType===TARGET_TYPES.enemy) return;
@@ -51,6 +51,11 @@ export default class SpellSelector extends Phaser.GameObjects.Container{
                 AMITY_COLORS.danger :
                 AMITY_COLORS.none;
 
+        // TODO: Allies currently show up as danger since they are not owned by player
+        if (spellCard.data.targetType === TARGET_TYPES.position){
+            if (spellCardOwnerId == unitOwnerId) this.selector.tint = AMITY_COLORS.success
+            else this.selector.tint = AMITY_COLORS.danger;
+        }
         this.setVisible(true);
     }
 

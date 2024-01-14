@@ -1,22 +1,21 @@
 import { CardData } from "@/game/data/cardData";
 import { Position } from "@/game/data/types/position";
-import Player from "@/game/data/player";
 import Unit from "../unit";
 import CardGO from "./cardGO";
+import GamePlayer from "../gamePlayer";
 
 export abstract class Card<T extends CardData> {
     readonly id: string;
     readonly data: T;
-    protected owner: Player;
+    protected owner?: GamePlayer;
 
     protected position: Position;
 
     protected gameObject? : CardGO<T>;
     
-    constructor(id:string, data:T, owner:Player){
+    constructor(id:string, data:T){
         this.id=id;
         this.data=data;
-        this.owner=owner;
         this.position = {x:0,y:0};
     }
 
@@ -33,7 +32,7 @@ export abstract class Card<T extends CardData> {
 
     abstract render(scene : Phaser.Scene) : CardGO<T>;
 
-    setOwner(owner:Player){
+    setOwner(owner:GamePlayer){
         this.owner=owner;
     }
 

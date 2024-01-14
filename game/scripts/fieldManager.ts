@@ -180,8 +180,8 @@ export default class FieldManager{
         )
         .on(
             EVENTS.fieldEvent.SUMMON_UNIT,
-            (location:Position, unitData:UnitCardData,cardOwner:Player)=>{
-                const gamePlayer = this.playersInGame.find(player=> player.playerInfo.id == cardOwner.id);
+            (location:Position, unitData:UnitCardData,cardOwner:GamePlayer)=>{
+                const gamePlayer = this.playersInGame.find(player=> player == cardOwner);
 
                 if (!gamePlayer) return;
 
@@ -571,7 +571,4 @@ export default class FieldManager{
             console.log(`${occupyingLandmark.id} will be captured by ${unit.getOwner().id} in ${occupyingCapturableLandmark.getCaptureTicks()} turns...`);
     }
 
-    getUnitsInRange(position:Position){
-
-    }
 }

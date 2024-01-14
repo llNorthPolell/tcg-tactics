@@ -1,6 +1,7 @@
 import { ValueType } from "@/game/enums/keys/valueType";
 import DealDamage from "@/game/scripts/skillEffects/dealDamage"
 import { checkEffectEnded, createTestUnit } from "./common";
+import SkillEffect from "@/game/scripts/skillEffects/skillEffect";
 
 
 it("should deal damage once and is diabled immediately after", ()=>{
@@ -68,5 +69,16 @@ it("should deal 5% damage to target each turn for 3 turns",()=>{
     }
     expect(applyDamageFn).toHaveBeenCalledTimes(3);
     expect(target.getUnitData().currHp).toBe(24);
+})
+
+
+it("should clone",()=>{
+    const damageSpell = new DealDamage("Deadly Poison",5,ValueType.PERCENTAGE,3,true,false); 
+    const damageSpellClone :SkillEffect= damageSpell.clone();
+
+    expect(damageSpell).not.toBe(damageSpellClone);
+
+    expect(damageSpell.amount).toBe((damageSpellClone as DealDamage).amount);
+    expect(damageSpell.duration).toBe(damageSpellClone.duration);
 })
 

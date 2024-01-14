@@ -9,6 +9,7 @@ import { EVENTS } from "../enums/keys/events";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
 import { UI_COLORS } from "../enums/keys/uiColors";
 import { EventEmitter } from "../scripts/events";
+import AreaOfEffect from "../scripts/skillEffects/areaOfEffect";
 import SkillEffect from "../scripts/skillEffects/skillEffect";
 import { inRange } from "../scripts/util";
 import { Card } from "./cards/card";
@@ -129,6 +130,34 @@ export default class Unit {
                 if(unit !== this) return;
                 
                 this.gameObject?.floatingText.play(text,color);
+            }
+        )
+        .on(
+            EVENTS.fieldEvent.AREA_OF_EFFECT,
+            (effect:AreaOfEffect)=>{
+                const target = effect.getTarget();
+                const caster = effect.getCaster();
+                
+                if (!target || !caster) return;
+
+                const isInRange = inRange((target instanceof Unit)?target.getLocation():target,this.getLocation(),effect.range);
+                const isAllied = (caster instanceof Unit)? caster.getOwner() == this.owner : caster == this.owner;
+                if (isInRange){
+                    if (isAllied && effect.targetType !== TARGET_TYPES.ally) return;
+                    if (!isAllied && effect.targetType === TARGET_TYPES.ally) return;
+                    console.log(`${this.unitData.name} was hit by ${effect.name}`);
+
+                    const effectsToApply = effect.createEffects();
+                    effectsToApply.forEach(
+                        childEffect=>{
+                            childEffect.setCaster(caster);
+                            childEffect.setTarget(this);
+
+                            // TODO: It is assumed that child effect is instant (0 duration)
+                            childEffect.apply();
+                        }
+                    )
+                }
             }
         );
     }

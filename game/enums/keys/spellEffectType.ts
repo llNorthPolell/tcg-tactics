@@ -22,5 +22,10 @@ export const SPELL_EFFECT_TYPE = Object.freeze({
     /**
      * Player draws cards
      */
-    drawCard: "draw-card"
+    drawCard: "draw-card",
+
+    /**
+     * Affects an area 
+     */
+    areaOfEffect: "area-of-effect"
 })

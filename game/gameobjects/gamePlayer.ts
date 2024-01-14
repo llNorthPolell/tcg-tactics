@@ -38,6 +38,12 @@ export default class GamePlayer{
         this.deck = deck;
         this.isDevicePlayer=isDevicePlayer;
 
+        deck.getCards().forEach(
+            card=>{
+                card.setOwner(this);
+            }
+        )
+
         this.activeChampions=[];
         this.activeUnits=[]; 
         this.traps=[];

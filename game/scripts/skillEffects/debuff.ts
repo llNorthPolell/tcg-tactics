@@ -14,4 +14,8 @@ export default class Debuff extends StatChange{
     constructor(name:string,amount: number, valueType : string=ValueType.VALUE, stat:string, duration=0, isRemovable=true){
         super(name,-amount,valueType,stat,duration,isRemovable)
     }
+
+    clone():Debuff{
+        return new Debuff(this.name,-this.amount,this.valueType,this.stat,this.duration,this.isRemovable);
+    }
 }

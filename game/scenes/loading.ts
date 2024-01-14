@@ -99,9 +99,9 @@ export default class LoadingScene extends Phaser.Scene {
                     valueType: ValueType.VALUE
                 },
                 [UNIT_CLASS.MAGE, UNIT_CLASS.MAGE, UNIT_CLASS.MAGE, UNIT_CLASS.MAGE],
-                5
-            ),
-            testPlayer
+                5,
+                testPlayer
+            )
         );
 
         const testOpponentLeader = new HeroCard(
@@ -150,9 +150,9 @@ export default class LoadingScene extends Phaser.Scene {
                     stat: UnitStatField.PWR
                 },
                 [UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.ASSASSIN, UNIT_CLASS.ASSASSIN, UNIT_CLASS.SOLDIER],
-                5
-            ),
-            testPlayer2
+                5,
+                testPlayer2
+            )
         );
 
 
@@ -204,9 +204,9 @@ export default class LoadingScene extends Phaser.Scene {
                         stat: UnitStatField.PWR
                     },
                     [UNIT_CLASS.SOLDIER, UNIT_CLASS.SOLDIER, UNIT_CLASS.SOLDIER, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.GUARDIAN],
-                    5
-                ),
-                testPlayer),
+                    5,
+                    testPlayer
+                )),
             new UnitCard(
                 "2",
                 new UnitCardData(
@@ -219,9 +219,9 @@ export default class LoadingScene extends Phaser.Scene {
                     1,
                     3,
                     1,
-                    1
-                ),
-                testPlayer),
+                    1,
+                    testPlayer
+                )),
             new UnitCard(
                 "3",
                 new UnitCardData(
@@ -234,9 +234,9 @@ export default class LoadingScene extends Phaser.Scene {
                     1,
                     3,
                     1,
-                    1
-                ),
-                testPlayer),
+                    1,
+                    testPlayer
+                )),
             new UnitCard(
                 "4",
                 new UnitCardData(
@@ -249,9 +249,9 @@ export default class LoadingScene extends Phaser.Scene {
                     1,
                     3,
                     1,
-                    1
-                ),
-                testPlayer),
+                    1,
+                    testPlayer
+                )),
             new UnitCard(
                 "5",
                 new UnitCardData(
@@ -264,9 +264,9 @@ export default class LoadingScene extends Phaser.Scene {
                     1,
                     2,
                     3,
-                    2
-                ),
-                testPlayer),
+                    2,
+                    testPlayer
+                )),
             new UnitCard(
                 "6",
                 new UnitCardData(
@@ -279,9 +279,9 @@ export default class LoadingScene extends Phaser.Scene {
                     1,
                     2,
                     3,
-                    2
-                ),
-                testPlayer),
+                    2,
+                    testPlayer
+                )),
             new UnitCard(
                 "7",
                 new UnitCardData(
@@ -294,18 +294,19 @@ export default class LoadingScene extends Phaser.Scene {
                     1,
                     1,
                     1,
-                    3
-                ),
-                testPlayer),
+                    3,
+                    testPlayer
+                )),
             new SpellCard(
                 "8",
                 new SpellCardData(
                     "1",
-                    "test_fire_spell",
+                    "Fireball",
                     TARGET_TYPES.enemy,
                     5,
+                    testPlayer,
                     "Deal 1 burn damage per turn for 3 turns",
-                    {
+                    [{
                         name: "Burn",
                         targetType: TARGET_TYPES.enemy,
                         effectType: SPELL_EFFECT_TYPE.dealDamage,
@@ -314,27 +315,54 @@ export default class LoadingScene extends Phaser.Scene {
                         duration: 3,
                         overTime: true,
                         isRemovable: true
-                    }
-                ),
-                testPlayer),
+                    }]
+                )),
             new SpellCard(
                 "9",
                 new SpellCardData(
                     "2",
-                    "test_heal_spell",
+                    "Healing Light",
                     TARGET_TYPES.ally,
                     2,
+                    testPlayer,
                     "Heal target by 10 hp",
-                    {
+                    [{
                         name: "Heal",
                         targetType: TARGET_TYPES.ally,
                         effectType: SPELL_EFFECT_TYPE.heal,
                         amount: 10,
                         valueType: ValueType.VALUE,
                         isRemovable: true
-                    }
-                ),
-                testPlayer),
+                    }]
+                )),
+            new SpellCard(
+                "10",
+                new SpellCardData(
+                    "3",
+                    "Magic Bomb",
+                    TARGET_TYPES.position,
+                    1,
+                    testPlayer,
+                    "Deal 2 damage to enemies within 1 tile at a target location",
+                    [{
+                        name: "Magic Bomb",
+                        targetType: TARGET_TYPES.position,
+                        effectType: SPELL_EFFECT_TYPE.areaOfEffect,
+                        range:1,
+                        isRemovable: true,
+                        childEffects:[
+                            {
+                                name: "Explode",
+                                targetType: TARGET_TYPES.enemy,
+                                effectType: SPELL_EFFECT_TYPE.dealDamage,
+                                amount: 2,
+                                valueType: ValueType.VALUE,
+                                isRemovable: true
+                            }
+                        ]
+                    }]
+                )),
+
         ];
 
         const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);

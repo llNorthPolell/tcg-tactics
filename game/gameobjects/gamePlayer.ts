@@ -84,8 +84,6 @@ export default class GamePlayer{
         return this.team;
     }
 
-
-
     registerLandmark(landmark: CapturableLandmark) {
         const prevOwner = landmark.getOwner();
 
@@ -152,8 +150,12 @@ export default class GamePlayer{
     }
 
     moveUnitToGraveyard(unit:Unit){
-        this.activeUnits = this.activeUnits
-                .filter(activeUnit => activeUnit != unit);
+        if (unit.card instanceof UnitCard)
+            this.activeUnits = this.activeUnits
+                    .filter(activeUnit => activeUnit != unit);
+        else 
+            this.activeChampions = this.activeChampions
+                    .filter(activeChampion => activeChampion != unit);
 
         this.graveyard.push(unit);
     }
@@ -178,10 +180,14 @@ export default class GamePlayer{
         return this.landmarksOwned;
     }
 
-    getActiveUnits(){
+    getAllActiveUnits(){
         return [...this.activeUnits, ...this.activeChampions];
     }
 
+    getActiveChampions(){
+        return [...this.activeChampions];
+    }
+    
     getCasualties(){
         return this.graveyard.length;
     }

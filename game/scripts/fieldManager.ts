@@ -114,7 +114,7 @@ export default class FieldManager{
                 this.isDevicePlayerTurn=isDevicePlayerTurn;
 
                 const player = this.playersInGame[activePlayerIndex];
-                player.getActiveUnits().forEach(unit=> {
+                player.getAllActiveUnits().forEach(unit=> {
                     this.attemptCaptureLandmark(unit); 
                 });
 
@@ -132,7 +132,7 @@ export default class FieldManager{
             EVENTS.gameEvent.NEXT_TURN,
             ()=>{
                 const player = this.playersInGame[this.activePlayerIndex];
-                player.getActiveUnits().forEach(unit=> {
+                player.getAllActiveUnits().forEach(unit=> {
                     if(!unit.isActive()) return;
                     unit.sleep();
                     console.log(`${unit.getUnitData().name} has not moved, so it was set to inactive...`);
@@ -143,6 +143,9 @@ export default class FieldManager{
             EVENTS.cardEvent.SELECT,
             (card : Card<CardData>)=>{
                 this.hideHighlightTiles();
+                const cardOwner = card.getOwner()!;
+                if (!cardOwner.isDevicePlayer) return;
+
                 if (card instanceof UnitCard || card instanceof HeroCard){
                     const rallyPointPositions : Position[] = 
                         this.playersInGame[this.activePlayerIndex].getLandmarksOwned()!
@@ -154,16 +157,25 @@ export default class FieldManager{
                     
                     this.showHighlightTiles(rallyPointPositions,undefined,(this.isDevicePlayerTurn)?undefined:TileStatus.WARNING,TileSelectionType.PLAY_CARD);
                 }
-                else {
-                    switch((card as SpellCard).data.targetType){
+                else if (card instanceof SpellCard){
+                    const activeHeroes = cardOwner.getActiveChampions();
+                    if (!activeHeroes || activeHeroes.length === 0)return;
+                    let highlightTiles : Position[] = [];
+                    activeHeroes.forEach(
+                        (hero:Unit)=>{
+                            highlightTiles =[...highlightTiles,...this.getTilesInRange(hero.getLocation(),2, true)];
+                        }
+                    )
+
+                    switch(card.data.targetType){
                         case TARGET_TYPES.ally:
-                            console.log(`Choose an ally to use ${card.data.name} on...`);
-                            break;
                         case TARGET_TYPES.enemy:
-                            console.log(`Choose an enemy to use ${card.data.name} on...`);
+                            console.log(`Choose an ${card.data.targetType} to use ${card.data.name} on...`);
+                            this.showHighlightTiles(highlightTiles,undefined,TileStatus.WARNING, TileSelectionType.PLAY_CARD);
                             break;
                         case TARGET_TYPES.position:
                             console.log(`Choose a target location to use ${card.data.name} on...`);
+                            this.showHighlightTiles(highlightTiles,undefined,TileStatus.SUCCESS, TileSelectionType.PLAY_CARD);
                             break;
                         default:
                             console.log(`Applied ${card.data.name}!`);
@@ -482,6 +494,7 @@ export default class FieldManager{
                     selectionTile.show(TileStatus.DANGER,unit,tileSelectionType);
                 else
                     selectionTile.show(status,unit,tileSelectionType);
+
             }
         )
     }

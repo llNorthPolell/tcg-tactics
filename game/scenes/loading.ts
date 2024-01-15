@@ -325,12 +325,12 @@ export default class LoadingScene extends Phaser.Scene {
                     TARGET_TYPES.ally,
                     2,
                     testPlayer,
-                    "Heal target by 10 hp",
+                    "Heal target by 5 hp",
                     [{
                         name: "Heal",
                         targetType: TARGET_TYPES.ally,
                         effectType: SPELL_EFFECT_TYPE.heal,
-                        amount: 10,
+                        amount: 5,
                         valueType: ValueType.VALUE,
                         isRemovable: true
                     }]
@@ -368,7 +368,7 @@ export default class LoadingScene extends Phaser.Scene {
                     "4",
                     "Nature's Blessing",
                     TARGET_TYPES.position,
-                    1,
+                    5,
                     testPlayer,
                     "Restore 2hp to allies within 2 tiles at a target location",
                     [{
@@ -382,7 +382,7 @@ export default class LoadingScene extends Phaser.Scene {
                                 name: "Heal",
                                 targetType: TARGET_TYPES.ally,
                                 effectType: SPELL_EFFECT_TYPE.heal,
-                                amount: 10,
+                                amount: 2,
                                 valueType: ValueType.VALUE,
                                 isRemovable: true
                             }

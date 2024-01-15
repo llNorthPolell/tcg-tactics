@@ -52,7 +52,6 @@ export default class SelectionTile {
                         
                         break;
                     default:
-                        console.log("Not a valid target");
                         break;
                 }
                 
@@ -81,7 +80,7 @@ export default class SelectionTile {
 
     show(status?:TileStatus,unit?:Unit, tileSelectionType: TileSelectionType = TileSelectionType.NONE){
         this.tileSelectionType=tileSelectionType;
-        this.setStatus(status? status: this.initStatus);
+        this.setStatus((status === undefined)? this.initStatus: status);
         this.selectedUnit=unit? unit: undefined;
         this.tile.setVisible(true);
     }

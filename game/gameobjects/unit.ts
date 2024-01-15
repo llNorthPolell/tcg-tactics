@@ -97,14 +97,21 @@ export default class Unit {
             (card : Card<CardData>)=>{
                 if (this.gameObject?.spellSelector.visible)
                     this.gameObject?.spellSelector.hide();
-                
+
                 if (card instanceof UnitCard || card instanceof HeroCard)
                     return;
                 
                 const spellCard = (card as SpellCard);
                 const targetType = spellCard.data.targetType;
+                
+                const player = spellCard.getOwner();
+                const activeHeroes = player!.getActiveChampions();
 
-                if(targetType!==TARGET_TYPES.none)
+                let nearAHero = false;
+                activeHeroes.forEach(hero=>{
+                    nearAHero = nearAHero || (inRange(this.location,hero.getLocation(),2));
+                })
+                if(targetType!==TARGET_TYPES.none && nearAHero) 
                     this.gameObject?.spellSelector.show(spellCard);
             }
         )
@@ -143,8 +150,6 @@ export default class Unit {
                 const isInRange = inRange((target instanceof Unit)?target.getLocation():target,this.getLocation(),effect.range);
                 const isAllied = (caster instanceof Unit)? caster.getOwner() == this.owner : caster == this.owner;
                 if (isInRange){
-                    console.log(`${this.unitData.name} was hit by ${effect.name}`);
-
                     const effectsToApply = effect.createEffects();
                     effectsToApply.forEach(
                         childEffect=>{

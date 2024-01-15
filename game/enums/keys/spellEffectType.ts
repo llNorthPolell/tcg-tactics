@@ -27,5 +27,10 @@ export const SPELL_EFFECT_TYPE = Object.freeze({
     /**
      * Affects an area 
      */
-    areaOfEffect: "area-of-effect"
+    areaOfEffect: "area-of-effect",
+
+    /**
+     * Decides which list of skill effects to apply based on a condition
+     */
+    conditional: "conditional"
 })

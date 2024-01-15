@@ -1,14 +1,17 @@
 import { CANVAS_SIZE, HAND_UI_SIZE } from "../config";
 import { CardData } from "../data/cardData";
 import { EVENTS } from "../enums/keys/events";
+import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { GAME_STATE } from "../enums/keys/gameState";
 import { SCENES } from "../enums/keys/scenes";
 import { UI_COLORS } from "../enums/keys/uiColors";
 import { Card } from "../gameobjects/cards/card";
+import HeroCard from "../gameobjects/cards/heroCard";
 import GamePlayer from "../gameobjects/gamePlayer";
 import Button from "../gameobjects/ui/button";
 import CardDetailsDisplay from "../gameobjects/ui/cardDetailsDisplay";
 import DeckStatDisplay from "../gameobjects/ui/deckStatDisplay";
+import DiscardWindow from "../gameobjects/ui/discardWindow";
 import HandUIObject from "../gameobjects/ui/handUIObject";
 import ResourceDisplay from "../gameobjects/ui/resourceDisplay";
 import UnitStatDisplay from "../gameobjects/ui/unitStatDisplay";
@@ -153,6 +156,10 @@ export default class HUD extends Phaser.Scene{
 
         this.rightPanel.add(this.deckStatDisplay);
 
+        const discardWindow = new DiscardWindow(this);
+        this.add.existing(discardWindow);
+        discardWindow.hide();
+
         EventEmitter
         .on(
             EVENTS.cardEvent.SELECT,
@@ -174,9 +181,19 @@ export default class HUD extends Phaser.Scene{
             }
         )
         .on(
+            EVENTS.cardEvent.CONFIRM_DISCARD,
+            ()=>{
+                endTurnButton.show();
+                handUIObject.setDiscardMode(false);
+            }
+        )
+        .on(
             EVENTS.uiEvent.UPDATE_HAND,
-            (hand:Card<CardData>[])=>{
-                handUIObject.render(hand);
+            (hand:Card<CardData>[], heroCard:HeroCard)=>{
+                if (heroCard && hand.length === GAME_CONSTANT.MAX_HAND_SIZE) 
+                    handUIObject.setDiscardMode(true);
+                else
+                    handUIObject.render(hand);
             }
         )
         .on(
@@ -199,6 +216,17 @@ export default class HUD extends Phaser.Scene{
             }
         )
         .on(
+            EVENTS.uiEvent.SHOW_DISCARD_WINDOW,
+            (heroCard:HeroCard)=>{
+                if (!heroCard)return;
+
+                discardWindow!.show(heroCard);
+                endTurnButton.hide();
+
+                console.log(`End Turn button visible = ${endTurnButton.visible}`);
+            }
+        )
+        .on(
             EVENTS.unitEvent.CANCEL,
             ()=>{
                 handUIObject.setVisible(true);
@@ -217,7 +245,8 @@ export default class HUD extends Phaser.Scene{
             (_playerId: number, _activePlayerIndex:number, isDevicePlayerTurn: boolean)=>{
                 if (!isDevicePlayerTurn) return;
                 this.wake();
-                endTurnButton.setVisible(true);
+                if (!handUIObject.getDiscardMode())
+                    endTurnButton.show();
             }
         )
         .on(

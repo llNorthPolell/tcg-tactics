@@ -24,6 +24,8 @@ export default class UnitCardData implements CardData{
     readonly cost:number;
     readonly owner:Player;
 
+    readonly rush:boolean;
+
     constructor(
         id : string, 
         name : string, 
@@ -39,7 +41,8 @@ export default class UnitCardData implements CardData{
         passiveSkillDesc?: string,
         passiveSkillData?: EffectData,
         activeSkillDesc?: string,
-        activeSkillData?: EffectData
+        activeSkillData?: EffectData,
+        rush?:boolean
         ){
         this.id=id;
         this.name=name;
@@ -56,6 +59,7 @@ export default class UnitCardData implements CardData{
         this.activeSkillDesc=activeSkillDesc;
         this.activeSkillData=activeSkillData;
         this.cost=cost;
+        this.rush=rush? true: false;
     }
     
 

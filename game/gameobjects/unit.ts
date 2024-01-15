@@ -6,6 +6,7 @@ import UnitCardData from "../data/cards/unitCardData";
 import { Position } from "../data/types/position";
 import UnitData from "../data/unitData";
 import { EVENTS } from "../enums/keys/events";
+import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
 import { UI_COLORS } from "../enums/keys/uiColors";
 import { EventEmitter } from "../scripts/events";
@@ -109,7 +110,7 @@ export default class Unit {
 
                 let nearAHero = false;
                 activeHeroes.forEach(hero=>{
-                    nearAHero = nearAHero || (inRange(this.location,hero.getLocation(),2));
+                    nearAHero = nearAHero || (inRange(this.location,hero.getLocation(),GAME_CONSTANT.MAX_SPELL_RANGE));
                 })
                 if(targetType!==TARGET_TYPES.none && nearAHero) 
                     this.gameObject?.spellSelector.show(spellCard);

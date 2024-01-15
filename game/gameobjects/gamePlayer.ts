@@ -1,8 +1,9 @@
 import Player from "../data/player";
 import { LandmarksCollection } from "../data/types/landmarksCollection";
 import { Position } from "../data/types/position";
-import { RESOURCE_LIMIT, Resources } from "../data/types/resources";
+import { Resources } from "../data/types/resources";
 import { EVENTS } from "../enums/keys/events";
+import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { LandmarkType } from "../enums/landmarkType";
 import { EventEmitter } from "../scripts/events";
 import UnitCard from "./cards/unitCard";
@@ -62,7 +63,7 @@ export default class GamePlayer{
             EVENTS.gameEvent.PLAYER_TURN,
             (activePlayerId:number,_activePlayerIndex:number)=>{
                 if (activePlayerId!==id) return;
-                if (this.maxResource<RESOURCE_LIMIT)
+                if (this.maxResource<GAME_CONSTANT.RESOURCE_LIMIT)
                     this.maxResource++;
 
             }

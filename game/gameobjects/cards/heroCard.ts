@@ -4,7 +4,6 @@ import { EVENTS } from "@/game/enums/keys/events";
 import { Position } from "@/game/data/types/position";
 import HeroCardGO from "./heroCardGO";
 import { Card } from "./card";
-import GamePlayer from "../gamePlayer";
 
 export default class HeroCard extends Card<HeroCardData>{
     constructor(id:string,data:HeroCardData){

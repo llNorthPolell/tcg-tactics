@@ -2,7 +2,9 @@ import { CARD_SIZE } from "../config";
 import { CardData } from "../data/cardData";
 import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
+import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { Card } from "../gameobjects/cards/card";
+import HeroCard from "../gameobjects/cards/heroCard";
 import GamePlayer from "../gameobjects/gamePlayer";
 import Unit from "../gameobjects/unit";
 import { EventEmitter } from "./events";
@@ -13,6 +15,7 @@ export default class CardManager{
     private deck: Card<CardData>[];
     private hand:Card<CardData>[];
     private selected?: Card<CardData>;
+    private cardToDiscard?: Card<CardData>;
 
     constructor(player:GamePlayer){
         this.player= player;
@@ -47,6 +50,28 @@ export default class CardManager{
                 this.returnCard();
                 this.selected = card;
                 this.pullOutCard();                
+            }
+        )
+        .on(
+            EVENTS.cardEvent.SELECT_DISCARD,
+            (card:Card<CardData>)=>{
+                if (card instanceof HeroCard){
+                    console.log(`Cannot discard hero cards...`);
+                    return;
+                }
+                this.returnCard();
+                console.log(`Select ${card.data.name} to discard...`);
+                this.cardToDiscard = card;
+                this.pullOutCard();      
+            }
+        )
+        .on(
+            EVENTS.cardEvent.CONFIRM_DISCARD,
+            (heroCard:HeroCard, discard:Card<CardData>)=>{
+                console.log(`Discarded ${discard.data.name}!`);
+                this.removeCard(discard);
+                console.log(`${heroCard.data.name} has been inserted into your hand!`);
+                this.insertCard(heroCard);
             }
         )
         .on(
@@ -96,25 +121,54 @@ export default class CardManager{
     drawCard(){
         const cardsLeft = this.deck.length;
         if(cardsLeft===0) return;
-        
-        const roll = Math.floor(Math.random()*this.deck.length);
+
+        let roll = Math.floor(Math.random()*this.deck.length);
+
+        // Uncomment to debug handling situation of drawing hero card when at max hand size
+        /*while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll] instanceof HeroCard){
+            console.log(`Testing: Rolled a hero, roll again!`);
+            roll = Math.floor(Math.random()*this.deck.length);
+        }*/
+
         const card = this.deck.splice(roll,1)[0];
+
+        if(this.hand.length >= GAME_CONSTANT.MAX_HAND_SIZE){
+            if (card instanceof HeroCard){
+                console.log("Maximum hand size reached! You've drawn a hero. Please discard a card from your hand.");
+                EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND,this.getHand(),card);
+                EventEmitter.emit(EVENTS.uiEvent.SHOW_DISCARD_WINDOW,card);
+            }
+            else
+                console.log(`Maximum hand size reached! Card ${card.data.name} was discarded...`)
+            EventEmitter.emit(EVENTS.uiEvent.UPDATE_DECK_COUNTER,this.deck.length);
+            return;
+        }
+
+        this.insertCard(card);
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_DECK_COUNTER,this.deck.length);
+        return card;
+    }
+
+    insertCard(card:Card<CardData>){
         card.setPosition({x:this.hand.length * CARD_SIZE.width,y:0});
         this.hand = [...this.hand,card];
         EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND,this.getHand());
-        EventEmitter.emit(EVENTS.uiEvent.UPDATE_DECK_COUNTER,this.deck.length);
-        return card;
+    }
+
+    removeCard(cardToRemove:Card<CardData>){
+        this.hand = this.hand.filter(card=> card!==cardToRemove);
+        this.repositionCardsInHand();
+        EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND, this.hand);
     }
 
     /**
      * Deselects card and redraws them
      */
     removeSelected(){
-        this.hand = this.hand.filter(card=> card!==this.selected);
+        if(!this.selected) return;
+        this.removeCard(this.selected);
         this.selected!.hide();
         this.selected=undefined;
-        this.repositionCardsInHand();
-        EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND, this.hand);
     }
 
     /**

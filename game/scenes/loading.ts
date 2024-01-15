@@ -389,6 +389,56 @@ export default class LoadingScene extends Phaser.Scene {
                         ]
                     }]
                 )),
+            new HeroCard(
+                "11",
+                new HeroCardData(
+                    "5",
+                    "test_assassin_hero",
+                    UNIT_CLASS.ASSASSIN,
+                    20,
+                    10,
+                    4,
+                    0,
+                    3,
+                    1,
+                    "pwr +25% to all",
+                    {
+                        name: "Assault Aura",
+                        targetType: TARGET_TYPES.none,
+                        effectType: SPELL_EFFECT_TYPE.statChange,
+                        childEffects: [],
+                        amount: 25,
+                        valueType: ValueType.PERCENTAGE,
+                        stat: UnitStatField.PWR,
+                        duration: -1,
+                        isRemovable: false
+                    },
+                    "Rush\n+2 pwr to units 1 tile adjacent to this unit",
+                    {
+                        name: "Charisma",
+                        targetType: TARGET_TYPES.none,
+                        effectType: SPELL_EFFECT_TYPE.statChange,
+                        childEffects: [],
+                        amount: 2,
+                        valueType: ValueType.VALUE,
+                        stat: UnitStatField.PWR,
+                        duration: -1,
+                        isRemovable: false
+                    },
+                    "deal 5 damage to target",
+                    {
+                        name: "Execute",
+                        targetType: TARGET_TYPES.none,
+                        effectType: SPELL_EFFECT_TYPE.dealDamage,
+                        amount: 5,
+                        valueType: ValueType.VALUE,
+                        stat: UnitStatField.PWR
+                    },
+                    [UNIT_CLASS.ASSASSIN, UNIT_CLASS.ASSASSIN, UNIT_CLASS.ASSASSIN, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.SOLDIER],
+                    5,
+                    testPlayer,
+                    true
+                )),
         ];
 
         const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);

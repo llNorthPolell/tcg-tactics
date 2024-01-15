@@ -69,7 +69,7 @@ export default class UnitData {
         
         this.stunTime=0;
         this.sleepTime=0;
-        this.rush=false;
+        this.rush=card.rush;
     }
     
 

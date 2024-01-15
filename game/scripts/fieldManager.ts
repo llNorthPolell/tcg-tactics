@@ -27,6 +27,7 @@ import SpellCard from "../gameobjects/cards/spellCard";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
 import HeroCardData from "../data/cards/heroCardData";
 import { LandmarksCollection } from "../data/types/landmarksCollection";
+import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 
 export type TilemapData = {
     map: Phaser.Tilemaps.Tilemap,
@@ -163,7 +164,7 @@ export default class FieldManager{
                     let highlightTiles : Position[] = [];
                     activeHeroes.forEach(
                         (hero:Unit)=>{
-                            highlightTiles =[...highlightTiles,...this.getTilesInRange(hero.getLocation(),2, true)];
+                            highlightTiles =[...highlightTiles,...this.getTilesInRange(hero.getLocation(),GAME_CONSTANT.MAX_SPELL_RANGE, true)];
                         }
                     )
 

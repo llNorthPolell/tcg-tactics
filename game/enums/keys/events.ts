@@ -5,7 +5,8 @@ export const EVENTS = {
     cardEvent: Object.freeze({
         /**
          * When player selects a card
-         * @Params card : Card<CardData>
+         * @Params card:Card<CardData>
+         * @Params discard?:boolean
          */
         SELECT: "select-card",
 
@@ -18,7 +19,21 @@ export const EVENTS = {
         /**
          * When player clicks cancel button after selecting a card
          */
-        CANCEL: "cancel-card-select"
+        CANCEL: "cancel-card-select",
+
+        /**
+         * Select card to discard
+         * @Params card:Card
+         */
+        SELECT_DISCARD: "select-discard",
+
+        
+        /**
+         * When player clicks the OK button on the discard window to confirm discarding a card to make room for the hero card.
+         * @Params heroCard:HeroCard
+         * @Params discard:Card
+         */
+        CONFIRM_DISCARD: "confirm-discard"
     }),
     /**
      * Triggers updates for specific UI elements
@@ -35,6 +50,7 @@ export const EVENTS = {
         /**
          * Signal HUD to update hand display
          * @Params hand:Card<CardData>[]
+         * @Params heroCard:HeroCard
          */
         UPDATE_HAND: "update-hand-ui",
 
@@ -56,7 +72,15 @@ export const EVENTS = {
         /**
          * Signal for damage numbers, healing numbers, status ailments etc.
          */
-        PLAY_FLOATING_TEXT: "play-floating-text"
+        PLAY_FLOATING_TEXT: "play-floating-text",
+
+        /**
+         * Signal to open the discard window. Typically opened when player reaches max hand size
+         * and draws a hero card.
+         * @Params heroCard:HeroCard
+         * @Params discard:Card
+         */
+        SHOW_DISCARD_WINDOW: "show-discard-window"
     }),
     /**
      * For game events like player turns, game over

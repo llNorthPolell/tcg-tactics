@@ -27,7 +27,8 @@ export default class HeroCardData extends UnitCardData{
         activeSkillData: EffectData,
         minions: string[],
         cost:number,
-        owner:Player
+        owner:Player,
+        rush?:boolean
         ){
             super(
                 id,
@@ -44,7 +45,8 @@ export default class HeroCardData extends UnitCardData{
                 passiveSkillDesc,
                 passiveSkillData,
                 activeSkillDesc,
-                activeSkillData
+                activeSkillData,
+                rush
             );
 
         this.leaderSkillDesc=leaderSkillDesc;

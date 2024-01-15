@@ -3,8 +3,6 @@ import { CardData } from "@/game/data/cardData";
 import HeroCardData from "@/game/data/cards/heroCardData";
 import SpellCardData from "@/game/data/cards/spellCardData";
 import { ASSETS } from "@/game/enums/keys/assets";
-import { EVENTS } from "@/game/enums/keys/events";
-import { EventEmitter } from "@/game/scripts/events";
 import { loadImage } from "@/game/scripts/imageLoader";
 import { Card } from "./card";
 
@@ -35,13 +33,6 @@ export default abstract class CardGO<T extends CardData> extends Phaser.GameObje
             }
         );
         this.add(cardNameText);*/
-
-        this.setInteractive(bg,Phaser.Geom.Rectangle.Contains).on(
-            Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
-            ()=>{
-                EventEmitter.emit(EVENTS.cardEvent.SELECT,card);
-            }
-        );
 
         let image = this.scene.add.sprite(CARD_SIZE.width*0.5,CARD_SIZE.height*0.5,ASSETS.UNDEFINED)
             .setDisplaySize(CARD_SIZE.width*0.98, CARD_SIZE.height*0.98)

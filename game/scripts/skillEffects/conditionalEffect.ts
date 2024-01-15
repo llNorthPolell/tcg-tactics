@@ -7,6 +7,7 @@ export default class ConditionalEffect extends BaseSkillEffect{
     protected target?: Unit | Position;
     protected condition: ()=>boolean;
     protected onTrue: SkillEffect[];
+    protected onFalseRemove: boolean;
     /**
      * This effect will be applied if the condition is met. If condition is not met, effect will be removed.
      * @param name - Name of the skill effect
@@ -14,13 +15,15 @@ export default class ConditionalEffect extends BaseSkillEffect{
      * @param onTrue - Skill effect list to apply when condition is met
      * @param duration - How long this effect lasts. Set to -1 if intended to be permanent.
      * @param targetType - Should this skill hit allies or enemies? See TARGET_TYPES enum.
+     * @param onFalseRemove - If true, will remove skill effects when condition is no longer met
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
-    constructor(name:string,condition:()=>boolean,onTrue:SkillEffect[],duration:number,targetType:string,isRemovable=true){
+    constructor(name:string,condition:()=>boolean,onTrue:SkillEffect[],duration:number,targetType:string,onFalseRemove=false,isRemovable=true){
         super(name,duration,targetType,isRemovable);
 
         this.condition = condition;
         this.onTrue=onTrue;
+        this.onFalseRemove=onFalseRemove;
     }
 
     apply(){
@@ -33,7 +36,7 @@ export default class ConditionalEffect extends BaseSkillEffect{
             return;
         }
         
-        if (this.active)
+        if (this.active && this.onFalseRemove)
             this.forceRemove();
     }
 

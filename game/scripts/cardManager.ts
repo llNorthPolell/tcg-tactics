@@ -59,10 +59,8 @@ export default class CardManager{
                     console.log(`Cannot discard hero cards...`);
                     return;
                 }
-                this.returnCard();
                 console.log(`Select ${card.data.name} to discard...`);
                 this.cardToDiscard = card;
-                this.pullOutCard();      
             }
         )
         .on(

@@ -1,6 +1,7 @@
 'use client';
 
 import React, {useEffect, useRef} from 'react';
+import "../styles/App.css";
 
 export default function GameCanvas(){
     const gameRef = useRef<Phaser.Game|null>(null);

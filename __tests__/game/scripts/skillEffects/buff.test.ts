@@ -1,4 +1,4 @@
-import Buff from "@/game/scripts/skillEffects/buff";
+import Buff from "@/game/scripts/skillEffects/basic/buff";
 import { checkEffectEnded, createTestUnit } from "./common";
 import { ValueType } from "@/game/enums/keys/valueType";
 import { UnitStatField } from "@/game/enums/keys/unitStatField";

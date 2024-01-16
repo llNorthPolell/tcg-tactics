@@ -1,13 +1,12 @@
 import { Position } from "@/game/data/types/position";
+import SkillEffect from "../skillEffect";
+import ConditionalEffect from "./conditionalEffect";
 import Unit from "@/game/gameobjects/unit";
-import BaseSkillEffect from "./baseSkillEffect";
-import SkillEffect from "./skillEffect";
 
-export default class ConditionalEffect extends BaseSkillEffect{
-    protected target?: Unit | Position;
-    protected condition: ()=>boolean;
-    protected onTrue: SkillEffect[];
-    protected onFalseRemove: boolean;
+export default class IsStandingAtEffect extends ConditionalEffect{
+    protected target?:Unit;
+    protected location:Position;
+
     /**
      * This effect will be applied if the condition is met. If condition is not met, effect will be removed.
      * @param name - Name of the skill effect
@@ -18,26 +17,22 @@ export default class ConditionalEffect extends BaseSkillEffect{
      * @param onFalseRemove - If true, will remove skill effects when condition is no longer met
      * @param isRemovable - If true, can be removed by a cleansing effect
      */
-    constructor(name:string,condition:()=>boolean,onTrue:SkillEffect[],duration:number,targetType:string,onFalseRemove=false,isRemovable=true){
-        super(name,duration,targetType,isRemovable);
-
-        this.condition = condition;
-        this.onTrue=onTrue;
-        this.onFalseRemove=onFalseRemove;
+    constructor(name:string,location:Position,onTrue:SkillEffect[],duration:number=-1,targetType:string,onFalseRemove=true,isRemovable=true){
+        super(name,()=>{return this.isStandingAtLocation()},onTrue,duration,targetType,onFalseRemove,isRemovable);
+        this.location=location;
     }
 
-    apply(){
-        if (this.condition()){
-            this.onTrue.forEach(
-                skillEffect=>{
-                    skillEffect.apply();
-                }
-            )
-            return;
-        }
-        
-        if (this.active && this.onFalseRemove)
-            this.forceRemove();
+    setTarget(target:Unit){
+        this.target = target;
+    }
+
+    getTarget():Unit|undefined{
+        return this.target;
+    }
+
+    isStandingAtLocation(){
+        if(!this.target) return false;
+        return this.target.getLocation() == this.location;
     }
 
     clone(): SkillEffect {

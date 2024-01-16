@@ -89,7 +89,8 @@ export default class GamePlayer{
         const prevOwner = landmark.getOwner();
 
         // if landmark was already owned previously, remove it from other previous owner's possession
-        this.unregisterLandmark(landmark);
+        if(prevOwner)
+            prevOwner.unregisterLandmark(landmark);
 
         // Give landmark and all surrounding rally points to new owner
         if (landmark instanceof Stronghold)

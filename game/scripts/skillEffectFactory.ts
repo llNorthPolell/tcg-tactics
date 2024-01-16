@@ -1,9 +1,9 @@
 
 import { EffectData } from "../data/effectData";
 import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
-import AreaOfEffect from "./skillEffects/areaOfEffect";
-import DealDamage from "./skillEffects/dealDamage";
-import Heal from "./skillEffects/heal";
+import AreaOfEffect from "./skillEffects/creational/areaOfEffect";
+import DealDamage from "./skillEffects/basic/dealDamage";
+import Heal from "./skillEffects/basic/heal";
 import SkillEffect from "./skillEffects/skillEffect";
 
 export default class SkillEffectFactory{

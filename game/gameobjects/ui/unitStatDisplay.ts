@@ -4,6 +4,7 @@ import { ASSETS } from "@/game/enums/keys/assets";
 import { HAND_UI_SIZE, PORTRAIT_SIZE } from "@/game/config";
 import { CLASS_ICON_MAPPING, getClassIcon } from "@/game/enums/keys/unitClass";
 import { FONT } from "@/game/enums/keys/font";
+import { UI_COLORS } from "@/game/enums/keys/uiColors";
 
 
 const UNIT_STAT_ICON_SIZE = {
@@ -28,7 +29,7 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
     private unitHPText:Phaser.GameObjects.Text;
     private unitSPText:Phaser.GameObjects.Text;
     private unitPwrText:Phaser.GameObjects.Text;
-
+    private unitDefText:Phaser.GameObjects.Text;
 
     constructor(scene:Phaser.Scene){
         super(scene,0,0);
@@ -76,6 +77,16 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
         pwrContainer.add(pwrIcon);
         pwrContainer.add(this.unitPwrText);
 
+        const defContainer = scene.add.container(HAND_UI_SIZE.width*0.45,HAND_UI_SIZE.height*0.7);
+        const defIcon = scene.add.image(0,0,ASSETS.DEF_ICON)
+            .setDisplaySize(UNIT_STAT_ICON_SIZE.width,UNIT_STAT_ICON_SIZE.height)
+            .setOrigin(0.5);
+        this.unitDefText = scene.add.text(0, 0,"0",secondaryStyle)
+            .setFontSize(UNIT_STAT_FONT_SIZE)
+            .setOrigin(0.5);
+        defContainer.add(defIcon);
+        defContainer.add(this.unitDefText);
+
         this.unitNameText = scene.add.text(
             HAND_UI_SIZE.width*0.15,
             HAND_UI_SIZE.height *0.2, 
@@ -99,6 +110,7 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
         this.add(hpContainer);
         this.add(spContainer);
         this.add(pwrContainer);
+        this.add(defContainer);
     }
 
     show(unit:Unit){
@@ -108,7 +120,9 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
         this.classIcon.setTexture(ASSETS.CLASS_ICONS, getClassIcon(this.unitData.unitClass));
         this.unitHPText.setText(String(this.unitData.currHp));
         this.unitSPText.setText(String(this.unitData.currSp));
-        this.unitPwrText.setText(String(this.unitData.currPwr));
+        this.updatePwrText();
+        this.updateDefText();
+
         this.setVisible(true);
     }
 
@@ -116,8 +130,34 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
         if (!this.unitData) return;
         this.unitHPText.setText(String(this.unitData.currHp));
         this.unitSPText.setText(String(this.unitData.currSp));
-        this.unitPwrText.setText(String(this.unitData.currPwr));
+        this.updatePwrText();
+        this.updateDefText();
+
         this.setVisible(true);
+    }
+
+    private updatePwrText(){
+        if (!this.unitData) return;
+        this.unitPwrText.setText(String(this.unitData.currPwr));
+
+        const color = (this.unitData.currPwr < this.unitData.basePwr)? UI_COLORS.damage : 
+            (this.unitData.currPwr > this.unitData.basePwr)? UI_COLORS.buff : UI_COLORS.white;
+
+        const rgb = Phaser.Display.Color.IntegerToRGB(color);
+
+        this.unitPwrText.setColor(Phaser.Display.Color.RGBToString(rgb.r,rgb.g,rgb.b));
+    }
+    
+    private updateDefText(){
+        if (!this.unitData) return;
+        this.unitDefText.setText(String(this.unitData.currDef));
+
+        const color = (this.unitData.currDef < this.unitData.baseDef)? UI_COLORS.damage : 
+            (this.unitData.currDef > this.unitData.baseDef)? UI_COLORS.buff : UI_COLORS.white;
+
+        const rgb = Phaser.Display.Color.IntegerToRGB(color);
+
+        this.unitDefText.setColor(Phaser.Display.Color.RGBToString(rgb.r,rgb.g,rgb.b));
     }
 
     hide(){

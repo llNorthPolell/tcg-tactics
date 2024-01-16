@@ -100,8 +100,10 @@ export default class FieldManager{
             player=>{
                 const stronghold = player.getStartingStronghold();
                 const leader = player.deck.getLeader();
-                if (leader)
-                    this.summonUnit({x:stronghold?.x,y:stronghold.y},leader.data,player);
+                if (leader){
+                    const leaderUnit = this.summonUnit({x:stronghold?.x,y:stronghold.y},leader.data,player);
+                    stronghold.enter(leaderUnit);
+                }
             }
         )
     }
@@ -233,7 +235,8 @@ export default class FieldManager{
             EVENTS.unitEvent.CANCEL,
             ()=>{
                 this.hideHighlightTiles();
-                this.movingUnit?.cancelMove();
+                if(!this.movingUnit) return;
+                this.movingUnit.cancelMove();
                 this.movingUnit=undefined;
             }
         )
@@ -242,14 +245,12 @@ export default class FieldManager{
             ()=>{
                 this.hideHighlightTiles();
                 if (!this.movingUnit) return;
+
                 const prevLocation = this.movingUnit.getLocation();
                 const prevLandmark = this.landmarks.get(`${prevLocation.x}_${prevLocation.y}`);
 
-                // if unit was capturing a landmark and steps out
-                if (prevLandmark && prevLandmark.capturable) {
-                    prevLandmark.occupant = undefined;
-                    (prevLandmark as CapturableLandmark).resetCaptureTick();
-                }
+                if (prevLandmark) 
+                    prevLandmark.leave();
 
                 this.units.delete(`${prevLocation.x}_${prevLocation.y}`);
                 this.movingUnit.confirmMove();
@@ -257,11 +258,11 @@ export default class FieldManager{
                 const newLocation = this.movingUnit.getLocation();
                 const newLandmark = this.landmarks.get(`${newLocation.x}_${newLocation.y}`);
 
-                this.units.set(`${newLocation.x}_${newLocation.y}`,this.movingUnit);
+                if (newLandmark)
+                    newLandmark.enter(this.movingUnit);
+
                 this.movingUnit=undefined;
                 
-                if (newLandmark)
-                    newLandmark.occupant=this.movingUnit;
             }
         )
         .on(
@@ -276,6 +277,11 @@ export default class FieldManager{
                 const owner = unit.getOwner();
                 owner.moveUnitToGraveyard(unit);
                 const lastLocation = unit.getLocation();
+                const lastLandmark = this.landmarks.get(`${lastLocation.x}_${lastLocation.y}`);
+
+                if (lastLandmark)
+                    lastLandmark.leave();
+                
                 this.units.delete(`${lastLocation.x}_${lastLocation.y}`);
                 unit.setLocation({x:-1,y:-1});
 
@@ -525,6 +531,8 @@ export default class FieldManager{
             console.log(`Summoned hero unit ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
         else
             console.log(`Summoned ${unit.getUnitData().name} with id ${unit.id} at location (${position.x},${position.y})`);
+
+        return unit;
     }
 
     update(){

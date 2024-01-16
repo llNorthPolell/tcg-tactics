@@ -17,4 +17,11 @@ export default abstract class BaseLandmark implements Landmark{
         this.capturable=capturable;
     }
 
+    enter(unit: Unit): void {
+        this.occupant=unit;
+    }
+    leave(): void {
+        this.occupant=undefined;
+    }
+
 }

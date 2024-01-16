@@ -1,6 +1,6 @@
 import { ValueType } from "@/game/enums/keys/valueType";
 import Unit from "@/game/gameobjects/unit";
-import BaseSkillEffect from "./baseSkillEffect";
+import BaseSkillEffect from "../baseSkillEffect";
 
 export default abstract class HealthChange extends BaseSkillEffect{
     protected target?:Unit;

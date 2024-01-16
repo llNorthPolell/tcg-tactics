@@ -36,6 +36,7 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.image(ASSETS.HP_ICON, "./assets/icons/hp.png");
         this.load.image(ASSETS.SP_ICON, "./assets/icons/sp.png");
         this.load.image(ASSETS.PWR_ICON, "./assets/icons/pwr.png");
+        this.load.image(ASSETS.DEF_ICON, "./assets/icons/def.png");
         this.load.image(ASSETS.ATTACK_SELECTOR, "./assets/icons/attack.png");
         this.load.image(ASSETS.SPELL_SELECTOR, "./assets/icons/spell.png");
         this.load.image(ASSETS.INCOME_RATE,"./assets/icons/incomeRate.png");
@@ -303,7 +304,7 @@ export default class LoadingScene extends Phaser.Scene {
                     "1",
                     "Fireball",
                     TARGET_TYPES.enemy,
-                    5,
+                    3,
                     testPlayer,
                     "Deal 1 burn damage per turn for 3 turns",
                     [{

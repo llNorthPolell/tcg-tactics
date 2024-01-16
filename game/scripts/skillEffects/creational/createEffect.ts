@@ -1,7 +1,7 @@
 import { Position } from "@/game/data/types/position";
 import Unit from "@/game/gameobjects/unit";
-import BaseSkillEffect from "./baseSkillEffect";
-import SkillEffect from "./skillEffect";
+import BaseSkillEffect from "../baseSkillEffect";
+import SkillEffect from "../skillEffect";
 
 export default abstract class CreateEffect extends BaseSkillEffect{
     protected target?: Unit | Position;

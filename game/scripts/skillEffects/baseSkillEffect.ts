@@ -91,6 +91,8 @@ export default abstract class BaseSkillEffect implements SkillEffect{
     reset(): void {
         if(!this.duration || this.duration <= 0) return;
         this.currTime = 0;
+        this.active=false;
+        this.target=undefined;
     }
     
     abstract clone():SkillEffect;

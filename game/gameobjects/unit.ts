@@ -10,7 +10,7 @@ import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
 import { UI_COLORS } from "../enums/keys/uiColors";
 import { EventEmitter } from "../scripts/events";
-import AreaOfEffect from "../scripts/skillEffects/areaOfEffect";
+import AreaOfEffect from "../scripts/skillEffects/creational/areaOfEffect";
 import SkillEffect from "../scripts/skillEffects/skillEffect";
 import { inRange } from "../scripts/util";
 import { Card } from "./cards/card";
@@ -265,13 +265,27 @@ export default class Unit {
     }
 
     removeBuff(skillEffect:SkillEffect){
+        if(!skillEffect.isRemovable) return;
         this.buffs = this.buffs.filter(buff=> buff != skillEffect);
+        skillEffect.remove();
+    }
+
+    forceRemovebuff(skillEffect:SkillEffect){
+        this.buffs = this.buffs.filter(buff=> buff != skillEffect);
+        skillEffect.forceRemove();
     }
 
     removeDebuff(skillEffect:SkillEffect){
+        if(!skillEffect.isRemovable) return;
         this.debuffs = this.debuffs.filter(debuff=> debuff != skillEffect);
+        skillEffect.remove();
     }
     
+    forceRemoveDebuff(skillEffect:SkillEffect){
+        this.debuffs = this.debuffs.filter(debuff=> debuff != skillEffect);
+        skillEffect.forceRemove();
+    }
+
     updateEffects(){
         this.buffs.forEach(buff=>{
             buff.apply();

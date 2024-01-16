@@ -30,4 +30,14 @@ export default interface Landmark{
      * The unit that is standing on this landmark
      */
     occupant?:Unit;
+
+    /**
+     * Called when unit enters a landmark and stays. Applies skill effects and sets occupant to unit.
+     */
+    enter(unit:Unit):void;
+
+    /**
+     * Called when unit leaves a landmark. Removes skill effects.
+     */
+    leave():void;
 }

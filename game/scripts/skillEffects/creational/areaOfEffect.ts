@@ -1,7 +1,7 @@
 import { EVENTS } from "@/game/enums/keys/events";
-import { EventEmitter } from "../events";
+import { EventEmitter } from "../../events";
 import CreateEffect from "./createEffect";
-import SkillEffect from "./skillEffect";
+import SkillEffect from "../skillEffect";
 import Unit from "@/game/gameobjects/unit";
 import GamePlayer from "@/game/gameobjects/gamePlayer";
 import { Position } from "@/game/data/types/position";

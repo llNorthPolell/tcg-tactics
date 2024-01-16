@@ -17,6 +17,7 @@ export const ASSETS = Object.freeze({
     HP_ICON: "hp-icon",
     SP_ICON: "sp-icon",
     PWR_ICON: "pwr-icon",
+    DEF_ICON: "def-icon",
     DECK_COUNT: "deck-count",
     DEATH_COUNT: "death-count",
     INCOME_RATE: "income-rate",

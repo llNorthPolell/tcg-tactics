@@ -1,4 +1,4 @@
-import Debuff from "@/game/scripts/skillEffects/debuff";
+import Debuff from "@/game/scripts/skillEffects/basic/debuff";
 import { checkEffectEnded, createTestUnit } from "./common";
 import { ValueType } from "@/game/enums/keys/valueType";
 import { UnitStatField } from "@/game/enums/keys/unitStatField";

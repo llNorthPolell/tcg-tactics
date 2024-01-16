@@ -1,4 +1,5 @@
 import GamePlayer from "../gamePlayer";
+import Unit from "../unit";
 import BaseLandmark from "./baseLandmark";
 import CapturableLandmark, { MAX_CAPTURE_TICK } from "./capturableLandmark";
 
@@ -29,5 +30,13 @@ export default abstract class BaseCapturableLandmark extends BaseLandmark implem
 
     getOwner():GamePlayer|undefined{
         return this.owner;
+    }
+    
+    enter(unit: Unit): void {
+        this.occupant=unit;
+    }
+    leave(): void {
+        this.occupant=undefined;
+        this.resetCaptureTick();
     }
 }

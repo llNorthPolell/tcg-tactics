@@ -1,7 +1,9 @@
 import { ValueType } from "@/game/enums/keys/valueType";
 import { UnitStatField } from "@/game/enums/keys/unitStatField";
 import Unit from "@/game/gameobjects/unit";
-import BaseSkillEffect from "./baseSkillEffect";
+import BaseSkillEffect from "../baseSkillEffect";
+import { EventEmitter } from "../../events";
+import { EVENTS } from "@/game/enums/keys/events";
 
 export default abstract class StatChange extends BaseSkillEffect{
     protected target?:Unit;
@@ -65,6 +67,7 @@ export default abstract class StatChange extends BaseSkillEffect{
                     Math.floor(this.target!.getUnitData().basePwr * this.amount/100);
                 this.target!.getUnitData().currPwr +=this.delta;
                 this.target!.getGameObject()?.updatePwrText();
+                EventEmitter.emit(EVENTS.uiEvent.UPDATE_UNIT_STAT_DISPLAY);
                 break;
             case UnitStatField.DEF:
                 this.delta = (this.valueType===ValueType.VALUE)?
@@ -111,6 +114,7 @@ export default abstract class StatChange extends BaseSkillEffect{
             case UnitStatField.PWR:
                 this.target!.getUnitData().currPwr -=this.delta;
                 this.target!.getGameObject()?.updatePwrText();
+                EventEmitter.emit(EVENTS.uiEvent.UPDATE_UNIT_STAT_DISPLAY);
                 break;
             case UnitStatField.DEF:
                 this.target!.getUnitData().currDef -=this.delta;
@@ -122,6 +126,15 @@ export default abstract class StatChange extends BaseSkillEffect{
                 break;
         }
         this.active=false;
+        this.applied=false;
         console.log("This spell effect has been removed.");
+    }
+
+    reset(){
+        this.target=undefined;
+        if(!this.duration || this.duration <= 0) return;
+        this.applied=false;
+        this.currTime = 0;
+        this.active=false;
     }
 }

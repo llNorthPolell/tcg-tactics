@@ -70,7 +70,7 @@ export default interface SkillEffect{
     getCaster():GamePlayer | Unit | undefined;
 
     /**
-     * Resets this skill effect's timer
+     * Resets this skill effect's timer, active status and target(set to undefined)
      */
     reset():void;
 

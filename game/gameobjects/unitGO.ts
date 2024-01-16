@@ -4,6 +4,7 @@ import { Position } from "../data/types/position";
 import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
 import { FONT } from "../enums/keys/font";
+import { UI_COLORS } from "../enums/keys/uiColors";
 import { CLASS_ICON_MAPPING, getClassIcon } from "../enums/keys/unitClass";
 import { EventEmitter } from "../scripts/events";
 import { loadImage } from "../scripts/imageLoader";
@@ -174,6 +175,16 @@ export default class UnitGO extends Phaser.GameObjects.Container{
     }
 
     updatePwrText(){
-        this.hpText.setText(String(this.unit.getUnitData().currPwr));
+        const currPwr = this.unit.getUnitData().currPwr;
+        const basePwr = this.unit.getUnitData().basePwr;
+
+        this.pwrText.setText(String(this.unit.getUnitData().currPwr));
+
+        const color = (currPwr < basePwr)? UI_COLORS.damage : 
+            (currPwr > basePwr)? UI_COLORS.buff : UI_COLORS.white;
+
+        const rgb = Phaser.Display.Color.IntegerToRGB(color);
+
+        this.pwrText.setColor(Phaser.Display.Color.RGBToString(rgb.r,rgb.g,rgb.b));
     }
 }

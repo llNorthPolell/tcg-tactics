@@ -54,4 +54,5 @@ input, textarea {
   font-size: 1.5rem; }
 
 #game {
+  min-height: 90vh;
   max-height: 100vh; }

@@ -4,8 +4,8 @@ import { UNIT_CLASS } from "../enums/keys/unitClass";
 import GamePlayer from "../gameobjects/gamePlayer";
 import Unit from "../gameobjects/unit";
 import { EventEmitter } from "./events";
-import DealDamage from "./skillEffects/dealDamage";
-import Heal from "./skillEffects/heal";
+import DealDamage from "./skillEffects/basic/dealDamage";
+import Heal from "./skillEffects/basic/heal";
 import SkillEffect from "./skillEffects/skillEffect";
 import { inRange } from "./util";
 
@@ -76,7 +76,7 @@ export default class CombatHandler{
         const attackerStats = attacker.getUnitData();
         const defenderStats = defender.getUnitData();
     
-        let damage = attackerStats.currPwr;
+        let damage = attackerStats.currPwr - defenderStats.currDef;
 
         switch (attackerStats.unitClass){
             case UNIT_CLASS.ASSASSIN:

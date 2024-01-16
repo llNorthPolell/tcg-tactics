@@ -212,7 +212,8 @@ export default class HUD extends Phaser.Scene{
         .on(
             EVENTS.uiEvent.UPDATE_UNIT_STAT_DISPLAY,
             ()=>{
-                unitStatDisplay.update();
+                if (unitStatDisplay.visible)
+                    unitStatDisplay.update();
             }
         )
         .on(
@@ -229,6 +230,7 @@ export default class HUD extends Phaser.Scene{
         .on(
             EVENTS.unitEvent.CANCEL,
             ()=>{
+                console.log(`Cancel`);
                 handUIObject.setVisible(true);
                 unitStatDisplay.hide();
             }
@@ -236,6 +238,7 @@ export default class HUD extends Phaser.Scene{
         .on(
             EVENTS.unitEvent.WAIT,
             ()=>{
+                console.log(`Wait`);
                 handUIObject.setVisible(true);
                 unitStatDisplay.hide();
             }

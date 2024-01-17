@@ -1,11 +1,11 @@
-import { TILESIZE } from "../config";
-import { AMITY_COLORS } from "../enums/keys/amityColors";
-import { ASSETS } from "../enums/keys/assets";
-import { EVENTS } from "../enums/keys/events";
-import { TARGET_TYPES } from "../enums/keys/targetTypes";
-import { EventEmitter } from "../scripts/events";
-import SpellCard from "./cards/spellCard";
+import { TILESIZE } from "@/game/config";
+import SpellCard from "../cards/spellCard";
 import Unit from "./unit";
+import { ASSETS } from "@/game/enums/keys/assets";
+import { EVENTS } from "@/game/enums/keys/events";
+import { EventEmitter } from "@/game/scripts/events";
+import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
+import { AMITY_COLORS } from "@/game/enums/keys/amityColors";
 
 export default class SpellSelector extends Phaser.GameObjects.Container{
     private unit:Unit;
@@ -28,7 +28,7 @@ export default class SpellSelector extends Phaser.GameObjects.Container{
                 Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
                 ()=>{
                     if (!this.spellCard) return;
-                    console.log(`Cast ${this.spellCard.data.name} onto ${this.unit.getUnitData().name}!`)
+                    console.log(`Cast ${this.spellCard.data.name} onto ${this.unit.name}!`)
                     EventEmitter.emit(EVENTS.cardEvent.PLAY, this.unit);
                 }
             )
@@ -37,7 +37,7 @@ export default class SpellSelector extends Phaser.GameObjects.Container{
 
     show(spellCard:SpellCard){
         const spellCardOwnerId = spellCard.getOwner()!.id;
-        const unitOwnerId = this.unit.getOwner().id;
+        const unitOwnerId = this.unit.getOwner()!.id;
         const targetType = spellCard.data.targetType;
 
         if (spellCardOwnerId===unitOwnerId && targetType===TARGET_TYPES.enemy) return;

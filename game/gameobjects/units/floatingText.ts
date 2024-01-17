@@ -1,5 +1,5 @@
-import { TILESIZE } from "../config";
-import { FONT } from "../enums/keys/font";
+import { TILESIZE } from "../../config";
+import { FONT } from "../../enums/keys/font";
 
 export default class FloatingText extends Phaser.GameObjects.Text{
     private animation:Phaser.Tweens.Tween;

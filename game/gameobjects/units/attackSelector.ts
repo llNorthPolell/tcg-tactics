@@ -1,8 +1,8 @@
-import { TILESIZE } from "../config";
-import { ASSETS } from "../enums/keys/assets";
-import { EVENTS } from "../enums/keys/events";
-import { EventEmitter } from "../scripts/events";
+import { TILESIZE } from "@/game/config";
 import Unit from "./unit";
+import { ASSETS } from "@/game/enums/keys/assets";
+import { EVENTS } from "@/game/enums/keys/events";
+import { EventEmitter } from "@/game/scripts/events";
 
 export default class AttackSelector extends Phaser.GameObjects.Container{
     private unit:Unit;

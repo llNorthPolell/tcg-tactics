@@ -1,12 +1,10 @@
-import { CardData } from "../data/cardData";
-import { Card } from "./cards/card";
-import HeroCard from "./cards/heroCard";
+import Card  from "./cards/card";
 
 export default class Deck{
-    private cards:Card<CardData>[];
-    private leader: HeroCard;
+    private cards:Card[];
+    private leader: Card;
 
-    constructor(cards:Card<CardData>[], leader:HeroCard){
+    constructor(cards:Card[], leader:Card){
         this.cards=cards;
         this.leader=leader;
     }

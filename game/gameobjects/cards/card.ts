@@ -1,50 +1,71 @@
-import { CardData } from "@/game/data/cardData";
+import GameObject from "../common/gameObject";
+import CardContent from "../common/cardContent";
+import { CARD_TYPE } from "@/game/enums/keys/cardType";
+import Unit from "../units/unit";
+import Effect from "@/game/skillEffects/effect";
 import { Position } from "@/game/data/types/position";
-import Unit from "../unit";
-import CardGO from "./cardGO";
-import GamePlayer from "../gamePlayer";
 
-export abstract class Card<T extends CardData> {
+
+export default class Card {
+    /**
+     * Id of this card in the database
+     */
     readonly id: string;
-    readonly data: T;
-    protected owner?: GamePlayer;
 
-    protected position: Position;
+    /**
+     * Name of this card
+     */
+    readonly name: string;
 
-    protected gameObject? : CardGO<T>;
+    /**
+     * Spell,Hero, or Unit card?
+     */
+    readonly cardType: string;
+
+    /**
+     * Cost to play this card
+     */
+    readonly cost: number;
     
-    constructor(id:string, data:T){
+    /**
+     * If linked, the contents of this card (either a unit or effect)
+     */
+    private contents:CardContent;
+
+    /**
+     * Reference to physicalization of the card rendered on screen
+     */
+    private gameObject?:GameObject;
+
+
+    constructor(id:string,name:string,cardType:string,cost:number,contents:CardContent){
         this.id=id;
-        this.data=data;
-        this.position = {x:0,y:0};
+        this.name=name;
+        this.cardType=cardType;
+        this.cost=cost;
+        this.contents=contents;
     }
 
-    setPosition(position:Position){
-        this.position=position;
-        this.gameObject?.setPosition(position.x,position.y);
-    }
-
-    getPosition(){
-        return this.position;
-    }
-
-    abstract play(target?:Unit | Position) : void;
-
-    abstract render(scene : Phaser.Scene) : CardGO<T>;
-
-    setOwner(owner:GamePlayer){
-        this.owner=owner;
-    }
-
-    getOwner(){
-        return this.owner;
+    linkGameObject(gameObject:GameObject):void{
+        this.gameObject=gameObject;
     }
     
-    getGameObject(){
+    getGameObject():GameObject|undefined{
         return this.gameObject;
     }
-    
-    hide(){
-        this.gameObject?.setVisible(false);
+
+    getContents() : CardContent{
+        return this.contents;
+    }
+
+    play(target?:Unit | Position):void{
+        if (this.cardType===CARD_TYPE.spell){
+            const effect = this.contents as Effect;
+        }
+        else {
+            const unit = this.contents as Unit;
+            const summonLocation = target as Position;
+            unit.getPositionController()!.moveTo(summonLocation);
+        }
     }
 }

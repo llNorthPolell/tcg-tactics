@@ -1,25 +1,24 @@
-import { TILESIZE } from "../config";
-import HeroCardData from "../data/cards/heroCardData";
-import { Position } from "../data/types/position";
-import { ASSETS } from "../enums/keys/assets";
-import { EVENTS } from "../enums/keys/events";
-import { FONT } from "../enums/keys/font";
-import { UI_COLORS } from "../enums/keys/uiColors";
-import { CLASS_ICON_MAPPING, getClassIcon } from "../enums/keys/unitClass";
-import { EventEmitter } from "../scripts/events";
-import { loadImage } from "../scripts/imageLoader";
-import AttackSelector from "./attackSelector";
+import { EVENTS } from "@/game/enums/keys/events";
+import GameObject from "../common/gameObject";
 import FloatingText from "./floatingText";
-import SpellSelector from "./spellSelector";
+import { EventEmitter } from "@/game/scripts/events";
+import { TILESIZE } from "@/game/config";
 import Unit from "./unit";
+import { ASSETS } from "@/game/enums/keys/assets";
+import { loadImage } from "@/game/scripts/imageLoader";
+import { UI_COLORS } from "@/game/enums/keys/uiColors";
+import { getClassIcon } from "@/game/enums/keys/unitClass";
+import { Position } from "@/game/data/types/position";
+import { FONT } from "@/game/enums/keys/font";
+import { UNIT_TYPE } from "@/game/enums/keys/unitType";
+import AttackSelector from "./attackSelector";
+import SpellSelector from "./spellSelector";
 
-export default class UnitGO extends Phaser.GameObjects.Container{
+
+export default class UnitGO extends Phaser.GameObjects.Container implements GameObject{
     private image: Phaser.GameObjects.Sprite;
     readonly imageAssetName: string;
     
-    private readonly activeColor: number;
-    private readonly inactiveColor:number;
-
     readonly attackSelector: AttackSelector;
     readonly spellSelector: SpellSelector; 
     readonly floatingText: FloatingText;
@@ -27,18 +26,15 @@ export default class UnitGO extends Phaser.GameObjects.Container{
     private hpText:Phaser.GameObjects.Text;
     private pwrText:Phaser.GameObjects.Text;
 
-    private unit: Unit;
-
-    constructor(scene : Phaser.Scene, unit:Unit){
-        super(scene,unit.getPixelPosition().x,unit.getPixelPosition().y);
+    private unit:Unit;
+    
+    constructor(scene : Phaser.Scene, unit:Unit,initialPosition:Position){
+        super(scene,initialPosition.x,initialPosition.y);
         this.unit = unit;
 
-        const unitType = unit.getUnitType();
-        const baseColor = unit.getOwner().color;
-        this.activeColor = baseColor;
-        const darkColor = Phaser.Display.Color.ValueToColor(baseColor).darken(80);
-        this.inactiveColor= darkColor.color;
-        this.imageAssetName = `${ASSETS.PORTRAIT}_${unitType}_${unit.card.id}`;
+        const unitType = unit.unitType;
+        const baseColor = unit.getOwner()!.color;
+        this.imageAssetName = `${ASSETS.PORTRAIT}_${unitType}_${unit.cardId}`;
 
         const bg = scene.add.rectangle(
             TILESIZE.width/2,
@@ -57,7 +53,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
             loadImage(scene, 
                 this.image, 
                 unitType, 
-                unit.card.id,
+                unit.cardId,
                 TILESIZE.width*0.85, 
                 TILESIZE.height*0.85);
         }
@@ -72,7 +68,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
             TILESIZE.width,
             0,
             ASSETS.CLASS_ICONS,
-            getClassIcon(unit.getUnitData().unitClass)
+            getClassIcon(unit.unitClass)
         )
         .setDisplaySize(TILESIZE.width*0.3, TILESIZE.height*0.3)
         .setOrigin(1,0);
@@ -90,7 +86,7 @@ export default class UnitGO extends Phaser.GameObjects.Container{
         this.hpText = this.scene.add.text(
             TILESIZE.width-1,
             TILESIZE.height*0.95,
-            String(unit.getUnitData().currHp),{
+            String(unit.getCurrentStats().hp),{
             fontFamily:FONT.secondary,
             fontSize:8,
             resolution:3.125
@@ -111,14 +107,14 @@ export default class UnitGO extends Phaser.GameObjects.Container{
         this.pwrText = this.scene.add.text(
             TILESIZE.width*0.1,
             TILESIZE.height*0.95,
-            String(unit.getUnitData().currPwr),{
+            String(unit.getCurrentStats().pwr),{
             fontFamily:FONT.secondary,
             fontSize:8,
             resolution:3.125
         }).setOrigin(0,1);
         this.add(this.pwrText);
 
-        if (unit.card instanceof HeroCardData){
+        if (unitType===UNIT_TYPE.hero){
             const heroGlow = scene.add.rectangle(
                 TILESIZE.width/2,
                 TILESIZE.height/2,
@@ -166,19 +162,23 @@ export default class UnitGO extends Phaser.GameObjects.Container{
         this.scene.add.existing(this);
     }
 
+    getPosition(): Position {
+        throw new Error("Method not implemented.");
+    }
+
     getImage(){
         return this.image;
     }
 
     updateHpText(){
-        this.hpText.setText(String(this.unit.getUnitData().currHp));
+        this.hpText.setText(String(this.unit.getCurrentStats().hp));
     }
 
     updatePwrText(){
-        const currPwr = this.unit.getUnitData().currPwr;
-        const basePwr = this.unit.getUnitData().basePwr;
+        const currPwr = this.unit.getCurrentStats().pwr;
+        const basePwr = this.unit.base.pwr;
 
-        this.pwrText.setText(String(this.unit.getUnitData().currPwr));
+        this.pwrText.setText(String(currPwr));
 
         const color = (currPwr < basePwr)? UI_COLORS.damage : 
             (currPwr > basePwr)? UI_COLORS.buff : UI_COLORS.white;
@@ -186,5 +186,9 @@ export default class UnitGO extends Phaser.GameObjects.Container{
         const rgb = Phaser.Display.Color.IntegerToRGB(color);
 
         this.pwrText.setColor(Phaser.Display.Color.RGBToString(rgb.r,rgb.g,rgb.b));
+    }
+
+    updateActive(){
+        this.getImage().setAlpha(this.unit.isActive()?1:0.7);
     }
 }

@@ -1,8 +1,12 @@
+import { EffectData } from "./effectData";
 import Player from "./player";
+import { UnitData } from "./unitData";
 
-export interface CardData {
-    readonly id: string;
-    readonly name: string;
-    readonly cost:number;
-    readonly owner:Player;
+export type CardData = {
+    id: string;
+    name: string;
+    cardType: string,
+    cost:number,
+    contents: UnitData | EffectData
+    owner:Player
 }

@@ -1,23 +1,24 @@
 import { CARD_SIZE } from "@/game/config";
-import { CardData } from "@/game/data/cardData";
-import HeroCardData from "@/game/data/cards/heroCardData";
-import SpellCardData from "@/game/data/cards/spellCardData";
-import { ASSETS } from "@/game/enums/keys/assets";
+import GameObject from "../common/gameObject";
+import Card from "./card";
 import { loadImage } from "@/game/scripts/imageLoader";
-import { Card } from "./card";
+import { ASSETS } from "@/game/enums/keys/assets";
+import CardGOStats from "./cardGOStats";
+import { CARD_TYPE } from "@/game/enums/keys/cardType";
+import { Position } from "@/game/data/types/position";
 
-export default abstract class CardGO<T extends CardData> extends Phaser.GameObjects.Container{
-    protected card: Card<T>;
+export default class CardGO extends Phaser.GameObjects.Container implements GameObject{
+    private card:Card;
+    private stats?:CardGOStats;
 
-    constructor(scene : Phaser.Scene, card:Card<T>){
-        super(scene,card.getPosition().x,card.getPosition().y);
-        this.card = card;
+    constructor(scene : Phaser.Scene, card:Card,initialPosition:Position){
+        super(scene,initialPosition.x,initialPosition.y);
         this.renderCardBase(scene,card);
+        this.card=card;
     }
 
-    protected renderCardBase(scene : Phaser.Scene,card:Card<T>){
-        const cardType = (card.data instanceof SpellCardData)? "spells" : 
-            (card.data instanceof HeroCardData)? "heroes": "units";
+    protected renderCardBase(scene : Phaser.Scene,card:Card){
+        const cardType = card.cardType;
 
         const bg = this.scene.add.rectangle(0,0,CARD_SIZE.width, CARD_SIZE.height,0x000000)
             .setOrigin(0,0)
@@ -39,7 +40,7 @@ export default abstract class CardGO<T extends CardData> extends Phaser.GameObje
             .setOrigin(0.5);
 
         this.add(image);
-        loadImage(scene, image, cardType, card.data.id,CARD_SIZE.width*0.98, CARD_SIZE.height*0.98);
+        loadImage(scene, image, cardType, card.id,CARD_SIZE.width*0.98, CARD_SIZE.height*0.98);
 
 
         const costBg = this.scene.add.circle(0,0,CARD_SIZE.width*0.15,0xd9d9d9)
@@ -47,13 +48,23 @@ export default abstract class CardGO<T extends CardData> extends Phaser.GameObje
             .setOrigin(0);
         this.add(costBg);
 
-        const costText = this.scene.add.text(CARD_SIZE.width*0.09,CARD_SIZE.width*0.025,String(card.data.cost),{
+        const costText = this.scene.add.text(CARD_SIZE.width*0.09,CARD_SIZE.width*0.025,String(card.cost),{
             color:'#000',
             fontFamily:'"Sansita",sans-serif',
             fontSize:24
         }).setOrigin(0);
         this.add(costText);
+
+        this.stats = (card.cardType === CARD_TYPE.spell)? undefined: new CardGOStats(scene,this);
     }
 
-    abstract renderContents():void;
+    getCard(){
+        return this.card;
+    }
+
+    getStats(){
+        return this.stats;
+    }
+
+    updateActive(){}
 }

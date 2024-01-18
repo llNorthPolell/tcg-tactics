@@ -1,3 +1,5 @@
+import { EVENTS } from "../enums/keys/events";
+import { EventEmitter } from "../scripts/events";
 import GameState from "../state/gameState";
 
 export default class TurnController{    
@@ -15,6 +17,10 @@ export default class TurnController{
         return this.gameState.getActivePlayer();
     }
     
+    getPlayersInGame(){
+        return this.gameState.playersInGame;
+    }
+
     isDevicePlayerTurn(){
         return this.getActivePlayer().isDevicePlayer;
     }
@@ -23,6 +29,6 @@ export default class TurnController{
     pass(playerId:number){
         console.log(`Player ${playerId}'s turn...`);
         console.log(`Player ${playerId} is not implemented, so will pass...`);
-        this.endTurn();
+        EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
     }
 }

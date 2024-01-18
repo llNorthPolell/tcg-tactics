@@ -10,10 +10,35 @@ import CardFactory from "@/game/gameobjects/cards/cardFactory";
 import GamePlayer from "@/game/gameobjects/player/gamePlayer";
 import Unit from "@/game/gameobjects/units/unit";
 import Effect from "@/game/skillEffects/effect";
+import { testFireballCardData, testGuardianCardData, testHealingLightCardData, testMageHeroCardData, testMagicBombCardData, testNaturesBlessingCardData, testRangerCardData, testRangerHeroCardData, testSoldierCardData, testSoldierHeroCardData } from "@/game/data/dummyData/testCards";
+import Deck from "@/game/gameobjects/cards/deck";
+import { EffectData } from "@/game/data/types/effectData";
+import { EffectDataComponent } from "@/game/data/types/effectDataComponent";
+
+console.log("Loading Player Information...");
+const testPlayerLeader = CardFactory.createCard(testMageHeroCardData);
+
+console.log("Loading Player Decks...");
+const testPlayerDeckCards = [
+    CardFactory.createCard(testSoldierHeroCardData),
+    CardFactory.createCard(testSoldierCardData),
+    CardFactory.createCard(testSoldierCardData),
+    CardFactory.createCard(testSoldierCardData),
+    CardFactory.createCard(testRangerCardData),
+    CardFactory.createCard(testRangerCardData),
+    CardFactory.createCard(testGuardianCardData),
+    CardFactory.createCard(testFireballCardData),
+    CardFactory.createCard(testHealingLightCardData),
+    CardFactory.createCard(testMagicBombCardData),
+    CardFactory.createCard(testNaturesBlessingCardData),
+]
+
+const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);
+
 
 it ("should create a Hero card",()=>{
     const testPlayer :Player = new Player("123456","testPlayer");
-    const testPlayerInGame :GamePlayer = new GamePlayer(1,testPlayer,1,0x000077);
+    const testPlayerInGame :GamePlayer = new GamePlayer(1,testPlayer,1,0x000077,testPlayerDeck);
     const input : CardData = {
         id: "3",
         name: "test_mage_hero",
@@ -36,7 +61,7 @@ it ("should create a Hero card",()=>{
     }
 
 
-    const card = CardFactory.createCard(input,testPlayerInGame);
+    const card = CardFactory.createCard(input);
 
     expect(card.id).toBe(input.id);
     expect(card.name).toBe(input.name);
@@ -53,13 +78,12 @@ it ("should create a Hero card",()=>{
     expect(unit.base.def).toBe(0);
     expect(unit.base.mvt).toBe(2);
     expect(unit.base.rng).toBe(2);
-    expect(unit.getOwner()).toBe(testPlayerInGame);
 })
 
 
 it ("should create a Unit card",()=>{
     const testPlayer :Player = new Player("123456","testPlayer");
-    const testPlayerInGame :GamePlayer = new GamePlayer(1,testPlayer,1,0x000077);
+    const testPlayerInGame :GamePlayer = new GamePlayer(1,testPlayer,1,0x000077,testPlayerDeck);
     const input : CardData = {
         id: "2",
         name: "test_soldier",
@@ -81,7 +105,7 @@ it ("should create a Unit card",()=>{
         owner: testPlayer
     }
 
-    const card = CardFactory.createCard(input,testPlayerInGame);
+    const card = CardFactory.createCard(input);
     expect(card.id).toBe(input.id);
     expect(card.name).toBe(input.name);
     expect(card.cost).toBe(input.cost);
@@ -97,39 +121,46 @@ it ("should create a Unit card",()=>{
     expect(unit.base.def).toBe(0);
     expect(unit.base.mvt).toBe(3);
     expect(unit.base.rng).toBe(1);
-    expect(unit.getOwner()).toBe(testPlayerInGame);
 })
 
 
 it ("should create a Spell card",()=>{
     const testPlayer :Player = new Player("123456","testPlayer");
-    const testPlayerInGame :GamePlayer = new GamePlayer(1,testPlayer,1,0x000077);
+    const testPlayerInGame :GamePlayer = new GamePlayer(1,testPlayer,1,0x000077,testPlayerDeck);
     const input : CardData = {
         id: "1",
         name: "Fireball",
         cardType: CARD_TYPE.spell,
         cost: 3,
-        contents: {
-            name: "Fireball",
-            targetType: TARGET_TYPES.enemy,
-            effectType: SPELL_EFFECT_TYPE.dealDamage,
-            description: "Deal 1 burn damage per turn for 3 turns",
-            isRemovable:false,
-            amount:1,
-            valueType: ValueType.VALUE,
-            duration:3,
-        },
+        contents: [
+            {
+                name: "Fireball",
+                description: "Deal 1 burn damage per turn for 3 turns",
+                targetType: TARGET_TYPES.enemy,
+                duration:3,
+                trigger: "onCast",
+                components: [
+                    {
+                        type: SPELL_EFFECT_TYPE.healthChange,
+                        amount: 1,
+                        valueType: ValueType.VALUE
+                    } as EffectDataComponent
+                ],       
+                isRemovable:false,
+            } as EffectData
+        ],
         owner: testPlayer
     }
     
-    const card = CardFactory.createCard(input,testPlayerInGame);
+    const card = CardFactory.createCard(input);
     expect(card.id).toBe(input.id);
     expect(card.name).toBe(input.name);
     expect(card.cost).toBe(input.cost);
     expect(card.cardType).toBe(input.cardType);
-    expect(card.getContents() instanceof Effect).toBe(true);
-
-    const effect = card.getContents() as Effect;
-    expect(effect.description).toBe("Deal 1 burn damage per turn for 3 turns");
-    expect(effect.isRemovable).toBe(false);
+    expect(card.getContents() instanceof Array).toBe(true);
+    
+    const effect = card.getContents() as Effect[];
+    expect(effect.length).toBe(1);
+    expect(effect[0].description).toBe("Deal 1 burn damage per turn for 3 turns");
+    expect(effect[0].isRemovable).toBe(false);
 })

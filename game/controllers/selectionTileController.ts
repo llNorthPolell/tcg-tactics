@@ -1,9 +1,12 @@
 import { Position } from "../data/types/position";
+import { LandmarkType } from "../enums/landmarkType";
 import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus } from "../enums/tileStatus";
 import Landmark from "../gameobjects/landmarks/landmark";
+import GamePlayer from "../gameobjects/player/gamePlayer";
 import SelectionTile from "../gameobjects/selectionTile";
 import Field from "../state/field";
+import LandmarkController from "./landmarkController";
 
 import UnitController from "./unitController";
 
@@ -23,12 +26,15 @@ export default class SelectionTileController{
         this.units=unitController;
     }
 
-    showRallyPoints(rallyPoints:Landmark[]){
+    showRallyPoints(activePlayer:GamePlayer){
+        const rallyPoints = activePlayer.landmarks.get(LandmarkType.RALLY_POINT);
+
         rallyPoints.forEach(
             rallyPoint=>{
                 const position = rallyPoint.position;
                 const selectionTile = this.selectionTiles[position.y][position.x];
                 const unitOnTile = this.units.getUnitByPosition(position);
+                this.activeTiles.push(selectionTile);
                 selectionTile.show(TileSelectionType.PLAY_CARD,(unitOnTile)?TileStatus.DANGER:TileStatus.SUCCESS);
             }
         )

@@ -70,6 +70,13 @@ export default class Capturable{
     }
 
     /**
+     * @returns List of landmarks linked to this one
+     */
+    getLinkedLandmarks(){
+        return this.linkedLandmarks;
+    }
+
+    /**
      * Will increment captureTick. If captureTick reaches the limit, the landmark will be transfered to the occupant's owner.
      * @returns True when the landmark has been captured. False if the unit has 
      * not taken 3 turns to capture this landmark yet.

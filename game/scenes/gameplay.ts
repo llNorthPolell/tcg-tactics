@@ -14,7 +14,7 @@ import LandmarkController from "../controllers/landmarkController";
 import SelectionTileController from "../controllers/selectionTileController";
 import UnitController from "../controllers/unitController";
 import EventDispatcher from "../controllers/eventDispatcher";
-import EffectSystem from "../effectSystem";
+import EffectSystem from "../system/effectSystem";
 import { EventEmitter } from "../scripts/events";
 import { EVENTS } from "../enums/keys/events";
 
@@ -67,7 +67,7 @@ export default class GameplayScene extends Phaser.Scene{
         this.game.scene.start(SCENES.HUD);
         this.game.scene.start(SCENES.TURN_TRANSITION);
 
-        EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
+        EventEmitter.emit(EVENTS.gameEvent.START_GAME);
         this.started=true;
     }
 

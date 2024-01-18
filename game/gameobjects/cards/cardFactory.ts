@@ -1,13 +1,12 @@
 import Card from "./card";
 import Unit from "../units/unit";
-import CardContent from "../common/cardContent";
 import { CARD_TYPE } from "@/game/enums/keys/cardType";
 import { CardData } from "@/game/data/types/cardData";
 import { UnitData } from "@/game/data/types/unitData";
 import { EffectData } from "@/game/data/types/effectData";
-import GamePlayer from "../player/gamePlayer";
 import EffectFactory from "@/game/skillEffects/effectFactory";
 import UnitFactory from "../units/unitFactory";
+import Effect from "@/game/skillEffects/effect";
 
 export default class CardFactory{
 
@@ -18,7 +17,7 @@ export default class CardFactory{
      * @returns result card object from information provided
      */
     static createCard(cardData:CardData) : Card{
-        let contents :CardContent;
+        let contents : Unit | Effect[];
         if ((cardData.cardType === CARD_TYPE.hero || cardData.cardType === CARD_TYPE.unit) && cardData.contents){
             const unitData = cardData.contents as UnitData;
             contents = UnitFactory.createUnit(cardData,unitData);

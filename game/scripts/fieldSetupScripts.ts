@@ -1,13 +1,15 @@
 import { TilemapData } from "@/game/data/types/tilemapData";
 import { ASSETS } from "@/game/enums/keys/assets";
-import Landmark from "./gameobjects/landmarks/landmark";
+import Landmark from "../gameobjects/landmarks/landmark";
 import { LandmarkType } from "@/game/enums/landmarkType";
-import SelectionTile from "./gameobjects/selectionTile";
-import { TileStatus } from "./enums/tileStatus";
-import GamePlayer from "./gameobjects/player/gamePlayer";
-import { LandmarksCollection } from "./data/types/landmarksCollection";
+import SelectionTile from "../gameobjects/selectionTile";
+import { TileStatus } from "../enums/tileStatus";
+import GamePlayer from "../gameobjects/player/gamePlayer";
+import { LandmarksCollection } from "../data/types/landmarksCollection";
+import Unit from "../gameobjects/units/unit";
+import GameObjectFactory from "../gameobjects/gameObjectFactory";
 
-export default class FieldGenerator{
+export default class FieldSetupScripts{
     static generateMap(scene:Phaser.Scene) : TilemapData{
         const map = scene.make.tilemap({key:ASSETS.TILE_MAP})!;
         map.addTilesetImage(ASSETS.TILE_MAP_TILE_SET_IMG,ASSETS.TILE_SET);
@@ -201,5 +203,23 @@ export default class FieldGenerator{
         );
 
         return selectionTiles;
+    }
+
+    static spawnDeckLeaders(scene:Phaser.Scene,playersInGame:GamePlayer[]){
+        playersInGame.forEach(
+            player=>{
+                const leaderCard = player.cards.getLeader();
+                if (!leaderCard)
+                    throw new Error (`${player.name} does not have a leader...`);
+                const leader = leaderCard.getContents() as Unit;
+                leader.setOwner(player);
+                const initStrongholdPosition = player.landmarks.getStartingStronghold().position;
+                leader.linkGameObject(GameObjectFactory.createUnitGO(scene,leader));
+                leader.position()?.moveTo(initStrongholdPosition);
+                player.units.register(leader);
+
+                console.log(`Summoned ${leader.name} at (${initStrongholdPosition.x},${initStrongholdPosition.y})`)
+            }
+        )
     }
 }

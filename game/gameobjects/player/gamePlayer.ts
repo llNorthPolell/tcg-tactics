@@ -3,6 +3,7 @@ import ResourceManager from "./resourceManager";
 import UnitManager from "./unitManager";
 import LandmarkManager from "./landmarkManager";
 import CardManager from "./cardManager";
+import Deck from "../cards/deck";
 
 export default class GamePlayer{
     /**
@@ -50,7 +51,7 @@ export default class GamePlayer{
      */
     readonly cards: CardManager;
 
-    constructor(id:number,playerInfo:Player, color:number, team:number,isDevicePlayer:boolean=false){
+    constructor(id:number,playerInfo:Player, color:number, team:number,deck:Deck, isDevicePlayer:boolean=false){
         this.id=id;
         this.name=playerInfo.name;
         this.color=color;
@@ -60,7 +61,7 @@ export default class GamePlayer{
         this.resources=new ResourceManager(this);
         this.units=new UnitManager(this);
         this.landmarks=new LandmarkManager(this);
-        this.cards=new CardManager(this);
+        this.cards=new CardManager(this,deck);
     }
 
     /**

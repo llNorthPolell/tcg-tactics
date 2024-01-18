@@ -27,8 +27,6 @@ export default class HUD extends Phaser.Scene{
     private resourceDisplay? : ResourceDisplay;
     private deckStatDisplay?: DeckStatDisplay;
 
-    private turn?: TurnController;
-
     //private cardManager? : CardManager;
     //private isPlayerTurn:boolean;
 
@@ -59,7 +57,7 @@ export default class HUD extends Phaser.Scene{
         ).setOrigin(0);
         this.bottomPanel.add(bg);
         
-        /*//      hand 
+        //      hand 
         const handUIObject = new HandUIObject(this);
         this.add.existing(handUIObject);
         this.bottomPanel.add(handUIObject);
@@ -77,7 +75,7 @@ export default class HUD extends Phaser.Scene{
                 cancelCardButton?.bg.setFillStyle(UI_COLORS.cancel);
                 EventEmitter.emit(EVENTS.cardEvent.CANCEL);
             });
-        handUIObject.add(cancelCardButton);
+        this.bottomPanel.add(cancelCardButton);
         cancelCardButton.hide();
 
         const endTurnButton = new Button(
@@ -93,9 +91,42 @@ export default class HUD extends Phaser.Scene{
                 endTurnButton?.bg.setFillStyle(UI_COLORS.action);
                 EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
             });
-        handUIObject.add(endTurnButton);
+        this.bottomPanel.add(endTurnButton);
 
-        //      unit display 
+
+        EventEmitter
+        .on(
+            EVENTS.gameEvent.PLAYER_TURN,
+            (activePlayer:GamePlayer)=>{
+                if (!activePlayer.isDevicePlayer){
+                    endTurnButton.hide();
+                    cancelCardButton.hide();
+                    return;
+                } 
+                endTurnButton.show();
+            }
+        )
+        .on(
+            EVENTS.cardEvent.SELECT,
+            ()=>{
+                //cardDetails.hide();
+                if(!turn.isDevicePlayerTurn) return;
+                cancelCardButton.show();
+                endTurnButton.hide();
+
+                //cardDetails.show(card);
+            }
+        )
+        .on(
+            EVENTS.cardEvent.CANCEL,
+            ()=>{
+                if(!turn.isDevicePlayerTurn) return;
+                cancelCardButton.hide();
+                endTurnButton.show();
+                //cardDetails.hide();
+            }
+        )
+       /* //      unit display 
         const unitStatDisplay = new UnitStatDisplay(this);
         this.add.existing(unitStatDisplay);
         this.bottomPanel.add(unitStatDisplay);

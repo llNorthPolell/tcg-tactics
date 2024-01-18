@@ -7,7 +7,7 @@ import { testFireball, testHealingLight, testMagicBomb, testNaturesBlessing } fr
 
 // Heroes 
 export const testMageHeroCardData : CardData = {
-    id:"1",
+    id:"3",
     name:"test_mage_hero",
     cardType: CARD_TYPE.hero,
     cost:5,
@@ -18,8 +18,8 @@ export const testMageHeroCardData : CardData = {
 
 
 export const testSoldierHeroCardData : CardData = {
-    id:"3",
-    name:"test_mage_hero",
+    id:"1",
+    name:"test_soldier_hero",
     cardType: CARD_TYPE.hero,
     cost:5,
     contents: {...testSoldierHero},

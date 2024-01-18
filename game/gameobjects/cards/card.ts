@@ -1,9 +1,7 @@
 import GameObject from "../common/gameObject";
 import CardContent from "../common/cardContent";
-import { CARD_TYPE } from "@/game/enums/keys/cardType";
 import Unit from "../units/unit";
 import Effect from "@/game/skillEffects/effect";
-import { Position } from "@/game/data/types/position";
 
 
 export default class Card {
@@ -30,7 +28,7 @@ export default class Card {
     /**
      * If linked, the contents of this card (either a unit or effect)
      */
-    private contents:CardContent;
+    private contents:Unit|Effect[];
 
     /**
      * Reference to physicalization of the card rendered on screen
@@ -38,7 +36,7 @@ export default class Card {
     private gameObject?:GameObject;
 
 
-    constructor(id:string,name:string,cardType:string,cost:number,contents:CardContent){
+    constructor(id:string,name:string,cardType:string,cost:number,contents:Unit|Effect[]){
         this.id=id;
         this.name=name;
         this.cardType=cardType;

@@ -87,6 +87,11 @@ export const EVENTS = {
      */
     gameEvent: Object.freeze({
         /**
+         * Called at the beginning of the game
+         */
+        START_GAME: "start-game",
+        
+        /**
          * When entering a player's turn.
          * @Params activePlayer:GamePlayer
          */

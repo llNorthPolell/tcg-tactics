@@ -28,14 +28,14 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
 
     private readonly unit:Unit;
     
-    constructor(scene : Phaser.Scene, unit:Unit,initialPosition:Position){
-        super(scene,initialPosition.x,initialPosition.y);
+    constructor(scene : Phaser.Scene, unit:Unit){
+        super(scene,-TILESIZE.width,-TILESIZE.height);
         this.unit = unit;
 
         const unitType = unit.unitType;
         const baseColor = unit.getOwner()!.color;
-        this.imageAssetName = `${ASSETS.PORTRAIT}_${unitType}_${unit.cardId}`;
-
+        this.imageAssetName = `${ASSETS.PORTRAIT}${unitType}_${unit.cardId}`;
+        console.log(`Asset Name: ${this.imageAssetName}. It exists? ${scene.textures.exists(this.imageAssetName)}`)
         const bg = scene.add.rectangle(
             TILESIZE.width/2,
             TILESIZE.height/2,
@@ -58,7 +58,7 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
                 TILESIZE.height*0.85);
         }
         this.add(this.image);
-
+        
         if (unit.isActive())
             this.image.setAlpha(1);
         else
@@ -162,8 +162,9 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
         this.scene.add.existing(this);
     }
 
+
     getPosition(): Position {
-        throw new Error("Method not implemented.");
+        return {x:this.x, y:this.y};
     }
 
     getImage(){
@@ -190,5 +191,9 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
 
     updateActive(){
         this.getImage().setAlpha(this.unit.isActive()?1:0.7);
+    }
+
+    getAsContainer(): Phaser.GameObjects.Container {
+        return this as Phaser.GameObjects.Container;
     }
 }

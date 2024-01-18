@@ -36,13 +36,13 @@ export const GAME_STATE = Object.freeze({
     // Controllers
     turnController: "turn-controller",
 
-
     unitsController: "units-controller",
 
     selectionTilesController: "selection-tiles-controller",
 
-
     landmarksController: "landmarks-controller",
+
+    cardController: "card-controller",
 
     effectsSystem: "effects-system",
 

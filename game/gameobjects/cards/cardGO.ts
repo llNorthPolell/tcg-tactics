@@ -8,17 +8,17 @@ import { CARD_TYPE } from "@/game/enums/keys/cardType";
 import { Position } from "@/game/data/types/position";
 
 export default class CardGO extends Phaser.GameObjects.Container implements GameObject{
-    private card:Card;
+    private readonly card:Card;
     private stats?:CardGOStats;
 
     constructor(scene : Phaser.Scene, card:Card,initialPosition:Position){
         super(scene,initialPosition.x,initialPosition.y);
-        this.renderCardBase(scene,card);
         this.card=card;
+        this.renderCardBase(scene);
     }
 
-    protected renderCardBase(scene : Phaser.Scene,card:Card){
-        const cardType = card.cardType;
+    protected renderCardBase(scene : Phaser.Scene){
+        const cardType = this.card.cardType;
 
         const bg = this.scene.add.rectangle(0,0,CARD_SIZE.width, CARD_SIZE.height,0x000000)
             .setOrigin(0,0)
@@ -40,7 +40,7 @@ export default class CardGO extends Phaser.GameObjects.Container implements Game
             .setOrigin(0.5);
 
         this.add(image);
-        loadImage(scene, image, cardType, card.id,CARD_SIZE.width*0.98, CARD_SIZE.height*0.98);
+        loadImage(scene, image, cardType, this.card.id,CARD_SIZE.width*0.98, CARD_SIZE.height*0.98);
 
 
         const costBg = this.scene.add.circle(0,0,CARD_SIZE.width*0.15,0xd9d9d9)
@@ -48,14 +48,14 @@ export default class CardGO extends Phaser.GameObjects.Container implements Game
             .setOrigin(0);
         this.add(costBg);
 
-        const costText = this.scene.add.text(CARD_SIZE.width*0.09,CARD_SIZE.width*0.025,String(card.cost),{
+        const costText = this.scene.add.text(CARD_SIZE.width*0.09,CARD_SIZE.width*0.025,String(this.card.cost),{
             color:'#000',
             fontFamily:'"Sansita",sans-serif',
             fontSize:24
         }).setOrigin(0);
         this.add(costText);
 
-        this.stats = (card.cardType === CARD_TYPE.spell)? undefined: new CardGOStats(scene,this);
+        this.stats = (this.card.cardType === CARD_TYPE.spell)? undefined: new CardGOStats(scene,this);
     }
 
     getCard(){
@@ -66,5 +66,24 @@ export default class CardGO extends Phaser.GameObjects.Container implements Game
         return this.stats;
     }
 
+    getPosition(): Position {
+        return {x:this.x, y:this.y};
+    }
+    
     updateActive(){}
+
+    getAsContainer(){
+        return this as Phaser.GameObjects.Container;
+    }
+
+    pullOut(){
+
+        const pullOutPosition = {x:this.x,y:this.y-CARD_SIZE.height*0.1}
+        this.setPosition(pullOutPosition.x,pullOutPosition.y);
+    }
+
+    return(){
+        const returnPosition = {x:this.x,y:this.y+CARD_SIZE.height*0.1}
+        this.setPosition(returnPosition.x,returnPosition.y);
+    }
 }

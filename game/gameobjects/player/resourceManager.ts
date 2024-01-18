@@ -1,5 +1,6 @@
 import { Resources } from "@/game/data/types/resources";
 import GamePlayer from "./gamePlayer";
+import { LandmarkType } from "@/game/enums/landmarkType";
 
 export default class ResourceManager{
     /**
@@ -58,5 +59,14 @@ export default class ResourceManager{
             current: this.currResource,
             max: this.maxResource
         }
+    }
+
+    /**
+     * @returns Calculated resource income per turn from landmarks
+     */
+    calculateIncome(){
+        return this.player.landmarks.get(LandmarkType.STRONGHOLD)!.length * 2 +
+            this.player.landmarks.get(LandmarkType.OUTPOST)!.length +
+            this.player.landmarks.get(LandmarkType.RESOURCE_NODE)!.length;
     }
 }

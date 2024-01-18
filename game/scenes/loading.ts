@@ -8,15 +8,16 @@ import { testFireballCardData, testGuardianCardData, testHealingLightCardData, t
 import CardFactory from "../gameobjects/cards/cardFactory";
 import Deck from "../gameobjects/cards/deck";
 import GamePlayer from "../gameobjects/player/gamePlayer";
-import FieldGenerator from "../fieldGenerator";
+import FieldSetupScripts from "../scripts/fieldSetupScripts";
 import EventDispatcher from "../controllers/eventDispatcher";
-import EffectSystem from "../effectSystem";
+import EffectSystem from "../system/effectSystem";
 import LandmarkController from "../controllers/landmarkController";
 import SelectionTileController from "../controllers/selectionTileController";
 import UnitController from "../controllers/unitController";
 import TurnController from "../controllers/turnController";
 import Field from "../state/field";
 import GameState from "../state/gameState";
+import CardController from "../controllers/cardController";
 
 export default class LoadingScene extends Phaser.Scene {
 
@@ -73,20 +74,17 @@ export default class LoadingScene extends Phaser.Scene {
         const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);
         const testOpponentDeck = new Deck([], testOpponentLeader);
 
-        const testGamePlayer = new GamePlayer(1, testPlayer, getPlayerColor(1), 1, true);
-        testGamePlayer.cards.setDeck(testPlayerDeck);
-
-        const testGameOpponent = new GamePlayer(2, testPlayer2, getPlayerColor(2), 2);
-        testGameOpponent.cards.setDeck(testOpponentDeck);
+        const testGamePlayer = new GamePlayer(1, testPlayer, getPlayerColor(1), 1, testPlayerDeck, true);
+        const testGameOpponent = new GamePlayer(2, testPlayer2, getPlayerColor(2), 2, testOpponentDeck);
 
         const playersInGame= [testGamePlayer,testGameOpponent];
 
         console.log("Generating Field...");
         const gameplayScene = this.game.scene.getScene(SCENES.GAMEPLAY);
-        const tilemapData = FieldGenerator.generateMap(gameplayScene);
-        const selectionTiles = FieldGenerator.generateHighlightTiles(gameplayScene,tilemapData);
-        const landmarksData = FieldGenerator.loadLandmarks(tilemapData);
-        FieldGenerator.assignInitialLandmarks(tilemapData,landmarksData.byType,playersInGame);
+        const tilemapData = FieldSetupScripts.generateMap(gameplayScene);
+        const selectionTiles = FieldSetupScripts.generateHighlightTiles(gameplayScene,tilemapData);
+        const landmarksData = FieldSetupScripts.loadLandmarks(tilemapData);
+        FieldSetupScripts.assignInitialLandmarks(tilemapData,landmarksData.byType,playersInGame);
 
         console.log("Initializing Game State");
         const gameState = new GameState(playersInGame);
@@ -98,9 +96,10 @@ export default class LoadingScene extends Phaser.Scene {
         const unitsController = new UnitController(field);
         const selectionTilesController = new SelectionTileController(field,unitsController);
         const landmarksController = new LandmarkController(field);
+        const cardController = new CardController(playersInGame);
         const effectsSystem = new EffectSystem(field,playersInGame);
-        const eventDispatcher = new EventDispatcher(landmarksController,
-            turnController,unitsController,selectionTilesController,effectsSystem);
+        const eventDispatcher = new EventDispatcher(gameplayScene,landmarksController,
+            turnController,unitsController,selectionTilesController,cardController,effectsSystem);
 
 
 
@@ -117,8 +116,11 @@ export default class LoadingScene extends Phaser.Scene {
         this.game.registry.set(GAME_STATE.unitsController, unitsController);
         this.game.registry.set(GAME_STATE.selectionTilesController, selectionTilesController);
         this.game.registry.set(GAME_STATE.landmarksController, landmarksController);
+        this.game.registry.set(GAME_STATE.cardController,cardController);
         this.game.registry.set(GAME_STATE.effectsSystem, effectsSystem);
         this.game.registry.set(GAME_STATE.eventDispatcher, eventDispatcher);
+
+        FieldSetupScripts.spawnDeckLeaders(gameplayScene,playersInGame);
 
         this.game.scene.start(SCENES.GAMEPLAY);
     }

@@ -15,7 +15,6 @@ export default class GameState{
     }
 
     goToNextPlayer(){
-        console.log(JSON.stringify(this.playersInGame.map(player=>player.name)));
         if (this.activePlayerIndex==this.playersInGame.length-1)
             this.goToNextTurn();
         

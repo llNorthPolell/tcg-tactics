@@ -1,10 +1,10 @@
 import { Position } from "@/game/data/types/position";
-import Unit from "./gameobjects/units/unit";
-import Field from "./state/field";
+import Unit from "../gameobjects/units/unit";
+import Field from "../state/field";
 import Effect from "@/game/skillEffects/effect";
 import { EffectTrigger } from "@/game/enums/keys/effectTriggers";
-import GamePlayer from "./gameobjects/player/gamePlayer";
-import Landmark from "./gameobjects/landmarks/landmark";
+import GamePlayer from "../gameobjects/player/gamePlayer";
+import Landmark from "../gameobjects/landmarks/landmark";
 
 /**
  * Centralized location to handle effects

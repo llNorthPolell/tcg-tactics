@@ -5,17 +5,12 @@ import Unit from "./units/unit";
 import { Position } from "@/game/data/types/position";
 
 export default class GameObjectFactory{
-    private scene:Phaser.Scene;
 
-    constructor(scene:Phaser.Scene){
-        this.scene=scene;
+    static createCardGO(scene:Phaser.Scene,card:Card,initialPosition:Position={x:0,y:0}) : CardGO{
+        return new CardGO(scene,card,initialPosition);
     }
 
-    createCardGO(card:Card,initialPosition:Position={x:0,y:0}) : CardGO{
-        return new CardGO(this.scene,card,initialPosition);
-    }
-
-    createUnitGO(unit:Unit,initialPosition:Position={x:0,y:0}): UnitGO{
-        return new UnitGO(this.scene,unit,initialPosition);
+    static createUnitGO(scene:Phaser.Scene,unit:Unit): UnitGO{
+        return new UnitGO(scene,unit);
     }
 }

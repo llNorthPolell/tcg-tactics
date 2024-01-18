@@ -1,12 +1,12 @@
 import { CANVAS_SIZE } from "@/game/config";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
-import { Card } from "../cards/card";
 import { CardData } from "@/game/data/types/cardData";
-import SpellCard from "../cards/spellCard";
 import { FONT } from "@/game/enums/keys/font";
-import HeroCard from "../cards/heroCard";
 import { Position } from "@/game/data/types/position";
-import UnitCard from "../cards/unitCard";
+import Card from "../cards/card";
+import { CARD_TYPE } from "@/game/enums/keys/cardType";
+import { EffectData } from "@/game/data/types/effectData";
+import { UnitData } from "@/game/data/types/unitData";
 
 const CARD_DETAILS_SIZE = {
     width:CANVAS_SIZE.width*0.2,
@@ -145,23 +145,23 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
         return {container, desc};
     }
 
-    show(card:Card<CardData>){
-        const cardType = (card instanceof SpellCard)? "Spell" : 
-            (card instanceof HeroCard)? "Hero" : "Unit";
-            
-        this.cardName.setText(card.data.name);
-        this.cardType.setText(cardType);
+    show(card:Card){
+        this.cardName.setText(card.name);
+        this.cardType.setText(card.cardType);
 
-        if (card instanceof SpellCard){
+        if (card.cardType === CARD_TYPE.spell){
             this.spellEffects.setVisible(true);
-            this.spellEffectsDesc.setText(card.data.description);
+            const contents = card.getContents() as EffectData[];
+            const descriptions : string[] = contents.map(content=> content.description);
+            this.spellEffectsDesc.setText(descriptions);
         }
-        if (card instanceof HeroCard) {
+        /*if (card.cardType === CARD_TYPE.hero) {
             this.leaderSkill.setVisible(true);
-            this.leaderDesc.setText(card.data.leaderSkillDesc);
-        }
+            const contents = card.getContents() as UnitData;
+            this.leaderDesc.setText(contents.effects?);
+        }*/
 
-        if (card instanceof UnitCard  || card instanceof HeroCard){
+        /*if (card instanceof UnitCard  || card instanceof HeroCard){
             if (card.data.passiveSkillDesc){
                 this.passiveSkill.setVisible(true);
                 this.passiveDesc.setText(card.data.passiveSkillDesc);
@@ -170,7 +170,7 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
                 this.activeSkill.setVisible(true);
                 this.activeDesc.setText(card.data.activeSkillDesc);
             }
-        }
+        }*/
         this.setVisible(true);
     }
 

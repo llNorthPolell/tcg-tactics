@@ -38,6 +38,10 @@ export default class PositionController{
         this.unit.getGameObject()!.setPosition(pixelLocation.x,pixelLocation.y);
     }
 
+    /**
+     * Finalizes move and sets position as the destination.
+     * Sets the unit inactive.
+     */
     confirm(){
         if (this.destination){
             this.position = this.destination;
@@ -54,6 +58,12 @@ export default class PositionController{
         return this.position;
     }
 
-
+    /**
+     * Moves unit back to original position and clears destination.
+     */
+    cancel(){
+        this.destination=undefined;
+        this.unit.getGameObject()!.setPosition(this.position.x* TILESIZE.width, this.position.y * TILESIZE.height);
+    }
 
 }

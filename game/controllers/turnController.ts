@@ -1,16 +1,24 @@
-import Game from "../state/game";
+import GameState from "../state/gameState";
 
 export default class TurnController{    
-    private readonly game:Game;
+    private readonly gameState:GameState;
 
-    constructor(game:Game){
-        this.game=game;
+    constructor(gameState:GameState){
+        this.gameState=gameState;
     }
 
     endTurn(){
-        this.game.goToNextPlayer();
+        this.gameState.goToNextPlayer();
     }
 
+    getActivePlayer(){
+        return this.gameState.getActivePlayer();
+    }
+    
+    isDevicePlayerTurn(){
+        return this.getActivePlayer().isDevicePlayer;
+    }
+    
     //TODO: Temporary, causes AI to automatically pass
     pass(playerId:number){
         console.log(`Player ${playerId}'s turn...`);

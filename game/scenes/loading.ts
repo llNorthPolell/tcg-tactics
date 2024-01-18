@@ -8,6 +8,15 @@ import { testFireballCardData, testGuardianCardData, testHealingLightCardData, t
 import CardFactory from "../gameobjects/cards/cardFactory";
 import Deck from "../gameobjects/cards/deck";
 import GamePlayer from "../gameobjects/player/gamePlayer";
+import FieldGenerator from "../fieldGenerator";
+import EventDispatcher from "../controllers/eventDispatcher";
+import EffectSystem from "../effectSystem";
+import LandmarkController from "../controllers/landmarkController";
+import SelectionTileController from "../controllers/selectionTileController";
+import UnitController from "../controllers/unitController";
+import TurnController from "../controllers/turnController";
+import Field from "../state/field";
+import GameState from "../state/gameState";
 
 export default class LoadingScene extends Phaser.Scene {
 
@@ -42,9 +51,11 @@ export default class LoadingScene extends Phaser.Scene {
     create() {
         console.log("Now Loading...");
 
+        console.log("Loading Player Information...");
         const testPlayerLeader = CardFactory.createCard(testMageHeroCardData);
         const testOpponentLeader = CardFactory.createCard(testRangerHeroCardData);
 
+        console.log("Loading Player Decks...");
         const testPlayerDeckCards = [
             CardFactory.createCard(testSoldierHeroCardData),
             CardFactory.createCard(testSoldierCardData),
@@ -68,8 +79,46 @@ export default class LoadingScene extends Phaser.Scene {
         const testGameOpponent = new GamePlayer(2, testPlayer2, getPlayerColor(2), 2);
         testGameOpponent.cards.setDeck(testOpponentDeck);
 
-        this.game.registry.set(GAME_STATE.player, testGamePlayer);
-        this.game.registry.set(GAME_STATE.opponents, [testGameOpponent])
+        const playersInGame= [testGamePlayer,testGameOpponent];
+
+        console.log("Generating Field...");
+        const gameplayScene = this.game.scene.getScene(SCENES.GAMEPLAY);
+        const tilemapData = FieldGenerator.generateMap(gameplayScene);
+        const selectionTiles = FieldGenerator.generateHighlightTiles(gameplayScene,tilemapData);
+        const landmarksData = FieldGenerator.loadLandmarks(tilemapData);
+        FieldGenerator.assignInitialLandmarks(tilemapData,landmarksData.byType,playersInGame);
+
+        console.log("Initializing Game State");
+        const gameState = new GameState(playersInGame);
+        const field = new Field(gameState,tilemapData,landmarksData.byLocation,selectionTiles);
+        
+
+        console.log("Initializing Controllers");
+        const turnController = new TurnController(gameState);
+        const unitsController = new UnitController(field);
+        const selectionTilesController = new SelectionTileController(field,unitsController);
+        const landmarksController = new LandmarkController(field);
+        const effectsSystem = new EffectSystem(field,playersInGame);
+        const eventDispatcher = new EventDispatcher(landmarksController,
+            turnController,unitsController,selectionTilesController,effectsSystem);
+
+
+
+        console.log("Starting game...")
+        this.game.registry.set(GAME_STATE.playersInGame, playersInGame);
+        this.game.registry.set(GAME_STATE.tilemapData, tilemapData);
+        this.game.registry.set(GAME_STATE.selectionTiles, selectionTiles);
+        this.game.registry.set(GAME_STATE.landmarksData, landmarksData);
+
+        this.game.registry.set(GAME_STATE.state, gameState);
+        this.game.registry.set(GAME_STATE.field, field);
+
+        this.game.registry.set(GAME_STATE.turnController, turnController);
+        this.game.registry.set(GAME_STATE.unitsController, unitsController);
+        this.game.registry.set(GAME_STATE.selectionTilesController, selectionTilesController);
+        this.game.registry.set(GAME_STATE.landmarksController, landmarksController);
+        this.game.registry.set(GAME_STATE.effectsSystem, effectsSystem);
+        this.game.registry.set(GAME_STATE.eventDispatcher, eventDispatcher);
 
         this.game.scene.start(SCENES.GAMEPLAY);
     }

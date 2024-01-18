@@ -1,24 +1,37 @@
 
 import { HAND_UI_SIZE } from "../config";
-import { EVENTS } from "../enums/keys/events";
+import { TilemapData } from "../data/types/tilemapData";
+import { LandmarksCollection } from "../data/types/landmarksCollection";
 import { GAME_STATE } from "../enums/keys/gameState";
 import { SCENES } from "../enums/keys/scenes";
-import Player from "../gameobjects/gamePlayer";
-import CombatHandler from "../scripts/combatHandler";
-import { EventEmitter } from "../scripts/events";
-import FieldManager from "../scripts/fieldManager";
+import GamePlayer from "../gameobjects/player/gamePlayer";
+import SelectionTile from "../gameobjects/selectionTile";
 import setupMouseInputs from "../scripts/inputHandler";
-import TurnManager from "../scripts/turnManager";
+import Field from "../state/field";
+import GameState from "../state/gameState";
+import TurnController from "../controllers/turnController";
+import LandmarkController from "../controllers/landmarkController";
+import SelectionTileController from "../controllers/selectionTileController";
+import UnitController from "../controllers/unitController";
+import EventDispatcher from "../controllers/eventDispatcher";
+import EffectSystem from "../effectSystem";
+import { EventEmitter } from "../scripts/events";
+import { EVENTS } from "../enums/keys/events";
+
 
 type GamePlayers = {
-    player: Player,
-    playersInGame: Player[]
+    player: GamePlayer,
+    playersInGame: GamePlayer[]
 }
 
 export default class GameplayScene extends Phaser.Scene{
-    private fieldManager?: FieldManager;
-    private turnManager?: TurnManager;
-    private combatHandler? : CombatHandler;
+    private turn?:TurnController;
+    private landmarks?:LandmarkController
+    private selectionTiles?: SelectionTileController;
+    private units?:UnitController;
+    private effects?:EffectSystem;
+    private eventSystem?:EventDispatcher;
+
     private started:boolean;
 
     constructor(){
@@ -31,16 +44,16 @@ export default class GameplayScene extends Phaser.Scene{
     preload(){}
 
     create(){
-        const {player,playersInGame} = this.loadPlayers();
-        this.game.scene.start(SCENES.HUD);
-        this.game.scene.start(SCENES.TURN_TRANSITION);
-        this.fieldManager = new FieldManager(this,playersInGame);
-        this.turnManager = new TurnManager(this,player,playersInGame);
-        this.combatHandler = new CombatHandler();
+        const tilemapData : TilemapData = this.game.registry.get(GAME_STATE.tilemapData);
 
-
+        this.turn = this.game.registry.get(GAME_STATE.turnController);
+        this.units = this.game.registry.get(GAME_STATE.unitsController);
+        this.selectionTiles = this.game.registry.get(GAME_STATE.selectionTilesController);
+        this.landmarks = this.game.registry.get(GAME_STATE.landmarksController);
+        this.effects = this.game.registry.get(GAME_STATE.effectsSystem);
+        this.eventSystem = this.game.registry.get(GAME_STATE.eventDispatcher);
         
-        const map = this.game.registry.get(GAME_STATE.field).mapData.map;
+        const map = tilemapData.map;
         const camera = this.cameras.main;
 
         const bounds = {x:map.widthInPixels*1.3, y: (map.heightInPixels)+(HAND_UI_SIZE.height/3.125)}
@@ -50,22 +63,13 @@ export default class GameplayScene extends Phaser.Scene{
         
         setupMouseInputs(this.input,camera);  
 
+
+        this.game.scene.start(SCENES.HUD);
+        this.game.scene.start(SCENES.TURN_TRANSITION);
+
+        EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
+        this.started=true;
     }
 
-    private loadPlayers() : GamePlayers {
-        const player:Player = this.game.registry.get(GAME_STATE.player);
-        const opponents:Player[] = this.game.registry.get(GAME_STATE.opponents);
-
-        return {
-            player: player,
-            playersInGame:[player,...opponents]
-        };
-    }
-
-    update(){
-        if (!this.started){
-            EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
-            this.started=true;
-        }
-    }
+    update(){}
 }

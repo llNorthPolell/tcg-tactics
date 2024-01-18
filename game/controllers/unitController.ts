@@ -18,9 +18,13 @@ export default class UnitController{
     summonUnitByCard(card:Card,position:Position){
         const unit = card.getContents() as Unit;
         const positionController = unit.position();
+        const owner = unit.getOwner();
         if (!positionController) 
             throw new Error(`Position controller has not been initiated in ${unit.name}`);
+        if (!owner)
+            throw new Error(`${unit.name} does not have an owner...`);
         this.field.units.set(`${position.x}_${position.y}`,unit);
+        this.field.unitsByPlayer.get(owner.id)!.push(unit);
     }
 
     summonUnitByEffect(effect:Effect, index:number=0,position:Position){
@@ -66,5 +70,13 @@ export default class UnitController{
 
     getUnitByPosition(position:Position){
         return this.field.units.get(`${position.x}_${position.y}`);
+    }
+
+    getUnitsByPlayerId(playerId:number){
+        return this.field.unitsByPlayer.get(playerId);
+    }
+
+    getSelected(){
+        return this.movingUnit;
     }
 }

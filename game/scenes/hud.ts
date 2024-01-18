@@ -1,13 +1,12 @@
 import { CANVAS_SIZE, HAND_UI_SIZE } from "../config";
+import TurnController from "../controllers/turnController";
 import { CardData } from "../data/types/cardData";
 import { EVENTS } from "../enums/keys/events";
 import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { GAME_STATE } from "../enums/keys/gameState";
 import { SCENES } from "../enums/keys/scenes";
 import { UI_COLORS } from "../enums/keys/uiColors";
-import { Card } from "../gameobjects/cards/card";
-import HeroCard from "../gameobjects/cards/heroCard";
-import GamePlayer from "../gameobjects/gamePlayer";
+import GamePlayer from "../gameobjects/player/gamePlayer";
 import Button from "../gameobjects/ui/button";
 import CardDetailsDisplay from "../gameobjects/ui/cardDetailsDisplay";
 import DeckStatDisplay from "../gameobjects/ui/deckStatDisplay";
@@ -15,8 +14,6 @@ import DiscardWindow from "../gameobjects/ui/discardWindow";
 import HandUIObject from "../gameobjects/ui/handUIObject";
 import ResourceDisplay from "../gameobjects/ui/resourceDisplay";
 import UnitStatDisplay from "../gameobjects/ui/unitStatDisplay";
-import Unit from "../gameobjects/unit";
-import CardManager from "../scripts/cardManager";
 import { EventEmitter } from "../scripts/events";
 
 const HUD_BUTTON_SIZE = {
@@ -30,28 +27,27 @@ export default class HUD extends Phaser.Scene{
     private resourceDisplay? : ResourceDisplay;
     private deckStatDisplay?: DeckStatDisplay;
 
-    private player?: GamePlayer;
+    private turn?: TurnController;
 
-    private cardManager? : CardManager;
-    private isPlayerTurn:boolean;
+    //private cardManager? : CardManager;
+    //private isPlayerTurn:boolean;
 
     constructor(){
         super({
             key: SCENES.HUD
         });
-        this.isPlayerTurn=false;
+        //this.isPlayerTurn=false;
     }
 
     preload(){}
 
     create(){
-        const player = this.game.registry.get(GAME_STATE.player) as GamePlayer;
-        this.player = player;
-        
+        const turn = this.game.registry.get(GAME_STATE.turnController);
+             
         this.bottomPanel = this.add.container(0,CANVAS_SIZE.height*0.8);
         this.rightPanel = this.add.container(CANVAS_SIZE.width*0.87,0);
 
-        this.cardManager = new CardManager(player);
+        //this.cardManager = new CardManager(player);
         
         // bottom panel
         const bg = this.add.rectangle(
@@ -63,7 +59,7 @@ export default class HUD extends Phaser.Scene{
         ).setOrigin(0);
         this.bottomPanel.add(bg);
         
-        //      hand 
+        /*//      hand 
         const handUIObject = new HandUIObject(this);
         this.add.existing(handUIObject);
         this.bottomPanel.add(handUIObject);
@@ -275,6 +271,6 @@ export default class HUD extends Phaser.Scene{
     }
     
     update(){
-
+*/
     }
 }

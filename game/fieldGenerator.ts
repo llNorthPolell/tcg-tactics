@@ -4,6 +4,8 @@ import Landmark from "./gameobjects/landmarks/landmark";
 import { LandmarkType } from "@/game/enums/landmarkType";
 import SelectionTile from "./gameobjects/selectionTile";
 import { TileStatus } from "./enums/tileStatus";
+import GamePlayer from "./gameobjects/player/gamePlayer";
+import { LandmarksCollection } from "./data/types/landmarksCollection";
 
 export default class FieldGenerator{
     static generateMap(scene:Phaser.Scene) : TilemapData{
@@ -43,16 +45,16 @@ export default class FieldGenerator{
     }
 
 
-    static loadLandmarks(tilemapData:TilemapData) : {landmarks:Map<LandmarkType,Landmark[]>, landmarkMap:Map<string,Landmark>}{
-        const landmarks = new Map();
-        landmarks.set(LandmarkType.STRONGHOLD,[]);
-        landmarks.set(LandmarkType.RALLY_POINT,[]);
-        landmarks.set(LandmarkType.OUTPOST,[]);
-        landmarks.set(LandmarkType.RESOURCE_NODE,[]);
+    static loadLandmarks(tilemapData:TilemapData) : LandmarksCollection{
+        const byType = new Map();
+        byType.set(LandmarkType.STRONGHOLD,[]);
+        byType.set(LandmarkType.RALLY_POINT,[]);
+        byType.set(LandmarkType.OUTPOST,[]);
+        byType.set(LandmarkType.RESOURCE_NODE,[]);
 
         let rallyPoints: Map<string,Landmark> = new Map();
         let parentNodes: Map<string,Landmark> = new Map();
-        let landmarkMap : Map<string, Landmark> = new Map();
+        let byLocation : Map<string, Landmark> = new Map();
 
         const landmarksLayer = tilemapData.layers.landmarks;
 
@@ -67,44 +69,38 @@ export default class FieldGenerator{
                 // store reference to landmark
                 switch(landmarkName){
                     case "Stronghold":
-                        console.log(`Stronghold at (${tileX},${tileY})`);
                         value = new Landmark(`stronghold_${key}`,LandmarkType.STRONGHOLD,tilePosition,landmarkTile,true);
                         parentNodes.set(key, value);
-                        landmarks.get(LandmarkType.STRONGHOLD)!.push(value);
+                        byType.get(LandmarkType.STRONGHOLD)!.push(value);
                         break;
                     case "Rally Point":
-                        console.log(`Rally Point at (${tileX},${tileY})`);
                         value = new Landmark(`rally_point_${key}`,LandmarkType.RALLY_POINT,tilePosition,landmarkTile,true,false);
                         rallyPoints.set(key,value);
                         break;
                     case "Outpost":
-                        console.log(`Outpost at (${tileX},${tileY})`);
                         value = new Landmark(`outpost_${key}`,LandmarkType.OUTPOST,tilePosition,landmarkTile,true);
                         parentNodes.set(key, value);
-                        landmarks.get(LandmarkType.OUTPOST)!.push(value);
+                        byType.get(LandmarkType.OUTPOST)!.push(value);
                         break;
                     case "Resource Node": 
-                        console.log(`Resource Node at (${tileX},${tileY})`);
                         value = new Landmark(`resource_node_${key}`,LandmarkType.RESOURCE_NODE,tilePosition,landmarkTile,true);
-                        landmarks.get(LandmarkType.RESOURCE_NODE)!.push(value);
+                        byType.get(LandmarkType.RESOURCE_NODE)!.push(value);
                         break;
                     case "Interest Point":
-                        console.log(`Interest Point at (${tileX},${tileY})`);
                         value = new Landmark(`point_of_interest_${key}`,LandmarkType.POINT_OF_INTEREST,tilePosition,landmarkTile,true);
                         break;
                     case "Camp":
-                        console.log(`Camp at (${tileX},${tileY})`);
                         break;
                     default:
                         break;
                 }
                 if (value)
-                    landmarkMap.set(key,value);
+                    byLocation.set(key,value);
                 
             }
         );
         this.linkRalliesToParents(parentNodes, rallyPoints)
-        return {landmarks, landmarkMap};
+        return {byType, byLocation};
     }
 
     private static linkRalliesToParents(parentNodes:Map<string,Landmark>, rallyPoints:Map<string,Landmark>){
@@ -135,7 +131,7 @@ export default class FieldGenerator{
     }
 
 
-    /*assignInitialLandmarks(tilemapData:TilemapData, landmarks:Map<LandmarkType,Landmark[]>){
+    static assignInitialLandmarks(tilemapData:TilemapData, landmarks:Map<LandmarkType,Landmark[]>,playersInGame:GamePlayer[]){
         const playerStartLayer=tilemapData.layers.playerStarts;
         const landmarksLayer=tilemapData.layers.landmarks;
 
@@ -147,29 +143,32 @@ export default class FieldGenerator{
                 const landmarkTile = landmarksLayer.getTileAt(tileX,tileY);
                 const landmarkName = landmarkTile.properties.name;
 
-                const owner = this.playersInGame[Number(object.name)-1];
+                const owner = playersInGame[Number(object.name)-1];
 
                 if (owner){
                     switch(landmarkName){
                         case "Stronghold":
-                            const stronghold = landmarks.get(LandmarkType.STRONGHOLD)!.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                            const stronghold = landmarks.get(LandmarkType.STRONGHOLD)!.find(
+                                landmark=>landmark.position.x==tileX && landmark.position.y==tileY);
                             if (stronghold){
-                                owner.registerLandmark(stronghold);
-                                stronghold.capture(owner);
+                                owner.landmarks.registerLandmark(stronghold);
+                                stronghold.capturable!.capture(owner);
                             }
                             break;
                         case "Outpost":
-                            const outpost = landmarks.get(LandmarkType.OUTPOST)!.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                            const outpost = landmarks.get(LandmarkType.OUTPOST)!.find(
+                                landmark=>landmark.position.x==tileX && landmark.position.y==tileY);
                             if (outpost){
-                                owner.registerLandmark(outpost);
-                                outpost.capture(owner);
+                                owner.landmarks.registerLandmark(outpost);
+                                outpost.capturable!.capture(owner);
                             }
                             break;
                         case "Resource Node":
-                            const resourceNode = landmarks.get(LandmarkType.RESOURCE_NODE)!.find(landmark=>landmark.x==tileX && landmark.y==tileY);
+                            const resourceNode = landmarks.get(LandmarkType.RESOURCE_NODE)!.find(
+                                landmark=>landmark.position.x==tileX && landmark.position.y==tileY);
                             if (resourceNode){
-                                owner.registerLandmark(resourceNode);
-                                resourceNode.capture(owner);
+                                owner.landmarks.registerLandmark(resourceNode);
+                                resourceNode.capturable!.capture(owner);
                             }
                             break;
                         default:
@@ -179,7 +178,7 @@ export default class FieldGenerator{
                 
             }
         );
-    }*/
+    }
 
 
 
@@ -194,10 +193,7 @@ export default class FieldGenerator{
                 const selectionTile = new SelectionTile(
                     scene,
                     `tile_${tile.x}_${tile.y}`,
-                    {x:tile.pixelX, y:tile.pixelY},
                     {x:tile.x,y:tile.y},
-                    tile.width, 
-                    tile.height,
                     status);
 
                 selectionTiles[tile.y][tile.x]=selectionTile;

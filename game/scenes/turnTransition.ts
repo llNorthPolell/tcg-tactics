@@ -2,6 +2,7 @@ import { CANVAS_SIZE } from "../config";
 import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
 import { SCENES } from "../enums/keys/scenes";
+import GamePlayer from "../gameobjects/player/gamePlayer";
 import { EventEmitter } from "../scripts/events";
 
 export default class TurnTransition extends Phaser.Scene{
@@ -52,8 +53,8 @@ export default class TurnTransition extends Phaser.Scene{
 
         EventEmitter.on(
             EVENTS.gameEvent.PLAYER_TURN,
-            (_playerId: number, _activePlayerIndex:number, isDevicePlayerTurn: boolean)=>{
-                if(isDevicePlayerTurn){
+            (activePlayer:GamePlayer)=>{
+                if(activePlayer.isDevicePlayer){
                     oppTurnSprite.setVisible(false);
                     yourTurnSprite.setVisible(true);
                     yourTurnAnimation.restart();

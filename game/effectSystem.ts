@@ -15,11 +15,21 @@ export default class EffectSystem{
     private onTurnStartLists: Map<number,Effect[]>;
     private onTurnEndLists:Map<number,Effect[]>;
 
-    constructor(field:Field){
+    constructor(field:Field,playersInGame:GamePlayer[]){
         this.field=field;
 
         this.onTurnStartLists=new Map();
+        this.initTurnLists(this.onTurnStartLists,playersInGame);
         this.onTurnEndLists=new Map();
+        this.initTurnLists(this.onTurnEndLists,playersInGame);
+    }
+
+    private initTurnLists(listsMap:Map<number,Effect[]>,playersInGame:GamePlayer[]){
+        playersInGame.forEach(
+            player=>{
+                listsMap.set(player.id,[]);
+            }
+        )
     }
 
     /**

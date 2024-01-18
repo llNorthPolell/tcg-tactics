@@ -99,6 +99,7 @@ export default class Capturable{
      */
     capture(owner:GamePlayer){
         this.setOwner(owner);
+        this.landmark.tile.tint = owner.color;
         this.linkedLandmarks.forEach(
             linkedLandmark=> {
                 linkedLandmark.capturable!.capture(owner);

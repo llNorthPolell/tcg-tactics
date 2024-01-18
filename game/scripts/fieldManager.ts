@@ -1,4 +1,4 @@
-import { ASSETS } from "../enums/keys/assets";
+/*import { ASSETS } from "../enums/keys/assets";
 import { EVENTS } from "../enums/keys/events";
 import { GAME_STATE } from "../enums/keys/gameState";
 import { EventEmitter } from "./events";
@@ -593,4 +593,4 @@ export default class FieldManager{
             console.log(`${occupyingLandmark.id} will be captured by ${unit.getOwner().id} in ${occupyingCapturableLandmark.getCaptureTicks()} turns...`);
     }
 
-}
+}*/

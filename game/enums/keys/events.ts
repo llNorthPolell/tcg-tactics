@@ -164,8 +164,7 @@ export const EVENTS = {
 
         /**
          * When player clicks on a selection tile after selecting a unit
-         * @Params unit:Unit
-         * @Params targetPosition:Position
+         * @Params destination:Position
          */
         MOVE: "move-unit",
 

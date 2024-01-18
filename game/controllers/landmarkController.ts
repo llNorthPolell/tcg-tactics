@@ -45,6 +45,17 @@ export default class LandmarkController{
     updateLandmarks(){
         const landmarks = this.field.landmarksByLocation;
 
-        landmarks.forEach(landmark=>landmark.capturable?.attemptCapture());
+        landmarks.forEach(landmark=>{
+            const captured = landmark.capturable?.attemptCapture();
+            if (captured){
+                const occupant = landmark.occupant;
+                if (!occupant)
+                    throw new Error ("Failed to capture landmark; no occupant was found...");
+                const newOwner = occupant.getOwner();
+                if (!newOwner)
+                    throw new Error (`Failed to capture landmark; ${occupant} does not have an owner...`);
+                this.transferLandmark(landmark,newOwner);
+            }
+        });
     }
 }

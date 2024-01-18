@@ -2,29 +2,50 @@
  * Contains keys to game registry 
  */
 export const GAME_STATE = Object.freeze({
+
+    // Game Data
     /**
-     * Contains information about device player
-     * @returns devicePlayer:GamePlayer
+     * Contains a list of players who are playing this game
+     * @returns playersInGame:GamePlayer[]
      */
-    player: "player",
+    playersInGame: "players-in-game",
 
     /**
-     * Contains information about opponents in a match
-     * @returns opponents:GamePlayer[]
+     * Contains low level data on the map (Phaser Tilemap and its layers, see game/data/types/tilemapData.ts)
+     * @returns tilemapData:TilemapData
      */
-    opponents: "opponents",
+    tilemapData: "tilemap-data",
 
     /**
-     * Contains information about allies in a match
-     * @returns allies:GamePlayer[]
+     * Contains 2-D array of selection tiles for selecting positions on the field to play a card or move a unit to
+     * @returns selectionTiles:SelectionTile[][]
      */
-    allies: "allies",
+    selectionTiles: "selection-tiles",
 
     /**
-     * Contains information about the playing field (tilemaps)
-     * @returns field:Field - Field type = { mapData: TilemapData, units: Map<string,Unit>, landmarks: Map<string, Landmark>}
+     * Contains maps of landmarks by type and by location (see game/data/types/landmarkCollection.ts)
+     * @returns landmarksData: LandmarkCollection
      */
-    field: "field"
+    landmarksData: "landmarks-data",
 
+    // State
+    state: "game-state",
+
+    field: "field",
+
+    // Controllers
+    turnController: "turn-controller",
+
+
+    unitsController: "units-controller",
+
+    selectionTilesController: "selection-tiles-controller",
+
+
+    landmarksController: "landmarks-controller",
+
+    effectsSystem: "effects-system",
+
+    eventDispatcher: "event-dispatcher"
 })
 

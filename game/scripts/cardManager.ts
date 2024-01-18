@@ -1,4 +1,4 @@
-import { CARD_SIZE } from "../config";
+/*import { CARD_SIZE } from "../config";
 import { CardData } from "../data/types/cardData";
 import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
@@ -123,10 +123,10 @@ export default class CardManager{
         let roll = Math.floor(Math.random()*this.deck.length);
 
         // Uncomment to debug handling situation of drawing hero card when at max hand size
-        /*while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll] instanceof HeroCard){
+        while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll] instanceof HeroCard){
             console.log(`Testing: Rolled a hero, roll again!`);
             roll = Math.floor(Math.random()*this.deck.length);
-        }*/
+        }
 
         const card = this.deck.splice(roll,1)[0];
 
@@ -159,9 +159,6 @@ export default class CardManager{
         EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND, this.hand);
     }
 
-    /**
-     * Deselects card and redraws them
-     */
     removeSelected(){
         if(!this.selected) return;
         this.removeCard(this.selected);
@@ -169,9 +166,6 @@ export default class CardManager{
         this.selected=undefined;
     }
 
-    /**
-     * Sets positions and redraws cards in hand
-     */
     repositionCardsInHand(){
         let c=0;
         this.hand.forEach(
@@ -200,4 +194,4 @@ export default class CardManager{
         if (selectedCurrentPosition.y===y) return;
         this.selected.setPosition({x,y});
     }
-}
+}*/

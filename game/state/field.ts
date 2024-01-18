@@ -3,8 +3,13 @@ import { TilemapData } from "@/game/data/types/tilemapData";
 import Landmark from "../gameobjects/landmarks/landmark";
 import Unit from "../gameobjects/units/unit";
 import SelectionTile from "../gameobjects/selectionTile";
+import Game from "./gameState";
 
 export default class Field{
+    private readonly game:Game;
+    /**
+     * Contains low level data relating to map
+     */
     readonly mapData: TilemapData;
 
     /**
@@ -27,12 +32,18 @@ export default class Field{
     readonly units: Map<string,Unit>;
     
     /**
+     * Units on the field stored by player
+     */
+    readonly unitsByPlayer: Map<number,Unit[]>;
+    
+    /**
      * Selection tiles for selecting destinations and target positions
      */
-    readonly selectionTiles?: SelectionTile[][];
+    readonly selectionTiles: SelectionTile[][];
 
 
-    constructor(mapData:TilemapData, landmarksByLocation:Map<string,Landmark>,selectionTiles:SelectionTile[][]){
+    constructor(game:Game, mapData:TilemapData, landmarksByLocation:Map<string,Landmark>,selectionTiles:SelectionTile[][]){
+        this.game=game;
         this.mapData = mapData;
         this.landmarksByLocation=landmarksByLocation;
 
@@ -40,7 +51,14 @@ export default class Field{
         this.landmarksByType=new Map();
 
         this.units=new Map();
+        this.unitsByPlayer=new Map();
 
+        game.getPlayers().forEach(
+            player=>{
+                this.unitsByPlayer.set(player.id,[]);
+            }
+        );
+        
         this.selectionTiles=selectionTiles;
     }
 

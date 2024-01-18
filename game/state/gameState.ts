@@ -2,7 +2,7 @@ import { EVENTS } from "@/game/enums/keys/events";
 import GamePlayer from "../gameobjects/player/gamePlayer";
 import { EventEmitter } from "@/game/scripts/events";
 
-export default class Game{
+export default class GameState{
     readonly playersInGame: GamePlayer[];
     private activePlayerIndex:number;
     private turn:number;
@@ -10,11 +10,12 @@ export default class Game{
     constructor(playersInGame:GamePlayer[]){
         this.playersInGame=playersInGame;
 
-        this.activePlayerIndex=0;
+        this.activePlayerIndex=-1;
         this.turn = 0;
     }
 
     goToNextPlayer(){
+        console.log(JSON.stringify(this.playersInGame.map(player=>player.name)));
         if (this.activePlayerIndex==this.playersInGame.length-1)
             this.goToNextTurn();
         
@@ -27,5 +28,13 @@ export default class Game{
     private goToNextTurn(){
         this.activePlayerIndex=-1;
         this.turn++;
+    }
+
+    getActivePlayer(){
+        return this.playersInGame[this.activePlayerIndex];
+    }
+
+    getPlayers(){
+        return this.playersInGame;
     }
 }

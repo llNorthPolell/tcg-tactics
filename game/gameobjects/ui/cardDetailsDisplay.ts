@@ -1,7 +1,7 @@
 import { CANVAS_SIZE } from "@/game/config";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
 import { Card } from "../cards/card";
-import { CardData } from "@/game/data/cardData";
+import { CardData } from "@/game/data/types/cardData";
 import SpellCard from "../cards/spellCard";
 import { FONT } from "@/game/enums/keys/font";
 import HeroCard from "../cards/heroCard";

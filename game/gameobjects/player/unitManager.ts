@@ -6,7 +6,7 @@ export default class UnitManager{
     /**
      * Reference to parent 
      */
-    private player:GamePlayer
+    readonly player:GamePlayer
     
     /**
      * List of followers under the player's control

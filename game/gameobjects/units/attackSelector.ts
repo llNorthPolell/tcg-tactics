@@ -5,7 +5,7 @@ import { EVENTS } from "@/game/enums/keys/events";
 import { EventEmitter } from "@/game/scripts/events";
 
 export default class AttackSelector extends Phaser.GameObjects.Container{
-    private unit:Unit;
+    private readonly unit:Unit;
     private attacker?: Unit;
 
     constructor(scene:Phaser.Scene,unit:Unit){

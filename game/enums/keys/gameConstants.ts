@@ -16,4 +16,10 @@ export const GAME_CONSTANT = Object.freeze({
      */
     RESOURCE_LIMIT: 10,
 
+
+    /**
+     * Number of turns to capture a capturable landmark.
+     */
+    LANDMARK_CAPTURE_TURNS: 3,
+
 });

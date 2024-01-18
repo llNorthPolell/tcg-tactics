@@ -88,9 +88,7 @@ export const EVENTS = {
     gameEvent: Object.freeze({
         /**
          * When entering a player's turn.
-         * @Params playerId:number
-         * @Params index:number
-         * @Params isDevicePlayerTurn:boolean
+         * @Params activePlayer:GamePlayer
          */
         PLAYER_TURN: "player-turn",
         

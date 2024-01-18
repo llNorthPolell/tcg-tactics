@@ -1,5 +1,5 @@
 import { CANVAS_SIZE, HAND_UI_SIZE } from "../config";
-import { CardData } from "../data/cardData";
+import { CardData } from "../data/types/cardData";
 import { EVENTS } from "../enums/keys/events";
 import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { GAME_STATE } from "../enums/keys/gameState";

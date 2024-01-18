@@ -1,12 +1,12 @@
 import HeroCardData from "@/game/data/cards/heroCardData";
-import Player from "@/game/data/player";
+import Player from "@/game/data/playerData";
 import { SPELL_EFFECT_TYPE } from "@/game/enums/keys/spellEffectType";
 import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
 import { UNIT_CLASS } from "@/game/enums/keys/unitClass";
 import { UnitStatField } from "@/game/enums/keys/unitStatField";
 import { ValueType } from "@/game/enums/keys/valueType";
 import HeroCard from "@/game/gameobjects/cards/heroCard";
-import Deck from "@/game/gameobjects/deck";
+import Deck from "@/game/gameobjects/cards/deck";
 import GamePlayer from "@/game/gameobjects/gamePlayer";
 import Unit from "@/game/gameobjects/unit";
 import SkillEffect from "@/game/scripts/skillEffects/skillEffect";

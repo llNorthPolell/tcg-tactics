@@ -1,4 +1,4 @@
-import { EffectData } from "@/game/data/effectData"
+import { EffectData } from "@/game/data/types/effectData"
 import Effect from "@/game/skillEffects/effect";
 import EffectFactory from "@/game/skillEffects/effectFactory"
 import HealthChange from "@/game/skillEffects/healthChange";
@@ -10,7 +10,7 @@ it("should create an effect called \"Fireball\" that deals 2 damage, and additio
             name: "Fireball",
             description: "Deals 2 damage",
             targetType: "enemy",
-            triggers: ["onCast"],				// This happens immediately when the effect is applied
+            trigger: "onCast",				// This happens immediately when the effect is applied
             components:[{
                 type: "health-change",
                 amount: -2,
@@ -23,7 +23,7 @@ it("should create an effect called \"Fireball\" that deals 2 damage, and additio
             description: "Deals 1 damage per turn for 3 turns",
             targetType: "enemy",
             duration:3,
-            triggers: ["onTurnStart"],				//This happens next turn  and is inserted into target as a debuff 
+            trigger: "onTurnStart",				//This happens next turn  and is inserted into target as a debuff 
             components: [{
                 type: "health-change",
                 amount: -1,
@@ -33,7 +33,7 @@ it("should create an effect called \"Fireball\" that deals 2 damage, and additio
         }
     ]
 
-    const effects:Effect[] = EffectFactory.createEffect(data);
+    const effects:Effect[] = EffectFactory.createEffects(data);
 
     expect(effects.length).toBe(2); 
 
@@ -42,7 +42,7 @@ it("should create an effect called \"Fireball\" that deals 2 damage, and additio
     expect(instantEffect.description).toBe("Deals 2 damage");
     expect(instantEffect.targetType).toBe("enemy");
     expect(instantEffect.duration).toBe(0);
-    expect(instantEffect.triggers[0]).toBe("onCast");
+    expect(instantEffect.trigger).toBe("onCast");
     expect(instantEffect.isRemovable).toBe(true);
     expect(instantEffect.getComponents().length).toBe(1);
     expect(instantEffect.getComponents()[0] instanceof HealthChange).toBe(true);
@@ -56,7 +56,7 @@ it("should create an effect called \"Fireball\" that deals 2 damage, and additio
     expect(dotEffect.description).toBe("Deals 1 damage per turn for 3 turns");
     expect(dotEffect.targetType).toBe("enemy");
     expect(dotEffect.duration).toBe(3);
-    expect(dotEffect.triggers[0]).toBe("onTurnStart");
+    expect(dotEffect.trigger).toBe("onTurnStart");
     expect(dotEffect.isRemovable).toBe(true);
     expect(dotEffect.getComponents().length).toBe(1);
     expect(dotEffect.getComponents()[0] instanceof HealthChange).toBe(true);
@@ -75,7 +75,7 @@ it("should create an effect called \"Stronghold's Advantage\" that provides buff
             description: "+2 PWR/DEF",
             targetType: "ally",
             duration:-1,
-            triggers: ["onCast"],			// Note this is onCast, as Stronghold should cast it immediately when it detects an occupant. 
+            trigger: "onCast",			// Note this is onCast, as Stronghold should cast it immediately when it detects an occupant. 
                                             // If this was onTurnStart, the buff won't be applied until next turn.
             components:[
                 {
@@ -98,7 +98,7 @@ it("should create an effect called \"Stronghold's Advantage\" that provides buff
             description: "Recover 2hp at the start of each turn",
             targetType: "ally",
             duration:-1,
-            triggers: ["onTurnStart"],				
+            trigger: "onTurnStart",				
             components:	[
                 {
                     type: "health-change",
@@ -110,7 +110,7 @@ it("should create an effect called \"Stronghold's Advantage\" that provides buff
         }
     ]
 
-    const effects:Effect[] = EffectFactory.createEffect(data);
+    const effects:Effect[] = EffectFactory.createEffects(data);
 
     expect(effects.length).toBe(2); 
 
@@ -119,7 +119,7 @@ it("should create an effect called \"Stronghold's Advantage\" that provides buff
     expect(instantEffect.description).toBe("+2 PWR/DEF");
     expect(instantEffect.targetType).toBe("ally");
     expect(instantEffect.duration).toBe(-1);
-    expect(instantEffect.triggers[0]).toBe("onCast");
+    expect(instantEffect.trigger).toBe("onCast");
     expect(instantEffect.isRemovable).toBe(false);
     expect(instantEffect.getComponents().length).toBe(2);
     expect(instantEffect.getComponents()[0] instanceof StatChange).toBe(true);
@@ -138,7 +138,7 @@ it("should create an effect called \"Stronghold's Advantage\" that provides buff
     expect(regenEffect.description).toBe("Recover 2hp at the start of each turn");
     expect(regenEffect.targetType).toBe("ally");
     expect(regenEffect.duration).toBe(-1);
-    expect(regenEffect.triggers[0]).toBe("onTurnStart");
+    expect(regenEffect.trigger).toBe("onTurnStart");
     expect(regenEffect.isRemovable).toBe(false);
     expect(regenEffect.getComponents().length).toBe(1);
     expect(regenEffect.getComponents()[0] instanceof HealthChange).toBe(true);

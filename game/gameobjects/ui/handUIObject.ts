@@ -1,4 +1,4 @@
-import { CardData } from "@/game/data/cardData";
+import { CardData } from "@/game/data/types/cardData";
 import { Card } from "../cards/card";
 import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";

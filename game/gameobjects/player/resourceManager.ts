@@ -5,7 +5,7 @@ export default class ResourceManager{
     /**
      * Reference to parent
      */
-    private player:GamePlayer;
+    readonly player:GamePlayer;
 
     /**
      * Current resources on hand

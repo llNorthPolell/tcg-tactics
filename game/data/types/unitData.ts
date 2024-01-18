@@ -6,5 +6,5 @@ export type UnitData = {
     unitType:string,
     unitClass:string,
     stats:UnitStats,
-    effect?:EffectData
+    effects?:EffectData[]
 }

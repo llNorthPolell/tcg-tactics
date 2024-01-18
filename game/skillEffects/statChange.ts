@@ -1,3 +1,4 @@
+import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
 import { UnitStatField } from "../enums/keys/unitStatField";
 import { ValueType } from "../enums/keys/valueType";
 import Unit from "../gameobjects/units/unit";
@@ -15,7 +16,7 @@ export default class StatChange extends BaseEffectComponent{
     private target?:Unit;
 
     constructor(stat:string,amount:number,valueType:string=ValueType.VALUE){
-        super();
+        super(SPELL_EFFECT_TYPE.statChange,amount,valueType,stat);
         this.stat=stat;
         this.amount=amount;
         this.valueType=valueType;

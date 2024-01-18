@@ -16,7 +16,7 @@ export default class PositionController{
     /**
      * Reference to parent
      */
-    private unit:Unit;
+    private readonly unit:Unit;
 
     /**
      * 

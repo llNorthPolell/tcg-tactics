@@ -5,7 +5,7 @@ import { EventEmitter } from "@/game/scripts/events";
 import UnitGO from "./unitGO";
 
 export default class CombatController {
-    private unit:Unit;
+    private readonly unit:Unit;
 
     constructor(unit:Unit){
         this.unit=unit;

@@ -1,8 +1,8 @@
 import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
 import { UNIT_CLASS } from "../enums/keys/unitClass";
-import GamePlayer from "../gameobjects/gamePlayer";
-import Unit from "../gameobjects/unit";
+import GamePlayer from "../gameobjects/player/gamePlayer";
+import Unit from "../gameobjects/units/unit";
 import { EventEmitter } from "./events";
 import DealDamage from "./skillEffects/basic/dealDamage";
 import Heal from "./skillEffects/basic/heal";
@@ -29,7 +29,7 @@ export default class CombatHandler{
                     if (!target)
                         console.log(`Apply ${skillEffect} without a target...`)
                     else if (target instanceof Unit){
-                        console.log(`Apply ${skillEffect.name} onto ${target.getUnitData().name}..`);
+                        console.log(`Apply ${skillEffect.name} onto ${target.name}..`);
                         if (!skillEffect.duration){
                             skillEffect.setTarget(target);
                             skillEffect.apply();
@@ -68,23 +68,23 @@ export default class CombatHandler{
 
         const attackerDmgTaken = this.calcDamage(defender, attacker);
         console.log(`${defender?.getUnitData().name} retaliates!`);
-        attacker.takeDamage(attackerDmgTaken);
+        attacker.combat.changeHealth(attackerDmgTaken);
     }
 
 
     calcDamage(attacker:Unit, defender:Unit):number{
-        const attackerStats = attacker.getUnitData();
-        const defenderStats = defender.getUnitData();
+        const attackerStats = attacker.getCurrentStats();
+        const defenderStats = defender.getCurrentStats();
     
-        let damage = attackerStats.currPwr - defenderStats.currDef;
+        let damage = attackerStats.pwr - defenderStats.def;
 
-        switch (attackerStats.unitClass){
+        switch (attacker.unitClass){
             case UNIT_CLASS.ASSASSIN:
-                if (defenderStats.currHp < defenderStats.maxHP * 0.5)
+                if (defenderStats.hp < defender.base.hp * 0.5)
                     damage = Math.ceil(damage * 1.2);
                 break;
             case UNIT_CLASS.BERSERKER:
-                if (attackerStats.currHp < attackerStats.maxHP * 0.5)
+                if (attackerStats.hp < attacker.base.hp * 0.5)
                     damage = Math.ceil(damage * 1.2);
                 break;
             default:
@@ -92,7 +92,7 @@ export default class CombatHandler{
         }
 
 
-        switch (defenderStats.unitClass){
+        switch (defender.unitClass){
             case UNIT_CLASS.GUARDIAN:
                 damage = Math.floor(damage * 0.8);
                 break;

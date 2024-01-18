@@ -1,13 +1,13 @@
-import Effect from "@/game/skillEffects/effect";
 import Card from "./card";
-import { v4 as uuidv4 } from 'uuid';
 import Unit from "../units/unit";
 import CardContent from "../common/cardContent";
 import { CARD_TYPE } from "@/game/enums/keys/cardType";
-import { CardData } from "@/game/data/cardData";
-import { UnitData } from "@/game/data/unitData";
-import { EffectData } from "@/game/data/effectData";
+import { CardData } from "@/game/data/types/cardData";
+import { UnitData } from "@/game/data/types/unitData";
+import { EffectData } from "@/game/data/types/effectData";
 import GamePlayer from "../player/gamePlayer";
+import EffectFactory from "@/game/skillEffects/effectFactory";
+import UnitFactory from "../units/unitFactory";
 
 export default class CardFactory{
 
@@ -17,22 +17,15 @@ export default class CardFactory{
      * @param owner Initial owner of this card 
      * @returns result card object from information provided
      */
-    static createCard(cardData:CardData,owner:GamePlayer) : Card{
+    static createCard(cardData:CardData) : Card{
         let contents :CardContent;
         if ((cardData.cardType === CARD_TYPE.hero || cardData.cardType === CARD_TYPE.unit) && cardData.contents){
             const unitData = cardData.contents as UnitData;
-            contents=new Unit(
-                uuidv4().toString(),
-                cardData.name,
-                owner,
-                cardData.id,
-                unitData.unitClass,
-                unitData.unitType, 
-                unitData.stats) 
+            contents = UnitFactory.createUnit(cardData,unitData);
         }
         else {
-            const effectData = cardData.contents as EffectData;
-            contents = new Effect(effectData);
+            const effectData = cardData.contents as EffectData[];
+            contents = EffectFactory.createEffects(effectData);
         }
         const card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,contents);
         return card;

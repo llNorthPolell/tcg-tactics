@@ -1,5 +1,5 @@
-import { EffectData } from "../data/effectData";
-import { EffectDataComponent } from "../data/effectDataComponent";
+import { EffectData } from "../data/types/effectData";
+import { EffectDataComponent } from "../data/types/effectDataComponent";
 import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
 import Effect from "./effect";
 import EffectComponent from "./effectComponent";
@@ -7,7 +7,7 @@ import HealthChange from "./healthChange";
 import StatChange from "./statChange";
 
 export default class EffectFactory{
-    static createEffect(effectData:EffectData[]):Effect[]{
+    static createEffects(effectData:EffectData[]):Effect[]{
         let effects:Effect[]=[];
         effectData.forEach(
             data=>{ 
@@ -24,7 +24,7 @@ export default class EffectFactory{
 
                 newEffect.addComponents(components);
 
-                effects = [...effects,newEffect];
+                effects.push(newEffect);
             }
         );
 
@@ -53,7 +53,7 @@ export default class EffectFactory{
                         break;
                 }
                 if(newComponent)
-                    effectComponents=[...effectComponents,newComponent];
+                    effectComponents.push(newComponent);
             }
         )
         return effectComponents;

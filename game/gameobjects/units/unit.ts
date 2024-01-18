@@ -2,8 +2,8 @@ import Effect from "@/game/skillEffects/effect";
 import GameObject from "../common/gameObject";
 import GamePlayer from "../player/gamePlayer";
 import PositionController from "./positionController";
-import { UnitStats } from "../../data/unitStats";
-import { UnitStatuses } from "@/game/data/unitStatuses";
+import { UnitStats } from "../../data/types/unitStats";
+import { UnitStatuses } from "@/game/data/types/unitStatuses";
 import CardContent from "../common/cardContent";
 import CombatController from "./combatController";
 
@@ -49,14 +49,9 @@ export default class Unit implements CardContent{
     private status: UnitStatuses;
 
     /**
-     * Unit statuses for behavioural effects (i.e. stuns, rush, etc.)
+     * Effects casted by this unit
      */
-    private effect?:Effect;
-
-    /**
-     * Player who controls this unit
-     */
-    private owner:GamePlayer;
+    private effects:Effect[];
 
     /**
      * Reference to physicalization of the unit rendered on screen
@@ -71,12 +66,18 @@ export default class Unit implements CardContent{
     /**
      * Reference to Combat controller object to handle unit combat functions.
      */
-    private combatController:CombatController
+    readonly combat:CombatController
     
     /**
      * If true, unit can move and attack
      */
     private active:boolean;
+
+
+    /**
+     * Player who controls this unit
+     */
+    private owner?:GamePlayer;
 
     /**
      * 
@@ -87,15 +88,14 @@ export default class Unit implements CardContent{
      * @param stats Base stats (values shown on the card)
      * @param unitType Hero or Unit?
      */
-    constructor(id:string,name:string,owner:GamePlayer,cardId:string,unitClass:string,unitType:string,stats:UnitStats,effect?:Effect){
+    constructor(id:string,name:string,cardId:string,unitClass:string,unitType:string,stats:UnitStats,effects:Effect[]){
         this.id=id; 
         this.name=name;
-        this.owner=owner;
         this.cardId=cardId;
         this.unitClass=unitClass;
         this.unitType=unitType;
         this.base=stats;
-        this.effect=effect;
+        this.effects=effects;
         this.current=stats;
         this.active=false;
 
@@ -105,7 +105,7 @@ export default class Unit implements CardContent{
             isStunned:false,
             rush:false
         }
-        this.combatController = new CombatController(this);
+        this.combat = new CombatController(this);
     }
 
     getCurrentStats():UnitStats{
@@ -116,15 +116,15 @@ export default class Unit implements CardContent{
         return this.status;
     }
 
-    getEffect():Effect | undefined{
-        return this.effect;
+    getEffects():Effect[]{
+        return this.effects;
     }
 
     setOwner(owner:GamePlayer):void{
         this.owner = owner;
     }
 
-    getOwner():GamePlayer{
+    getOwner():GamePlayer | undefined{
         return this.owner;
     }
     
@@ -137,14 +137,10 @@ export default class Unit implements CardContent{
         return this.gameObject;
     }
 
-    getPositionController():PositionController | undefined{
+    position():PositionController | undefined{
         return this.positionController;
     }
 
-    getCombatController():CombatController{
-        return this.combatController;
-    }
-    
     setActive(active:boolean):void{
         this.active=active;
     }

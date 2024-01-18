@@ -4,7 +4,7 @@ import { EVENTS } from "@/game/enums/keys/events";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
 import { EventEmitter } from "@/game/scripts/events";
 import { Card } from "../cards/card";
-import { CardData } from "@/game/data/cardData";
+import { CardData } from "@/game/data/types/cardData";
 import HeroCard from "../cards/heroCard";
 import Button from "./button";
 import SpellCard from "../cards/spellCard";

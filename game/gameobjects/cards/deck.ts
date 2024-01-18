@@ -1,4 +1,4 @@
-import Card  from "./cards/card";
+import Card from "./card";
 
 export default class Deck{
     private cards:Card[];

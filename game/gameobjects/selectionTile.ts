@@ -4,7 +4,8 @@ import { EVENTS } from "../enums/keys/events";
 import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus} from "../enums/tileStatus";
 import { EventEmitter } from "../scripts/events";
-import Unit from "./unit";
+import Unit from "./units/unit";
+
 
 export default class SelectionTile {
     private tile: Phaser.GameObjects.Rectangle;

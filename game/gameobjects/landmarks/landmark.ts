@@ -1,20 +1,23 @@
-import Unit from "../unit";
+import { Position } from "@/game/data/types/position";
+import Unit from "../units/unit";
+import { LandmarkType } from "@/game/enums/landmarkType";
+import Capturable from "./capturable";
 
-export default interface Landmark{
+export default class Landmark{
     /**
-     * id for landmark (in type_x_y format)
+     * Id for landmark (in type_x_y format)
      */
     readonly id:string;
 
     /**
-     * x value (in tiles)
+     * Location of this landmark on the map (in tiles)
      */
-    readonly x:number;
+    readonly position:Position;
 
     /**
-     * y value (in tiles)
+     * Type of landmark (Stronghold, Outpost, Resource Node, etc.)
      */
-    readonly y:number;
+    readonly type:LandmarkType;
 
     /**
      * Phaser.Tilemaps.Tile object from the landmark layer
@@ -24,20 +27,19 @@ export default interface Landmark{
     /**
      * True for capturable landmarks. Used for checking if landmark is a capturable-type
      */
-    readonly capturable:boolean;
+    readonly capturable?:Capturable;
 
     /**
      * The unit that is standing on this landmark
      */
     occupant?:Unit;
 
-    /**
-     * Called when unit enters a landmark and stays. Applies skill effects and sets occupant to unit.
-     */
-    enter(unit:Unit):void;
+    constructor(id:string, type:LandmarkType, position:Position, tile:Phaser.Tilemaps.Tile, capturable:boolean, directCapturable:boolean=true){
+        this.id=id;
+        this.type=type;
+        this.position=position
+        this.tile=tile;
 
-    /**
-     * Called when unit leaves a landmark. Removes skill effects.
-     */
-    leave():void;
+        this.capturable=(capturable)? new Capturable(this,directCapturable):undefined;
+    }
 }

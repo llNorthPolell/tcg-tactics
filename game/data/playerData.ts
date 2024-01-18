@@ -1,4 +1,4 @@
-export default class Player{
+export default class PlayerData{
     readonly id: string;
     readonly name: string;
 

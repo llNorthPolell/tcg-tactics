@@ -1,5 +1,5 @@
 import { CARD_SIZE } from "../config";
-import { CardData } from "../data/cardData";
+import { CardData } from "../data/types/cardData";
 import { Position } from "../data/types/position";
 import { EVENTS } from "../enums/keys/events";
 import { GAME_CONSTANT } from "../enums/keys/gameConstants";

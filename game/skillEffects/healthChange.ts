@@ -1,3 +1,4 @@
+import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
 import { ValueType } from "../enums/keys/valueType";
 import Unit from "../gameobjects/units/unit";
 import BaseEffectComponent from "./baseEffectComponent";
@@ -7,7 +8,7 @@ export default class HealthChange extends BaseEffectComponent{
     readonly valueType:string;
 
     constructor(amount:number, valueType:string=ValueType.VALUE){
-        super();
+        super(SPELL_EFFECT_TYPE.healthChange,amount,valueType);
         this.amount=amount;
         this.valueType=valueType;
     }

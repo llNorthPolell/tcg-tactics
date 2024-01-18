@@ -1,5 +1,5 @@
-import { CardData } from "@/game/data/cardData";
-import Player from "@/game/data/player";
+import { CardData } from "@/game/data/types/cardData";
+import Player from "@/game/data/playerData";
 import { CARD_TYPE } from "@/game/enums/keys/cardType";
 import { SPELL_EFFECT_TYPE } from "@/game/enums/keys/spellEffectType";
 import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";

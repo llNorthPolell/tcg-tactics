@@ -1,4 +1,4 @@
-import UnitData from "@/game/data/unitData";
+import UnitData from "@/game/data/types/unitData";
 import Unit from "../unit";
 import { ASSETS } from "@/game/enums/keys/assets";
 import { HAND_UI_SIZE, PORTRAIT_SIZE } from "@/game/config";

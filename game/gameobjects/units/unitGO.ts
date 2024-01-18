@@ -26,7 +26,7 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
     private hpText:Phaser.GameObjects.Text;
     private pwrText:Phaser.GameObjects.Text;
 
-    private unit:Unit;
+    private readonly unit:Unit;
     
     constructor(scene : Phaser.Scene, unit:Unit,initialPosition:Position){
         super(scene,initialPosition.x,initialPosition.y);

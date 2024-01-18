@@ -1,6 +1,8 @@
-import Player from "@/game/data/player";
+import Player from "@/game/data/playerData";
 import ResourceManager from "./resourceManager";
 import UnitManager from "./unitManager";
+import LandmarkManager from "./landmarkManager";
+import CardManager from "./cardManager";
 
 export default class GamePlayer{
     /**
@@ -31,12 +33,22 @@ export default class GamePlayer{
     /**
      * Resource manager for access to generate and spend resources, and get resources on hand
      */
-    private resources:ResourceManager;
+    readonly resources:ResourceManager;
 
     /**
      * Unit manager for access to active units, heroes, and the player's graveyard
      */
-    private units:UnitManager;
+    readonly units:UnitManager;
+
+    /**
+     * Landmark manager for access to owned landmarks
+     */
+    readonly landmarks:LandmarkManager;
+
+    /**
+     * Card manager for access to deck and hand
+     */
+    readonly cards: CardManager;
 
     constructor(id:number,playerInfo:Player, color:number, team:number,isDevicePlayer:boolean=false){
         this.id=id;
@@ -47,6 +59,8 @@ export default class GamePlayer{
 
         this.resources=new ResourceManager(this);
         this.units=new UnitManager(this);
+        this.landmarks=new LandmarkManager(this);
+        this.cards=new CardManager(this);
     }
 
     /**
@@ -62,19 +76,5 @@ export default class GamePlayer{
      */
     getTeam():number{
         return this.team;
-    }
-    
-    /**
-     * Resource manager for access to generate and spend resources, and get resources on hand
-     */
-    getResourceManager() : ResourceManager{
-        return this.resources;
-    }
-
-    /**
-     * Unit manager for access to active units, heroes, and the player's graveyard
-     */
-    getUnitManager() : UnitManager{
-        return this.units;
     }
 }

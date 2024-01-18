@@ -58,14 +58,4 @@ export default class Card {
         return this.contents;
     }
 
-    play(target?:Unit | Position):void{
-        if (this.cardType===CARD_TYPE.spell){
-            const effect = this.contents as Effect;
-        }
-        else {
-            const unit = this.contents as Unit;
-            const summonLocation = target as Position;
-            unit.getPositionController()!.moveTo(summonLocation);
-        }
-    }
 }

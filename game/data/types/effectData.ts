@@ -41,7 +41,7 @@ export type EffectData = {
      * @note Target-based: isClass=X, isHero, isUnit
      * @note Default: undefined
      */
-    triggers: string[],
+    trigger: string,
 
     /**
      * 

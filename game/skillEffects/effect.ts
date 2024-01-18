@@ -39,7 +39,7 @@ export default class Effect implements CardContent{
      * @note 0 or undefined = Single Target
      * @note -1 = Global
      */
-    range:number;
+    readonly range:number;
 
     /**
      * Applies this effect only on specified condition
@@ -50,12 +50,12 @@ export default class Effect implements CardContent{
      * @note Target-based: isClass=X, isHero, isUnit
      * @note Default: undefined
      */
-    triggers: string[];
+    readonly trigger: string;
 
     /**
      * Modular effect handlers that actually apply effects
      */
-    private components:EffectComponent[];
+    readonly components:EffectComponent[];
 
     /**
      * Active If true, will run apply() method
@@ -69,13 +69,19 @@ export default class Effect implements CardContent{
      */
     readonly isRemovable:boolean;
 
-    constructor(name:string, description:string, targetType:string, duration:number=0, range:number=0, triggers:string[], isRemovable:boolean=false){
+    /**
+     * The target to apply this skill to. If target is a unit, applies the effects directly. 
+     * If target is a position, will create this effect on units in range. 
+     */
+    private target?:Unit|Position;
+
+    constructor(name:string, description:string, targetType:string, duration:number=0, range:number=0, trigger:string, isRemovable:boolean=false){
         this.name=name;
         this.description=description;
         this.targetType=targetType;
         this.duration=duration;
         this.range=range;
-        this.triggers=triggers;
+        this.trigger=trigger;
         this.components=[];
         this.active=false;
         this.isRemovable=isRemovable;
@@ -88,23 +94,30 @@ export default class Effect implements CardContent{
      * @param newComponents New effect components to add to this effect
      */
     addComponents(newComponents:EffectComponent[]){
-        this.components = [...this.components,...newComponents];
+        this.components.push(...newComponents);
     }
 
     /**
      * @returns List of components in this effect.
      */
-    getComponents(){
+    getComponents():EffectComponent[]{
         return this.components;
+    }
+
+    /**
+     * @returns List of components with the specified type in this effect
+     */
+    getComponentsByType(type:string):EffectComponent[]{
+        return this.components.filter(component=>component.type === type);
     }
     
     /**
-     * @param target Applies the effect onto the target unit or position on the field. 
+     * Applies the effect onto the assigned target unit or position on the field. 
      */
-    apply(target?:Unit|Position){
+    apply(){
         this.components.forEach(
             component=>{
-                component.apply(target);
+                component.apply(this.target);
             }
         )
         if(this.duration<=0)return;
@@ -114,7 +127,14 @@ export default class Effect implements CardContent{
     }
 
     /**
-     * 
+     * Sets the target for this skill
+     */
+    setTarget(target:Unit|Position){
+        this.target=target;
+    }
+
+    /**
+     * Sets active status of this effect.
      * @param active If true, will run apply() method
      */
     setActive(active:boolean){
@@ -122,7 +142,6 @@ export default class Effect implements CardContent{
     }
 
     /**
-     * 
      * @returns If true, will run apply() method
      */
     isActive():boolean{
@@ -130,24 +149,32 @@ export default class Effect implements CardContent{
     }
 
     /**
-     * 
+     * Removes an effect if it is removable. 
      */
     remove(): void {
         if(!this.isRemovable) return;
         this.forceRemove();
     }
 
+    /**
+     * Removes an effect forcefully, even if it is marked as not removable.
+     */
     forceRemove(): void {
         this.components.forEach(
             component=>{
                 component.remove();
             }
         );
-        this.active=false;
+        this.reset();
     }
 
+    /**
+     * Resets this effect. 
+     */
     reset(): void {
         this.currTime=0;
+        this.target=undefined;
+        this.active=false;
     }
     
 }

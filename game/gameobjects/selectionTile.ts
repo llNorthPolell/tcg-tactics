@@ -65,6 +65,7 @@ export default class SelectionTile {
         this.tileSelectionType=tileSelectionType;
         this.setStatus((status === undefined)? this.initStatus: status);
         this.tile.setVisible(true);
+        console.log(`${this.tile.visible}`);
     }
 
     hide(){

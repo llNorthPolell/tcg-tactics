@@ -4,10 +4,9 @@ import GamePlayer from "../player/gamePlayer";
 import PositionController from "./positionController";
 import { UnitStats } from "../../data/types/unitStats";
 import { UnitStatuses } from "@/game/data/types/unitStatuses";
-import CardContent from "../common/cardContent";
 import CombatController from "./combatController";
 
-export default class Unit implements CardContent{
+export default class Unit{
     /**
      * Id of the unit
      */
@@ -81,12 +80,14 @@ export default class Unit implements CardContent{
 
     /**
      * 
-     * @param id Id of the unit
-     * @param cardId Id of this unit's card
+     * @param id Id of this unit (generated in game)
+     * @param name Name of this unit
+     * @param cardId Id of this unit's card from the database
      * @param owner Owner of this unit
      * @param unitClass Class of this unit (i.e. Soldier, Ranger, Mage, etc.)
      * @param stats Base stats (values shown on the card)
      * @param unitType Hero or Unit?
+     * @param effects Effects casted by this unit
      */
     constructor(id:string,name:string,cardId:string,unitClass:string,unitType:string,stats:UnitStats,effects:Effect[]){
         this.id=id; 
@@ -143,6 +144,7 @@ export default class Unit implements CardContent{
 
     setActive(active:boolean):void{
         this.active=active;
+        this.gameObject?.updateActive();
     }
 
     isActive():boolean{

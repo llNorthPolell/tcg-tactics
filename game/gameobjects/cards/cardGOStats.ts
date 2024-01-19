@@ -7,7 +7,11 @@ import { getClassIcon } from "@/game/enums/keys/unitClass";
 export default class CardGOStats{
     constructor(scene:Phaser.Scene, container: CardGO){
         const card = container.getCard();
-        const unit = (card.getContents() as Unit)
+        const unit = card.getUnit();
+
+        if (!unit)
+            throw new Error(`No unit was linked to ${card.name}...`);
+        
         const stats = unit.getCurrentStats();
 
         const healthBg = scene.add.image(

@@ -46,6 +46,33 @@ export const GAME_STATE = Object.freeze({
 
     effectsSystem: "effects-system",
 
-    eventDispatcher: "event-dispatcher"
+    eventDispatcher: "event-dispatcher",
+
+    mainController: "main-controller",
+
+    // UI
+    handUIObject: "hand-ui",
+
+    unitControlsPanel: "unit-controls-panel",
+
+    unitStatDisplay: "unit-stat-display",
+
+    endTurnButton: "end-turn-button",
+
+    resourceDisplay: "resource-display",
+
+
+    handUIController: "hand-ui-controller",
+
+    unitCtrlPanelController: "unit-controls-panel-controller",
+
+    unitStatDisplayController: "unit-stat-display-controller",
+
+    endTurnButtonController: "end-turn-button-controller",
+
+    resourceDisplayController: "resource-display-controller",
+
+
+    uiController: "ui-controller",
 })
 

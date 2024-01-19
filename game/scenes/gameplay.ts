@@ -17,6 +17,7 @@ import EventDispatcher from "../controllers/eventDispatcher";
 import EffectSystem from "../system/effectSystem";
 import { EventEmitter } from "../scripts/events";
 import { EVENTS } from "../enums/keys/events";
+import FieldSetupScripts from "../scripts/fieldSetupScripts";
 
 
 type GamePlayers = {
@@ -62,6 +63,10 @@ export default class GameplayScene extends Phaser.Scene{
             .setZoom(3.125);
         
         setupMouseInputs(this.input,camera);  
+
+        /*const playersInGame = this.game.registry.get(GAME_STATE.playersInGame);
+        const unitsController = this.game.registry.get(GAME_STATE.unitsController);
+        FieldSetupScripts.spawnDeckLeaders(this,playersInGame,unitsController);*/
 
 
         this.game.scene.start(SCENES.HUD);

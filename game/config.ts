@@ -25,6 +25,11 @@ export const PORTRAIT_SIZE = {
     height: HAND_UI_SIZE.height
 }
 
+export const HUD_BUTTON_SIZE = {
+    width:200,
+    height:50
+}
+
 export const config : Phaser.Types.Core.GameConfig= {
     type: Phaser.AUTO,
     scale: {

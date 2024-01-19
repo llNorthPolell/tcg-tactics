@@ -6,7 +6,6 @@ import { UnitData } from "@/game/data/types/unitData";
 import { EffectData } from "@/game/data/types/effectData";
 import EffectFactory from "@/game/skillEffects/effectFactory";
 import UnitFactory from "../units/unitFactory";
-import Effect from "@/game/skillEffects/effect";
 
 export default class CardFactory{
 
@@ -17,16 +16,17 @@ export default class CardFactory{
      * @returns result card object from information provided
      */
     static createCard(cardData:CardData) : Card{
-        let contents : Unit | Effect[];
+        let card;
         if ((cardData.cardType === CARD_TYPE.hero || cardData.cardType === CARD_TYPE.unit) && cardData.contents){
             const unitData = cardData.contents as UnitData;
-            contents = UnitFactory.createUnit(cardData,unitData);
+            const unit =  UnitFactory.createUnit(cardData,unitData);
+            card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,undefined,unit);
         }
         else {
             const effectData = cardData.contents as EffectData[];
-            contents = EffectFactory.createEffects(effectData);
+            const effects = EffectFactory.createEffects(effectData);
+            card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,effects);
         }
-        const card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,contents);
         return card;
     }
 

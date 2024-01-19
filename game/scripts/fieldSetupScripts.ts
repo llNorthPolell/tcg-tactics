@@ -8,6 +8,7 @@ import GamePlayer from "../gameobjects/player/gamePlayer";
 import { LandmarksCollection } from "../data/types/landmarksCollection";
 import Unit from "../gameobjects/units/unit";
 import GameObjectFactory from "../gameobjects/gameObjectFactory";
+import UnitController from "../controllers/unitController";
 
 export default class FieldSetupScripts{
     static generateMap(scene:Phaser.Scene) : TilemapData{
@@ -205,19 +206,14 @@ export default class FieldSetupScripts{
         return selectionTiles;
     }
 
-    static spawnDeckLeaders(scene:Phaser.Scene,playersInGame:GamePlayer[]){
+    static spawnDeckLeaders(scene:Phaser.Scene,playersInGame:GamePlayer[], unitsController:UnitController){
         playersInGame.forEach(
             player=>{
                 const leaderCard = player.cards.getLeader();
                 if (!leaderCard)
                     throw new Error (`${player.name} does not have a leader...`);
-                const leader = leaderCard.getContents() as Unit;
-                leader.setOwner(player);
                 const initStrongholdPosition = player.landmarks.getStartingStronghold().position;
-                leader.linkGameObject(GameObjectFactory.createUnitGO(scene,leader));
-                leader.position()?.moveTo(initStrongholdPosition);
-                player.units.register(leader);
-
+                const leader = unitsController.summonUnitByCard(scene,leaderCard,initStrongholdPosition);
                 console.log(`Summoned ${leader.name} at (${initStrongholdPosition.x},${initStrongholdPosition.y})`)
             }
         )

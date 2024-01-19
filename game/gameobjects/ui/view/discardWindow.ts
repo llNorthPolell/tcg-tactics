@@ -5,8 +5,8 @@ import { UI_COLORS } from "@/game/enums/keys/uiColors";
 import { EventEmitter } from "@/game/scripts/events";
 import { CardData } from "@/game/data/types/cardData";
 import Button from "./button";
-import CardGO from "../cards/cardGO";
-import Card from "../cards/card";
+import CardGO from "../../cards/cardGO";
+import Card from "../../cards/card";
 
 const DISCARD_WINDOW_SIZE = {
     width: CANVAS_SIZE.width*0.4,

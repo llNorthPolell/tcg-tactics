@@ -1,9 +1,8 @@
 import { Position } from "../data/types/position";
-import CardContent from "../gameobjects/common/cardContent";
 import Unit from "../gameobjects/units/unit";
 import EffectComponent from "./effectComponent";
 
-export default class Effect implements CardContent{
+export default class Effect{
     /**
      * Name of the effect
      */

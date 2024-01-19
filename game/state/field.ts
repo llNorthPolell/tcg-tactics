@@ -31,11 +31,7 @@ export default class Field{
      */
     readonly units: Map<string,Unit>;
     
-    /**
-     * Units on the field stored by player
-     */
-    readonly unitsByPlayer: Map<number,Unit[]>;
-    
+
     /**
      * Selection tiles for selecting destinations and target positions
      */
@@ -51,14 +47,7 @@ export default class Field{
         this.landmarksByType=new Map();
 
         this.units=new Map();
-        this.unitsByPlayer=new Map();
-
-        game.getPlayers().forEach(
-            player=>{
-                this.unitsByPlayer.set(player.id,[]);
-            }
-        );
-        
+ 
         this.selectionTiles=selectionTiles;
     }
 

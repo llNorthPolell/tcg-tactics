@@ -30,7 +30,7 @@ export default class PositionController{
     }
 
     /**
-     * Updates position in tiles
+     * Updates the game object's position (in tiles)
      */
     moveTo(destination:Position){
         this.destination = destination;
@@ -48,6 +48,15 @@ export default class PositionController{
             this.destination=undefined;
         }
         this.unit.setActive(false);
+    }
+
+    /**
+     * Sets the position (in tiles)
+     */
+    set(position:Position){
+        this.position = position;
+        const pixelLocation = {x:position.x * TILESIZE.width, y:position.y * TILESIZE.height};
+        this.unit.getGameObject()!.setPosition(pixelLocation.x,pixelLocation.y);
     }
 
     /**

@@ -12,13 +12,14 @@ const RESOURCE_DISPLAY_SIZE = {
 }
 
 export default class ResourceDisplay extends Phaser.GameObjects.Container{
-    private bg: Phaser.GameObjects.Rectangle;
+    private readonly currentText:Phaser.GameObjects.Text;
+    private readonly maxText:Phaser.GameObjects.Text;
+    private readonly incomeText:Phaser.GameObjects.Text;
 
     constructor(        
-        scene:Phaser.Scene, 
-        position: Position){
-        super(scene,position.x,position.y);
-        this.bg = scene.add.rectangle(
+        scene:Phaser.Scene){
+        super(scene,0,CANVAS_SIZE.height*0.39);
+        const bg = scene.add.rectangle(
             0,
             0,
             RESOURCE_DISPLAY_SIZE.width,
@@ -26,7 +27,7 @@ export default class ResourceDisplay extends Phaser.GameObjects.Container{
             UI_COLORS.background
         ).setOrigin(0);
         
-        const currResourceText = scene.add.text(
+        this.currentText = scene.add.text(
             RESOURCE_DISPLAY_SIZE.width*0.2,
             RESOURCE_DISPLAY_SIZE.height*0.2,
             "0",
@@ -47,7 +48,7 @@ export default class ResourceDisplay extends Phaser.GameObjects.Container{
         .setLineWidth(3)
         .setOrigin(0);
 
-        const maxResourceText = scene.add.text(
+        this.maxText = scene.add.text(
             RESOURCE_DISPLAY_SIZE.width*0.55,
             RESOURCE_DISPLAY_SIZE.height*0.5,
             "0",
@@ -63,7 +64,7 @@ export default class ResourceDisplay extends Phaser.GameObjects.Container{
             ASSETS.INCOME_RATE
         ).setOrigin(0.5);
 
-        const incomeRateText = scene.add.text(
+        this.incomeText = scene.add.text(
             RESOURCE_DISPLAY_SIZE.width*0.5,
             RESOURCE_DISPLAY_SIZE.height*0.8,
             "X 0",
@@ -72,24 +73,24 @@ export default class ResourceDisplay extends Phaser.GameObjects.Container{
             }
         );
 
-        this.add(this.bg);
-        this.add(currResourceText);
+        this.add(bg);
+        this.add(this.currentText);
         this.add(line);
-        this.add(maxResourceText);
+        this.add(this.maxText);
         this.add(incomeRateIcon);
-        this.add(incomeRateText);
+        this.add(this.incomeText);
+    }
 
-        EventEmitter.on(
-            EVENTS.uiEvent.UPDATE_RESOURCE_DISPLAY,
-            (currResource:number, maxResource:number, incomeRate?:number)=>{
-                console.log(`Update Display with ${currResource}/ ${maxResource}`);
-                currResourceText.setText(String(currResource));
-                maxResourceText.setText(String(maxResource));
-                if (incomeRate){
-                    console.log(`Update Income Rate Display with ${incomeRate}`);
-                    incomeRateText.setText(`X ${incomeRate}`);
-                }
-            }
-        );
+
+    setCurrent(current:number){
+        this.currentText.setText(String(current));
+    }
+
+    setMax(max:number){
+        this.maxText.setText(String(max));
+    }
+
+    setIncome(income:number){
+        this.incomeText.setText(`X ${income}`);
     }
 }

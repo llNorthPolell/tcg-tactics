@@ -1,5 +1,5 @@
 import GameObject from "../common/gameObject";
-import CardContent from "../common/cardContent";
+import GamePlayer from "../player/gamePlayer";
 import Unit from "../units/unit";
 import Effect from "@/game/skillEffects/effect";
 
@@ -26,34 +26,56 @@ export default class Card {
     readonly cost: number;
     
     /**
-     * If linked, the contents of this card (either a unit or effect)
+     * If linked, the unit that is summoned by playing this card
      */
-    private contents:Unit|Effect[];
+    private unit?:Unit;
+
+    /**
+     * If linked, the effects that are cast by playing this card
+     */
+    private effects?: Effect[];
+
+    /**
+     * If linked, the owner of this card
+     */
+    private owner?:GamePlayer
 
     /**
      * Reference to physicalization of the card rendered on screen
      */
     private gameObject?:GameObject;
 
-
-    constructor(id:string,name:string,cardType:string,cost:number,contents:Unit|Effect[]){
+    
+    constructor(id:string,name:string,cardType:string,cost:number,effects?:Effect[],unit?:Unit){
         this.id=id;
         this.name=name;
         this.cardType=cardType;
         this.cost=cost;
-        this.contents=contents;
+        this.effects=effects;
+        this.unit=unit;
     }
 
     linkGameObject(gameObject:GameObject):void{
         this.gameObject=gameObject;
     }
     
+    setOwner(owner:GamePlayer){
+        this.owner=owner;
+    }
+
     getGameObject():GameObject|undefined{
         return this.gameObject;
     }
 
-    getContents() : CardContent{
-        return this.contents;
+    getUnit() : Unit | undefined{
+        return this.unit;
     }
 
+    getEffects():Effect[] | undefined{
+        return this.effects;
+    }
+
+    getOwner():GamePlayer | undefined{
+        return this.owner;
+    }
 }

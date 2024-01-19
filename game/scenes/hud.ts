@@ -1,40 +1,24 @@
-import { CANVAS_SIZE, HAND_UI_SIZE } from "../config";
-import TurnController from "../controllers/turnController";
-import { CardData } from "../data/types/cardData";
+import { CANVAS_SIZE, HAND_UI_SIZE, HUD_BUTTON_SIZE } from "../config";
 import { EVENTS } from "../enums/keys/events";
-import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { GAME_STATE } from "../enums/keys/gameState";
 import { SCENES } from "../enums/keys/scenes";
 import { UI_COLORS } from "../enums/keys/uiColors";
 import GamePlayer from "../gameobjects/player/gamePlayer";
-import Button from "../gameobjects/ui/button";
-import CardDetailsDisplay from "../gameobjects/ui/cardDetailsDisplay";
-import DeckStatDisplay from "../gameobjects/ui/deckStatDisplay";
-import DiscardWindow from "../gameobjects/ui/discardWindow";
-import HandUIObject from "../gameobjects/ui/handUIObject";
-import ResourceDisplay from "../gameobjects/ui/resourceDisplay";
-import UnitStatDisplay from "../gameobjects/ui/unitStatDisplay";
+import Button from "../gameobjects/ui/view/button";
+import DeckStatDisplay from "../gameobjects/ui/view/deckStatDisplay";
 import { EventEmitter } from "../scripts/events";
 
-const HUD_BUTTON_SIZE = {
-    width:200,
-    height:50
-}
+
 
 export default class HUD extends Phaser.Scene{
     private rightPanel? :Phaser.GameObjects.Container;
     private bottomPanel? : Phaser.GameObjects.Container;
-    private resourceDisplay? : ResourceDisplay;
     private deckStatDisplay?: DeckStatDisplay;
-
-    //private cardManager? : CardManager;
-    //private isPlayerTurn:boolean;
 
     constructor(){
         super({
             key: SCENES.HUD
         });
-        //this.isPlayerTurn=false;
     }
 
     preload(){}
@@ -45,8 +29,6 @@ export default class HUD extends Phaser.Scene{
         this.bottomPanel = this.add.container(0,CANVAS_SIZE.height*0.8);
         this.rightPanel = this.add.container(CANVAS_SIZE.width*0.87,0);
 
-        //this.cardManager = new CardManager(player);
-        
         // bottom panel
         const bg = this.add.rectangle(
             0,
@@ -58,123 +40,56 @@ export default class HUD extends Phaser.Scene{
         this.bottomPanel.add(bg);
         
         //      hand 
-        const handUIObject = new HandUIObject(this);
-        this.add.existing(handUIObject);
+        const handUIObject = this.game.registry.get(GAME_STATE.handUIObject);
         this.bottomPanel.add(handUIObject);
 
-        const cancelCardButton = new Button(
-            this,
-            "cancelCardButton",
-            "Cancel",
-            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.5},
-            HUD_BUTTON_SIZE.width,
-            HUD_BUTTON_SIZE.height,
-            UI_COLORS.cancel,
-            ()=>{cancelCardButton?.bg.setFillStyle(UI_COLORS.cancelLight)},
-            ()=>{
-                cancelCardButton?.bg.setFillStyle(UI_COLORS.cancel);
-                EventEmitter.emit(EVENTS.cardEvent.CANCEL);
-            });
-        this.bottomPanel.add(cancelCardButton);
-        cancelCardButton.hide();
-
-        const endTurnButton = new Button(
-            this,
-            "endTurnButton",
-            "End Turn",
-            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.1},
-            HUD_BUTTON_SIZE.width,
-            HUD_BUTTON_SIZE.height,
-            UI_COLORS.action,
-            ()=>{endTurnButton?.bg.setFillStyle(UI_COLORS.actionLight)},
-            ()=>{
-                endTurnButton?.bg.setFillStyle(UI_COLORS.action);
-                EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
-            });
+        const endTurnButton = this.game.registry.get(GAME_STATE.endTurnButton);
         this.bottomPanel.add(endTurnButton);
+
+        
+        //      unit display 
+        const unitStatDisplay = this.game.registry.get(GAME_STATE.unitStatDisplay);
+        this.bottomPanel.add(unitStatDisplay);
+
+        const unitControlsPanel = this.game.registry.get(GAME_STATE.unitControlsPanel);
+        unitStatDisplay.add(unitControlsPanel);
+        
+
+        unitStatDisplay.hide();
+  
+ 
+        // right panel
+        const resourceDisplay = this.game.registry.get(GAME_STATE.resourceDisplay);
+        this.rightPanel.add(resourceDisplay);       
 
 
         EventEmitter
         .on(
-            EVENTS.gameEvent.PLAYER_TURN,
-            (activePlayer:GamePlayer)=>{
-                if (!activePlayer.isDevicePlayer){
-                    endTurnButton.hide();
-                    cancelCardButton.hide();
-                    return;
-                } 
-                endTurnButton.show();
-            }
-        )
-        .on(
             EVENTS.cardEvent.SELECT,
             ()=>{
                 //cardDetails.hide();
-                if(!turn.isDevicePlayerTurn) return;
-                cancelCardButton.show();
-                endTurnButton.hide();
 
                 //cardDetails.show(card);
             }
         )
         .on(
-            EVENTS.cardEvent.CANCEL,
+            EVENTS.uiEvent.UPDATE_UNIT_STAT_DISPLAY,
             ()=>{
-                if(!turn.isDevicePlayerTurn) return;
-                cancelCardButton.hide();
-                endTurnButton.show();
-                //cardDetails.hide();
+                if (unitStatDisplay.visible)
+                    unitStatDisplay.update();
             }
         )
-       /* //      unit display 
-        const unitStatDisplay = new UnitStatDisplay(this);
-        this.add.existing(unitStatDisplay);
-        this.bottomPanel.add(unitStatDisplay);
 
-        const cancelUnitSelectionButton = new Button(
-            this,
-            "cancelUnitButton",
-            "Cancel",
-            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.5},
-            HUD_BUTTON_SIZE.width,
-            HUD_BUTTON_SIZE.height,
-            UI_COLORS.cancel,
-            ()=>{cancelCardButton?.bg.setFillStyle(UI_COLORS.cancelLight)},
-            ()=>{
-                cancelCardButton?.bg.setFillStyle(UI_COLORS.cancel);
-                EventEmitter.emit(EVENTS.unitEvent.CANCEL);
-            });
-        unitStatDisplay.add(cancelUnitSelectionButton);
 
-        const waitButton = new Button(
-            this,
-            "waitButton",
-            "Wait",
-            {x:HAND_UI_SIZE.width * 0.8,y:HAND_UI_SIZE.height*0.1},
-            HUD_BUTTON_SIZE.width,
-            HUD_BUTTON_SIZE.height,
-            UI_COLORS.action,
-            ()=>{waitButton?.bg.setFillStyle(UI_COLORS.actionLight)},
-            ()=>{
-                waitButton?.bg.setFillStyle(UI_COLORS.action);
-                EventEmitter.emit(EVENTS.unitEvent.WAIT);
-            });
-        unitStatDisplay.add(waitButton);
 
-        unitStatDisplay.hide();
+       
 
-        // Card Details
+
+
+        /*// Card Details
         const cardDetails = new CardDetailsDisplay(this);
         cardDetails.hide();
         this.add.existing(cardDetails);
-
-        // right panel
-        this.resourceDisplay = new ResourceDisplay(
-            this, 
-            {x:0,y:CANVAS_SIZE.height*0.39}
-        );
-
-        this.rightPanel.add(this.resourceDisplay);
 
         this.deckStatDisplay = new DeckStatDisplay(
             this,

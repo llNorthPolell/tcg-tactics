@@ -1,12 +1,9 @@
 import { CANVAS_SIZE } from "@/game/config";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
-import { CardData } from "@/game/data/types/cardData";
 import { FONT } from "@/game/enums/keys/font";
 import { Position } from "@/game/data/types/position";
-import Card from "../cards/card";
+import Card from "../../cards/card";
 import { CARD_TYPE } from "@/game/enums/keys/cardType";
-import { EffectData } from "@/game/data/types/effectData";
-import { UnitData } from "@/game/data/types/unitData";
 
 const CARD_DETAILS_SIZE = {
     width:CANVAS_SIZE.width*0.2,
@@ -151,8 +148,10 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
 
         if (card.cardType === CARD_TYPE.spell){
             this.spellEffects.setVisible(true);
-            const contents = card.getContents() as EffectData[];
-            const descriptions : string[] = contents.map(content=> content.description);
+            const effects = card.getEffects();
+            if (!effects) 
+                throw new Error(`Failed to display spell details; ${card.name} does not have effects defined...`)
+            const descriptions : string[] = effects.map(content=> content.description);
             this.spellEffectsDesc.setText(descriptions);
         }
         /*if (card.cardType === CARD_TYPE.hero) {

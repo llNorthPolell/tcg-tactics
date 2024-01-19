@@ -18,6 +18,18 @@ import TurnController from "../controllers/turnController";
 import Field from "../state/field";
 import GameState from "../state/gameState";
 import CardController from "../controllers/cardController";
+import HandUIObject from "../gameobjects/ui/view/handUIObject";
+import HandUIController from "../gameobjects/ui/controllers/handUIController";
+import UIController from "../controllers/uiController";
+import MainGameController from "../controllers/mainGameController";
+import UnitControlPanelController from "../gameobjects/ui/controllers/unitCtrlPanelController";
+import UnitControlsPanel from "../gameobjects/ui/view/unitControlsPanel";
+import UnitStatDisplayController from "../gameobjects/ui/controllers/unitStatDisplayController";
+import UnitStatDisplay from "../gameobjects/ui/view/unitStatDisplay";
+import EndTurnButtonController from "../gameobjects/ui/controllers/endTurnButtonController";
+import EndTurnButton from "../gameobjects/ui/view/endTurnButton";
+import ResourceDisplay from "../gameobjects/ui/view/resourceDisplay";
+import ResourceDisplayController from "../gameobjects/ui/controllers/resourceDisplayController";
 
 export default class LoadingScene extends Phaser.Scene {
 
@@ -81,6 +93,7 @@ export default class LoadingScene extends Phaser.Scene {
 
         console.log("Generating Field...");
         const gameplayScene = this.game.scene.getScene(SCENES.GAMEPLAY);
+        
         const tilemapData = FieldSetupScripts.generateMap(gameplayScene);
         const selectionTiles = FieldSetupScripts.generateHighlightTiles(gameplayScene,tilemapData);
         const landmarksData = FieldSetupScripts.loadLandmarks(tilemapData);
@@ -98,10 +111,26 @@ export default class LoadingScene extends Phaser.Scene {
         const landmarksController = new LandmarkController(field);
         const cardController = new CardController(playersInGame);
         const effectsSystem = new EffectSystem(field,playersInGame);
-        const eventDispatcher = new EventDispatcher(gameplayScene,landmarksController,
+        const mainController = new MainGameController(gameplayScene,landmarksController,
             turnController,unitsController,selectionTilesController,cardController,effectsSystem);
 
+        console.log("Initializing UI");
+        const hudScene = this.game.scene.getScene(SCENES.HUD);
+        const handUIObject = new HandUIObject(hudScene);
+        const unitControlsPanel = new UnitControlsPanel(hudScene);
+        const unitStatDisplay = new UnitStatDisplay(hudScene);
+        const endTurnButton = new EndTurnButton(hudScene);
+        const resourceDisplay = new ResourceDisplay(hudScene);
 
+        const handUIController = new HandUIController(handUIObject,testGamePlayer);
+        const unitControlsPanelController = new UnitControlPanelController(unitControlsPanel);
+        const unitStatDisplayController = new UnitStatDisplayController(unitStatDisplay)
+        const endTurnButtonController = new EndTurnButtonController(endTurnButton);
+        const resourceDisplayController = new ResourceDisplayController(resourceDisplay);
+        const uiController = new UIController(turnController,
+            handUIController,unitControlsPanelController,unitStatDisplayController,endTurnButtonController,resourceDisplayController);
+
+        const eventDispatcher = new EventDispatcher(gameplayScene,mainController,uiController);
 
         console.log("Starting game...")
         this.game.registry.set(GAME_STATE.playersInGame, playersInGame);
@@ -118,9 +147,23 @@ export default class LoadingScene extends Phaser.Scene {
         this.game.registry.set(GAME_STATE.landmarksController, landmarksController);
         this.game.registry.set(GAME_STATE.cardController,cardController);
         this.game.registry.set(GAME_STATE.effectsSystem, effectsSystem);
-        this.game.registry.set(GAME_STATE.eventDispatcher, eventDispatcher);
+        this.game.registry.set(GAME_STATE.mainController,mainController)
+        
 
-        FieldSetupScripts.spawnDeckLeaders(gameplayScene,playersInGame);
+        this.game.registry.set(GAME_STATE.handUIObject, handUIObject);
+        this.game.registry.set(GAME_STATE.unitControlsPanel, unitControlsPanel);
+        this.game.registry.set(GAME_STATE.unitStatDisplay, unitStatDisplay);
+        this.game.registry.set(GAME_STATE.endTurnButton,endTurnButton);
+        this.game.registry.set(GAME_STATE.resourceDisplay,resourceDisplay);
+        
+        this.game.registry.set(GAME_STATE.handUIController, handUIController);
+        this.game.registry.set(GAME_STATE.unitCtrlPanelController, unitControlsPanelController);
+        this.game.registry.set(GAME_STATE.unitStatDisplayController, unitStatDisplayController);
+        this.game.registry.set(GAME_STATE.endTurnButtonController,endTurnButtonController)
+        this.game.registry.set(GAME_STATE.resourceDisplayController,resourceDisplayController);
+
+        this.game.registry.set(GAME_STATE.uiController,uiController);
+        this.game.registry.set(GAME_STATE.eventDispatcher, eventDispatcher);
 
         this.game.scene.start(SCENES.GAMEPLAY);
     }

@@ -2,11 +2,9 @@ import { Position } from "../data/types/position";
 import { LandmarkType } from "../enums/landmarkType";
 import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus } from "../enums/tileStatus";
-import Landmark from "../gameobjects/landmarks/landmark";
 import GamePlayer from "../gameobjects/player/gamePlayer";
 import SelectionTile from "../gameobjects/selectionTile";
 import Field from "../state/field";
-import LandmarkController from "./landmarkController";
 
 import UnitController from "./unitController";
 
@@ -40,8 +38,8 @@ export default class SelectionTileController{
         )
     }
 
-    showMoves(root:Position,range:number,passObstacles:boolean=false,status?:TileStatus){
-        const locations = this.getTilesInRange(root,range,passObstacles);
+    showMoves(root:Position,movement:number,passObstacles:boolean=false){
+        const locations = this.getTilesInRange(root,movement,passObstacles);
         locations.forEach(
             position=>{
                 const selectionTile = this.selectionTiles![position.y][position.x];
@@ -51,8 +49,20 @@ export default class SelectionTileController{
                 if (unitOnTile && position.x !== root.x && position.y !== root.y)
                     selectionTile.show(TileSelectionType.MOVE_UNIT,TileStatus.DANGER);
                 else
-                    selectionTile.show(TileSelectionType.MOVE_UNIT,status);
+                    selectionTile.show(TileSelectionType.MOVE_UNIT);
 
+            }
+        )
+    }
+
+    showAttackRange(root:Position,range:number,status:TileStatus=TileStatus.WARNING){
+        const locations = this.getTilesInRange(root,range,true);
+        locations.forEach(
+            position=>{
+                const selectionTile = this.selectionTiles![position.y][position.x];
+                this.activeTiles.push(selectionTile);
+
+                selectionTile.show(TileSelectionType.NONE,status);
             }
         )
     }
@@ -70,18 +80,23 @@ export default class SelectionTileController{
     private getTilesInRange(root:Position,range:number, passObstacles: boolean):Position[]{
         const maxPosition = {x:this.field.mapData.map.width-1,y:this.field.mapData.map.height-1};
         const obstacleLayer = this.field.mapData.layers.obstacle!;
-
+        const units = this.units;
+        
         let accum :Map<string,Position> = new Map();
     
         function inRangeTilesRecursive(current:Position,tilesLeft:number){
             if (tilesLeft===0)return;
+
             if (current.x <0 || current.y<0)return;
             if (current.x >maxPosition.x || current.y>maxPosition.y) return;
             
             accum.set(`${current.x}_${current.y}`,current);
             if(!passObstacles && obstacleLayer.getTileAt(current.x, current.y)) return;
 
+            const unitOnTile = units.getUnitByPosition(current);
+
             if(!passObstacles && 
+                unitOnTile &&
                 current.x !== root.x && 
                 current.y !== root.y) 
                      return;

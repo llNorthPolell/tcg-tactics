@@ -62,6 +62,14 @@ export default class GamePlayer{
         this.units=new UnitManager(this);
         this.landmarks=new LandmarkManager(this);
         this.cards=new CardManager(this,deck);
+
+        deck.getCards().forEach(
+            card=>{
+                card.setOwner(this);
+            }
+        );
+
+        deck.getLeader().setOwner(this);
     }
 
     /**

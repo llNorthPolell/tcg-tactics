@@ -35,7 +35,6 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
         const unitType = unit.unitType;
         const baseColor = unit.getOwner()!.color;
         this.imageAssetName = `${ASSETS.PORTRAIT}${unitType}_${unit.cardId}`;
-        console.log(`Asset Name: ${this.imageAssetName}. It exists? ${scene.textures.exists(this.imageAssetName)}`)
         const bg = scene.add.rectangle(
             TILESIZE.width/2,
             TILESIZE.height/2,
@@ -44,7 +43,7 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
             baseColor
         ).setOrigin(0.5);
         this.add(bg);
-
+        
         this.image = scene.add.sprite(TILESIZE.width*0.5,TILESIZE.height*0.5,this.imageAssetName)
             .setOrigin(0.5)
             .setDisplaySize(TILESIZE.width*0.85, TILESIZE.height*0.85);

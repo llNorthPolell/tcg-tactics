@@ -1,10 +1,10 @@
-import UnitData from "@/game/data/types/unitData";
-import Unit from "../unit";
 import { ASSETS } from "@/game/enums/keys/assets";
 import { HAND_UI_SIZE, PORTRAIT_SIZE } from "@/game/config";
 import { CLASS_ICON_MAPPING, getClassIcon } from "@/game/enums/keys/unitClass";
 import { FONT } from "@/game/enums/keys/font";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
+import Unit from "../../units/unit";
+import UnitGO from "../../units/unitGO";
 
 
 const UNIT_STAT_ICON_SIZE = {
@@ -20,16 +20,13 @@ const UNIT_CLASS_ICON_SIZE ={
 }
 
 export default class UnitStatDisplay extends Phaser.GameObjects.Container{
-
-    private unitData?: UnitData;
-
-    private image:Phaser.GameObjects.Sprite;
-    private classIcon: Phaser.GameObjects.Sprite;
-    private unitNameText:Phaser.GameObjects.Text;
-    private unitHPText:Phaser.GameObjects.Text;
-    private unitSPText:Phaser.GameObjects.Text;
-    private unitPwrText:Phaser.GameObjects.Text;
-    private unitDefText:Phaser.GameObjects.Text;
+    private readonly image:Phaser.GameObjects.Sprite;
+    private readonly classIcon: Phaser.GameObjects.Sprite;
+    private readonly unitNameText:Phaser.GameObjects.Text;
+    private readonly unitHPText:Phaser.GameObjects.Text;
+    private readonly unitSPText:Phaser.GameObjects.Text;
+    private readonly unitPwrText:Phaser.GameObjects.Text;
+    private readonly unitDefText:Phaser.GameObjects.Text;
 
     constructor(scene:Phaser.Scene){
         super(scene,0,0);
@@ -113,54 +110,45 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
         this.add(defContainer);
     }
 
-    show(unit:Unit){
-        this.unitData = unit.getUnitData();
-        this.image.setTexture(unit.getGameObject()!.imageAssetName);
-        this.unitNameText.setText(this.unitData.name);
-        this.classIcon.setTexture(ASSETS.CLASS_ICONS, getClassIcon(this.unitData.unitClass));
-        this.unitHPText.setText(String(this.unitData.currHp));
-        this.unitSPText.setText(String(this.unitData.currSp));
-        this.updatePwrText();
-        this.updateDefText();
-
+    show(){
         this.setVisible(true);
-    }
-
-    update(){
-        if (!this.unitData) return;
-        this.unitHPText.setText(String(this.unitData.currHp));
-        this.unitSPText.setText(String(this.unitData.currSp));
-        this.updatePwrText();
-        this.updateDefText();
-
-        this.setVisible(true);
-    }
-
-    private updatePwrText(){
-        if (!this.unitData) return;
-        this.unitPwrText.setText(String(this.unitData.currPwr));
-
-        const color = (this.unitData.currPwr < this.unitData.basePwr)? UI_COLORS.damage : 
-            (this.unitData.currPwr > this.unitData.basePwr)? UI_COLORS.buff : UI_COLORS.white;
-
-        const rgb = Phaser.Display.Color.IntegerToRGB(color);
-
-        this.unitPwrText.setColor(Phaser.Display.Color.RGBToString(rgb.r,rgb.g,rgb.b));
-    }
-    
-    private updateDefText(){
-        if (!this.unitData) return;
-        this.unitDefText.setText(String(this.unitData.currDef));
-
-        const color = (this.unitData.currDef < this.unitData.baseDef)? UI_COLORS.damage : 
-            (this.unitData.currDef > this.unitData.baseDef)? UI_COLORS.buff : UI_COLORS.white;
-
-        const rgb = Phaser.Display.Color.IntegerToRGB(color);
-
-        this.unitDefText.setColor(Phaser.Display.Color.RGBToString(rgb.r,rgb.g,rgb.b));
     }
 
     hide(){
         this.setVisible(false);
     }
+
+    setUnitName(name:string){
+        this.unitNameText.setText(name);
+    }
+
+    setClassIcon(classIconFrame:number){
+        this.classIcon.setTexture(ASSETS.CLASS_ICONS, classIconFrame);
+    }
+
+    setPortrait(imageAssetName:string){
+        this.image.setTexture(imageAssetName);
+    }
+
+    setHP(hp:number){
+        this.unitHPText.setText(String(hp));
+    }
+
+    setSP(sp:number){
+        this.unitSPText.setText(String(sp));
+    }
+
+    setPwr(pwr:number,color:number=UI_COLORS.white){
+        this.unitPwrText.setText(String(pwr));
+        const rgb = Phaser.Display.Color.IntegerToRGB(color);
+        this.unitPwrText.setColor(Phaser.Display.Color.RGBToString(rgb.r,rgb.g,rgb.b));
+    }
+
+    setDef(def:number,color:number=UI_COLORS.white){
+        this.unitDefText.setText(String(def));
+        const rgb = Phaser.Display.Color.IntegerToRGB(color);
+        this.unitDefText.setColor(Phaser.Display.Color.RGBToString(rgb.r,rgb.g,rgb.b)); 
+    }
+
+
 }

@@ -1,6 +1,7 @@
 import { Resources } from "@/game/data/types/resources";
 import GamePlayer from "./gamePlayer";
 import { LandmarkType } from "@/game/enums/landmarkType";
+import { GAME_CONSTANT } from "@/game/enums/keys/gameConstants";
 
 export default class ResourceManager{
     /**
@@ -21,7 +22,7 @@ export default class ResourceManager{
     constructor(player:GamePlayer){
         this.player=player;
         this.currResource=0;
-        this.maxResource=2;
+        this.maxResource=1;
     }
 
     /**
@@ -34,8 +35,14 @@ export default class ResourceManager{
             newCurrentResource=this.maxResource;
 
         this.currResource=newCurrentResource;
+    }
 
-        if (!this.player.isDevicePlayer) return;
+    /**
+     * Increase limit (at the start of every turn, up to 10)
+     */
+    increaseMax(){
+        if (this.maxResource<GAME_CONSTANT.RESOURCE_LIMIT)
+            this.maxResource++;
     }
 
     /**

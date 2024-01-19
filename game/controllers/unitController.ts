@@ -3,6 +3,7 @@ import Card from "../gameobjects/cards/card";
 import Unit from "../gameobjects/units/unit";
 import Field from "../state/field";
 import { Position } from "@/game/data/types/position";
+import GameObjectFactory from "../gameobjects/gameObjectFactory";
 
 export default class UnitController{
 
@@ -15,16 +16,28 @@ export default class UnitController{
         this.movingUnit=undefined;
     }
 
-    summonUnitByCard(card:Card,position:Position){
-        const unit = card.getContents() as Unit;
-        const positionController = unit.position();
-        const owner = unit.getOwner();
+    summonUnitByCard(scene:Phaser.Scene, card:Card,position:Position) : Unit{
+        const unit = card.getUnit();
+        if (!unit)
+            throw new Error(`Cannot summon a unit with the card ${card.name}; no unit was initialized...`);
+
+        const owner = card.getOwner();
+        if(!owner)
+            throw new Error(`Cannot summon a unit with the card ${card.name}; card has no owner...`);
+
+        unit.setOwner(owner);
+
+        const unitGO = GameObjectFactory.createUnitGO(scene,unit);
+        unit.linkGameObject(unitGO);
+        const positionController = unit.position(); 
+        
         if (!positionController) 
             throw new Error(`Position controller has not been initiated in ${unit.name}`);
-        if (!owner)
-            throw new Error(`${unit.name} does not have an owner...`);
+
+        positionController.set(position);
         this.field.units.set(`${position.x}_${position.y}`,unit);
-        this.field.unitsByPlayer.get(owner.id)!.push(unit);
+        owner.units.register(unit);
+        return unit;
     }
 
     summonUnitByEffect(effect:Effect, index:number=0,position:Position){
@@ -52,7 +65,7 @@ export default class UnitController{
         const position = this.getPosition(unit);
 
         this.field.units.delete(`${position.x}_${position.y}`);
-        unit.position()?.moveTo(destination);
+        unit.position()?.confirm();
         this.field.units.set(`${destination.x}_${destination.y}`,unit);
     }
 
@@ -70,10 +83,6 @@ export default class UnitController{
 
     getUnitByPosition(position:Position){
         return this.field.units.get(`${position.x}_${position.y}`);
-    }
-
-    getUnitsByPlayerId(playerId:number){
-        return this.field.unitsByPlayer.get(playerId);
     }
 
     getSelected(){

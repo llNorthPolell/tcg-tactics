@@ -8,8 +8,6 @@ import { UNIT_TYPE } from "@/game/enums/keys/unitType";
 import { ValueType } from "@/game/enums/keys/valueType";
 import CardFactory from "@/game/gameobjects/cards/cardFactory";
 import GamePlayer from "@/game/gameobjects/player/gamePlayer";
-import Unit from "@/game/gameobjects/units/unit";
-import Effect from "@/game/skillEffects/effect";
 import { testFireballCardData, testGuardianCardData, testHealingLightCardData, testMageHeroCardData, testMagicBombCardData, testNaturesBlessingCardData, testRangerCardData, testRangerHeroCardData, testSoldierCardData, testSoldierHeroCardData } from "@/game/data/dummyData/testCards";
 import Deck from "@/game/gameobjects/cards/deck";
 import { EffectData } from "@/game/data/types/effectData";
@@ -67,9 +65,9 @@ it ("should create a Hero card",()=>{
     expect(card.name).toBe(input.name);
     expect(card.cost).toBe(input.cost);
     expect(card.cardType).toBe(input.cardType);
-    expect(card.getContents() instanceof Unit).toBe(true);
+    expect(card.getUnit()).not.toBeUndefined();
 
-    const unit = card.getContents() as Unit;
+    const unit = card.getUnit()!;
     expect(unit.unitType).toBe(UNIT_TYPE.hero);
     expect(unit.unitClass).toBe(UNIT_CLASS.MAGE);
     expect(unit.base.hp).toBe(20);
@@ -110,9 +108,9 @@ it ("should create a Unit card",()=>{
     expect(card.name).toBe(input.name);
     expect(card.cost).toBe(input.cost);
     expect(card.cardType).toBe(input.cardType);
-    expect(card.getContents() instanceof Unit).toBe(true);
 
-    const unit = card.getContents() as Unit;
+    expect(card.getUnit()).not.toBeUndefined()
+    const unit = card.getUnit()!;
     expect(unit.unitType).toBe(UNIT_TYPE.unit);
     expect(unit.unitClass).toBe(UNIT_CLASS.SOLDIER);
     expect(unit.base.hp).toBe(10);
@@ -157,10 +155,10 @@ it ("should create a Spell card",()=>{
     expect(card.name).toBe(input.name);
     expect(card.cost).toBe(input.cost);
     expect(card.cardType).toBe(input.cardType);
-    expect(card.getContents() instanceof Array).toBe(true);
     
-    const effect = card.getContents() as Effect[];
-    expect(effect.length).toBe(1);
-    expect(effect[0].description).toBe("Deal 1 burn damage per turn for 3 turns");
-    expect(effect[0].isRemovable).toBe(false);
+    expect(card.getEffects()).not.toBeUndefined();
+    const effects = card.getEffects()!;
+    expect(effects.length).toBe(1);
+    expect(effects[0].description).toBe("Deal 1 burn damage per turn for 3 turns");
+    expect(effects[0].isRemovable).toBe(false);
 })

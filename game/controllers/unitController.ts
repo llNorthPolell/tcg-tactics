@@ -29,12 +29,8 @@ export default class UnitController{
 
         const unitGO = GameObjectFactory.createUnitGO(scene,unit);
         unit.linkGameObject(unitGO);
-        const positionController = unit.position(); 
-        
-        if (!positionController) 
-            throw new Error(`Position controller has not been initiated in ${unit.name}`);
+        this.getPositionController(unit).set(position);
 
-        positionController.set(position);
         this.field.units.set(`${position.x}_${position.y}`,unit);
         owner.units.register(unit);
         return unit;
@@ -50,10 +46,6 @@ export default class UnitController{
         if (!unit)
             throw new Error(`Unit was not found in ${effect.name}`);
 
-        const positionController = unit.position();
-        if (!positionController) 
-            throw new Error(`Position controller has not been initiated in ${unit.name}`);
-
         this.field.units.set(`${position.x}_${position.y}`,unit);
     }
 
@@ -61,12 +53,21 @@ export default class UnitController{
         this.movingUnit=unit;
     }
 
+    cancelMove(){
+        if(!this.movingUnit) return;
+        const positionController = this.getPositionController(this.movingUnit);
+        positionController.cancel()
+        this.movingUnit=undefined;
+    }
+
     confirmMove(unit:Unit, destination:Position){
-        const position = this.getPosition(unit);
+        const positionController = this.getPositionController(unit);
+        const position = positionController.get();
 
         this.field.units.delete(`${position.x}_${position.y}`);
-        unit.position()?.confirm();
         this.field.units.set(`${destination.x}_${destination.y}`,unit);
+        positionController.confirm();
+        this.movingUnit=undefined;
     }
 
     removeUnit(unit:Unit){
@@ -75,9 +76,7 @@ export default class UnitController{
     }
 
     getPosition(unit:Unit){
-        const positionController = unit.position();
-        if(!positionController)
-            throw new Error(`${unit.name}'s position is undefined...`);
+        const positionController = this.getPositionController(unit);
         return positionController.get();
     }
 
@@ -87,5 +86,12 @@ export default class UnitController{
 
     getSelected(){
         return this.movingUnit;
+    }
+
+    private getPositionController(unit:Unit){
+        const positionController = unit.position();
+        if(!positionController)
+            throw new Error(`${unit.name}'s does not have a position controller...`);
+        return positionController;
     }
 }

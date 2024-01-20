@@ -1,14 +1,8 @@
 import { EventEmitter } from "@/game/scripts/events";
-import LandmarkController from "./landmarkController";
-import TurnController from "./turnController";
-import UnitController from "./unitController";
 import { EVENTS } from "@/game/enums/keys/events";
 import Unit from "../gameobjects/units/unit";
-import SelectionTileController from "./selectionTileController";
 import { Position } from "../data/types/position";
-import EffectSystem from "../system/effectSystem";
 import GamePlayer from "../gameobjects/player/gamePlayer";
-import CardController from "./cardController";
 import Card from "../gameobjects/cards/card";
 import MainGameController from "./mainGameController";
 import UIController from "./uiController";
@@ -44,8 +38,8 @@ export default class EventDispatcher {
         .on(
             EVENTS.gameEvent.NEXT_TURN,
             ()=>{
-                this.main.endTurn();
                 this.ui.handleEndTurn();
+                this.main.endTurn();
             }
         )
         .on(
@@ -73,6 +67,13 @@ export default class EventDispatcher {
                 this.ui.handleCancelCard();
             }
         )
+        .on(
+            EVENTS.cardEvent.PLAY,
+            (position:Position)=>{
+                this.main.playCard(position);
+                this.ui.handlePlayCard();
+            }
+        )
     }
 
 
@@ -81,7 +82,6 @@ export default class EventDispatcher {
         .on(
             EVENTS.unitEvent.SELECT,
             (unit:Unit)=>{
-                this.main.cancelUnitMove();
                 this.main.selectUnit(unit);
                 this.ui.handleSelectUnit(this.main.getActivePlayer(),unit);
             }

@@ -13,16 +13,16 @@ const CARD_DETAILS_SIZE = {
 const TEXT_START_X = CARD_DETAILS_SIZE.width*0.05;
 
 export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
-    private cardName:Phaser.GameObjects.Text;
-    private cardType:Phaser.GameObjects.Text;
-    private spellEffects:Phaser.GameObjects.Container;
-    private spellEffectsDesc:Phaser.GameObjects.Text;
-    private leaderSkill:Phaser.GameObjects.Container;
-    private leaderDesc:Phaser.GameObjects.Text;
-    private passiveSkill:Phaser.GameObjects.Container;
-    private passiveDesc:Phaser.GameObjects.Text;
-    private activeSkill:Phaser.GameObjects.Container;
-    private activeDesc:Phaser.GameObjects.Text;
+    private readonly cardName:Phaser.GameObjects.Text;
+    private readonly cardType:Phaser.GameObjects.Text;
+    private readonly spellEffects:Phaser.GameObjects.Container;
+    private readonly spellEffectsDesc:Phaser.GameObjects.Text;
+    private readonly leaderSkill:Phaser.GameObjects.Container;
+    private readonly leaderDesc:Phaser.GameObjects.Text;
+    private readonly passiveSkill:Phaser.GameObjects.Container;
+    private readonly passiveDesc:Phaser.GameObjects.Text;
+    private readonly activeSkill:Phaser.GameObjects.Container;
+    private readonly activeDesc:Phaser.GameObjects.Text;
 
     constructor(scene:Phaser.Scene){
         super(scene,CANVAS_SIZE.width * 0.66, CANVAS_SIZE.height *0.29);
@@ -68,6 +68,8 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
                 CARD_DETAILS_SIZE.height*0.3
             )
         );
+
+        this.hide();
     }
 
 
@@ -138,11 +140,58 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
         container.add(bg);
         container.add(desc);
         this.add(container);
-
+        container.setVisible(false);
+        
         return {container, desc};
     }
 
-    show(card:Card){
+    show(){
+        this.setVisible(true);
+
+        if (this.spellEffectsDesc.text !== "")
+            this.spellEffects.setVisible(true);
+
+        if (this.leaderDesc.text !== "")
+            this.spellEffects.setVisible(true);     
+
+        if (this.passiveDesc.text !== "")
+            this.spellEffects.setVisible(true);
+
+        if (this.activeDesc.text !== "")
+            this.spellEffects.setVisible(true);
+    }
+
+    hide(){
+        this.setVisible(false);
+    }
+
+    reset(){
+        this.cardName.setText("");
+        this.cardType.setText("");
+        this.spellEffectsDesc.setText("");
+        this.spellEffects.setVisible(false);
+        this.leaderDesc.setText("");
+        this.leaderSkill.setVisible(false);
+        this.passiveDesc.setText("");
+        this.passiveSkill.setVisible(false);
+        this.activeDesc.setText("");
+        this.activeSkill.setVisible(false);
+
+    }
+
+    setCardName(name:string){
+        this.cardName.setText(name);
+    }
+
+    setCardType(cardType:string){
+        this.cardType.setText(cardType);
+    }
+
+    setEffects(){
+        throw new Error("Not implemented yet");
+    }
+
+    /*sshow(card:Card){
         this.cardName.setText(card.name);
         this.cardType.setText(card.cardType);
 
@@ -158,9 +207,9 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
             this.leaderSkill.setVisible(true);
             const contents = card.getContents() as UnitData;
             this.leaderDesc.setText(contents.effects?);
-        }*/
+        }
 
-        /*if (card instanceof UnitCard  || card instanceof HeroCard){
+        if (card instanceof UnitCard  || card instanceof HeroCard){
             if (card.data.passiveSkillDesc){
                 this.passiveSkill.setVisible(true);
                 this.passiveDesc.setText(card.data.passiveSkillDesc);
@@ -170,21 +219,7 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
                 this.activeDesc.setText(card.data.activeSkillDesc);
             }
         }*/
-        this.setVisible(true);
-    }
+        /*this.setVisible(true);
+    }*/
 
-    hide(){
-        this.cardName.setText("");
-        this.cardType.setText("");
-        this.spellEffectsDesc.setText("");
-        this.spellEffects.setVisible(false);
-        this.leaderDesc.setText("");
-        this.leaderSkill.setVisible(false);
-        this.passiveDesc.setText("");
-        this.passiveSkill.setVisible(false);
-        this.activeDesc.setText("");
-        this.activeSkill.setVisible(false);
-
-        this.setVisible(false);
-    }
 }

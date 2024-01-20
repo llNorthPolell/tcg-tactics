@@ -15,6 +15,8 @@ export default class CardManager{
 
     private deckLeader?:Card;
 
+    private selected?:Card;
+
     constructor(player:GamePlayer, deck:Deck){
         this.player=player;
         this.hand=[];
@@ -53,8 +55,9 @@ export default class CardManager{
         this.hand.push(card);
     }
 
-    removeCardFromHand(cardToRemove:Card){
-        this.hand = this.hand.filter(card=> card!==cardToRemove);
+    removeCardFromHand(card:Card){
+        const cardIndex=this.getIndexInHand(card);
+        this.hand=this.hand.toSpliced(cardIndex,1);
     }
     
     getHand(){
@@ -63,5 +66,29 @@ export default class CardManager{
 
     getLeader(){
         return this.deckLeader;
+    }
+
+    getDeckCount(){
+        return this.deck.length;
+    }
+
+    getIndexInHand(inputCard:Card){
+        const cardIndex = this.hand.findIndex(card => card === inputCard);
+        if (cardIndex === -1)
+            throw new Error(`${inputCard.name} was not in the player's hand!`);
+        return cardIndex;
+    }
+
+    selectCard(card:Card){
+        this.getIndexInHand(card);
+        this.selected=card;
+    }
+
+    deselectCard(){
+        this.selected=undefined;
+    }
+
+    getSelected(){
+        return this.selected;
     }
 }   

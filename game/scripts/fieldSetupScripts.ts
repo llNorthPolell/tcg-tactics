@@ -2,13 +2,14 @@ import { TilemapData } from "@/game/data/types/tilemapData";
 import { ASSETS } from "@/game/enums/keys/assets";
 import Landmark from "../gameobjects/landmarks/landmark";
 import { LandmarkType } from "@/game/enums/landmarkType";
-import SelectionTile from "../gameobjects/selectionTile";
-import { TileStatus } from "../enums/tileStatus";
+import SelectionTile from "../gameobjects/selectionTiles/selectionTile";
+import { TileStatus, getColorByTileStatus } from "../enums/tileStatus";
 import GamePlayer from "../gameobjects/player/gamePlayer";
 import { LandmarksCollection } from "../data/types/landmarksCollection";
 import Unit from "../gameobjects/units/unit";
 import GameObjectFactory from "../gameobjects/gameObjectFactory";
 import UnitController from "../controllers/unitController";
+import SelectionTileController from "../gameobjects/selectionTiles/selectionTileController";
 
 export default class FieldSetupScripts{
     static generateMap(scene:Phaser.Scene) : TilemapData{
@@ -185,25 +186,24 @@ export default class FieldSetupScripts{
 
 
 
-    static generateHighlightTiles(scene:Phaser.Scene,tilemapData:TilemapData){
+    static generateSelectionGrid(scene:Phaser.Scene,tilemapData:TilemapData) : SelectionTileController[][]{
         const map = tilemapData.map;
         const obstacleLayer = tilemapData.layers.obstacle;
 
-        let selectionTiles= new Array(map.height).fill([]).map(row=>new Array(map.width));
+        let controllers= new Array(map.height).fill([]).map(row=>new Array(map.width));
         map.forEachTile(
             tile=>{
                 const status = (obstacleLayer.getTileAt(tile.x,tile.y))? TileStatus.DANGER:TileStatus.SUCCESS;
                 const selectionTile = new SelectionTile(
                     scene,
-                    `tile_${tile.x}_${tile.y}`,
                     {x:tile.x,y:tile.y},
-                    status);
-
-                selectionTiles[tile.y][tile.x]=selectionTile;
+                    getColorByTileStatus(status));
+                const controller = new SelectionTileController(selectionTile, status);
+                controllers[tile.y][tile.x]=controller;
             }
         );
 
-        return selectionTiles;
+        return controllers;
     }
 
     static spawnDeckLeaders(scene:Phaser.Scene,playersInGame:GamePlayer[], unitsController:UnitController){

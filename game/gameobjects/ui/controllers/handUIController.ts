@@ -27,19 +27,16 @@ export default class HandUIController{
 
         this.selected = card;
         (cardGO as CardGO).pullOut();
-
         this.ui.showCancelButton();
     }
 
     cancel(){
         if (!this.selected) return;
         (this.selected.getGameObject() as CardGO).return();
-        this.selected=undefined;    
-        this.ui.hideCancelButton();    
+        this.selected=undefined; 
+        this.ui.hideCancelButton();       
     }
 
-
-    
     setDiscardMode(discardMode:boolean){
         this.discardMode=discardMode;
     }

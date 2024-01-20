@@ -18,9 +18,9 @@ export const GAME_STATE = Object.freeze({
 
     /**
      * Contains 2-D array of selection tiles for selecting positions on the field to play a card or move a unit to
-     * @returns selectionTiles:SelectionTile[][]
+     * @returns selectionGrid:SelectionTileController[][]
      */
-    selectionTiles: "selection-tiles",
+    selectionGrid: "selection-grid",
 
     /**
      * Contains maps of landmarks by type and by location (see game/data/types/landmarkCollection.ts)
@@ -38,7 +38,7 @@ export const GAME_STATE = Object.freeze({
 
     unitsController: "units-controller",
 
-    selectionTilesController: "selection-tiles-controller",
+    selectionGridController: "selection-grid-controller",
 
     landmarksController: "landmarks-controller",
 
@@ -61,6 +61,10 @@ export const GAME_STATE = Object.freeze({
 
     resourceDisplay: "resource-display",
 
+    cardDetailsDisplay: "card-details-display",
+
+    deckStatDisplay: "deck-stat-display",
+
 
     handUIController: "hand-ui-controller",
 
@@ -71,6 +75,10 @@ export const GAME_STATE = Object.freeze({
     endTurnButtonController: "end-turn-button-controller",
 
     resourceDisplayController: "resource-display-controller",
+
+    cardDetailsDisplayController: "card-details-display-controller",
+
+    deckStatDisplayController: "deck-stat-display-controller",
 
 
     uiController: "ui-controller",

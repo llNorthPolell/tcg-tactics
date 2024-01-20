@@ -1,9 +1,7 @@
 import { CANVAS_SIZE } from "@/game/config";
 import { Position } from "@/game/data/types/position";
 import { ASSETS } from "@/game/enums/keys/assets";
-import { EVENTS } from "@/game/enums/keys/events";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
-import { EventEmitter } from "@/game/scripts/events";
 
 const DECK_STAT_DISPLAY_SIZE = {
     width:  CANVAS_SIZE.width*0.12,
@@ -11,13 +9,13 @@ const DECK_STAT_DISPLAY_SIZE = {
 }
 
 export default class DeckStatDisplay extends Phaser.GameObjects.Container{
-    private bg: Phaser.GameObjects.Rectangle;
+    private readonly deckCountText:Phaser.GameObjects.Text;
+    private readonly deathCountText:Phaser.GameObjects.Text;
 
     constructor(        
-        scene:Phaser.Scene, 
-        position: Position){
-        super(scene,position.x,position.y);
-        this.bg = scene.add.rectangle(
+        scene:Phaser.Scene){
+        super(scene,0,CANVAS_SIZE.height*0.15);
+        const bg = scene.add.rectangle(
             0,
             0,
             DECK_STAT_DISPLAY_SIZE.width,
@@ -31,7 +29,7 @@ export default class DeckStatDisplay extends Phaser.GameObjects.Container{
             ASSETS.DECK_COUNT
         ).setOrigin(0.5);
 
-        const deckCountText = scene.add.text(
+       this.deckCountText = scene.add.text(
             DECK_STAT_DISPLAY_SIZE.width*0.4,
             DECK_STAT_DISPLAY_SIZE.height*0.15,
             "X 0",
@@ -46,7 +44,7 @@ export default class DeckStatDisplay extends Phaser.GameObjects.Container{
             ASSETS.DEATH_COUNT
         ).setOrigin(0.5);
 
-        const deathCountText = scene.add.text(
+        this.deathCountText = scene.add.text(
             DECK_STAT_DISPLAY_SIZE.width*0.4,
             DECK_STAT_DISPLAY_SIZE.height*0.55,
             "X 0",
@@ -55,24 +53,19 @@ export default class DeckStatDisplay extends Phaser.GameObjects.Container{
             }
         );
 
-        this.add(this.bg);
+        this.add(bg);
         this.add(deckCountIcon);
-        this.add(deckCountText);
+        this.add(this.deckCountText);
         this.add(deathCountIcon);
-        this.add(deathCountText);
-        
-        EventEmitter
-        .on(
-            EVENTS.uiEvent.UPDATE_DECK_COUNTER,
-            (count:number)=>{
-                deckCountText.setText(`X ${count}`);
-            }
-        )
-        .on(
-            EVENTS.uiEvent.UPDATE_CASUALTY_COUNTER,
-            (count:number)=>{
-                deathCountText.setText(`X ${count}`);
-            }
-        )
+        this.add(this.deathCountText);
     }
+
+    setDeckCount(count:number){
+        this.deckCountText.setText(`X ${count}`);
+    }
+
+    setDeathCount(count:number){
+        this.deathCountText.setText(`X ${count}`);
+    }
+
 }

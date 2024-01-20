@@ -2,8 +2,9 @@
 import { TilemapData } from "@/game/data/types/tilemapData";
 import Landmark from "../gameobjects/landmarks/landmark";
 import Unit from "../gameobjects/units/unit";
-import SelectionTile from "../gameobjects/selectionTile";
+import SelectionTile from "../gameobjects/selectionTiles/selectionTile";
 import Game from "./gameState";
+import SelectionTileController from "../gameobjects/selectionTiles/selectionTileController";
 
 export default class Field{
     private readonly game:Game;
@@ -35,10 +36,10 @@ export default class Field{
     /**
      * Selection tiles for selecting destinations and target positions
      */
-    readonly selectionTiles: SelectionTile[][];
+    readonly selectionGrid: SelectionTileController[][];
 
 
-    constructor(game:Game, mapData:TilemapData, landmarksByLocation:Map<string,Landmark>,selectionTiles:SelectionTile[][]){
+    constructor(game:Game, mapData:TilemapData, landmarksByLocation:Map<string,Landmark>,selectionGrid:SelectionTileController[][]){
         this.game=game;
         this.mapData = mapData;
         this.landmarksByLocation=landmarksByLocation;
@@ -48,7 +49,7 @@ export default class Field{
 
         this.units=new Map();
  
-        this.selectionTiles=selectionTiles;
+        this.selectionGrid=selectionGrid;
     }
 
 }

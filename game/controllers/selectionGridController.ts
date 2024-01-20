@@ -3,24 +3,24 @@ import { LandmarkType } from "../enums/landmarkType";
 import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus } from "../enums/tileStatus";
 import GamePlayer from "../gameobjects/player/gamePlayer";
-import SelectionTile from "../gameobjects/selectionTile";
+import SelectionTileController from "../gameobjects/selectionTiles/selectionTileController";
 import Field from "../state/field";
 
 import UnitController from "./unitController";
 
-export default class SelectionTileController{
+export default class SelectionGridController{
     private readonly field:Field;
 
     private readonly units: UnitController;
 
-    private selectionTiles: SelectionTile[][];
+    private selectionGrid: SelectionTileController[][];
 
-    private activeTiles:SelectionTile[];
+    private activeTiles:SelectionTileController[];
     
     constructor(field:Field,unitController:UnitController){
         this.field=field;
         this.activeTiles=[];
-        this.selectionTiles=field.selectionTiles;
+        this.selectionGrid=field.selectionGrid;
         this.units=unitController;
     }
 
@@ -30,10 +30,13 @@ export default class SelectionTileController{
         rallyPoints.forEach(
             rallyPoint=>{
                 const position = rallyPoint.position;
-                const selectionTile = this.selectionTiles[position.y][position.x];
+                const selectionTile = this.selectionGrid[position.y][position.x];
                 const unitOnTile = this.units.getUnitByPosition(position);
                 this.activeTiles.push(selectionTile);
-                selectionTile.show(TileSelectionType.PLAY_CARD,(unitOnTile)?TileStatus.DANGER:TileStatus.SUCCESS);
+
+                selectionTile.setSelectionType(TileSelectionType.PLAY_CARD);
+                selectionTile.show((unitOnTile)?TileStatus.DANGER:TileStatus.SUCCESS);
+
             }
         )
     }
@@ -42,27 +45,29 @@ export default class SelectionTileController{
         const locations = this.getTilesInRange(root,movement,passObstacles);
         locations.forEach(
             position=>{
-                const selectionTile = this.selectionTiles![position.y][position.x];
-                this.activeTiles.push(selectionTile);
-
+                const selectionTile = this.selectionGrid![position.y][position.x];
                 const unitOnTile = this.units.getUnitByPosition(position);
-                if (unitOnTile && position.x !== root.x && position.y !== root.y)
-                    selectionTile.show(TileSelectionType.MOVE_UNIT,TileStatus.DANGER);
-                else
-                    selectionTile.show(TileSelectionType.MOVE_UNIT);
+                this.activeTiles.push(selectionTile);
+                
+                selectionTile.setSelectionType(TileSelectionType.MOVE_UNIT);
 
+                if (unitOnTile && position.x !== root.x && position.y !== root.y)
+                    selectionTile.show(TileStatus.DANGER);
+                else
+                    selectionTile.show();
             }
         )
     }
 
     showAttackRange(root:Position,range:number,status:TileStatus=TileStatus.WARNING){
+        console.log("SHOW");
         const locations = this.getTilesInRange(root,range,true);
         locations.forEach(
             position=>{
-                const selectionTile = this.selectionTiles![position.y][position.x];
+                const selectionTile = this.selectionGrid![position.y][position.x];
                 this.activeTiles.push(selectionTile);
 
-                selectionTile.show(TileSelectionType.NONE,status);
+                selectionTile.show(status);
             }
         )
     }

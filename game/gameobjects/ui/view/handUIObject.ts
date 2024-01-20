@@ -23,9 +23,6 @@ export default class HandUIObject extends Phaser.GameObjects.Container{
             ()=>{this.cancelCardButton?.bg.setFillStyle(UI_COLORS.cancelLight)},
             ()=>{
                 this.cancelCardButton?.bg.setFillStyle(UI_COLORS.cancel);
-                //if(!turn.isDevicePlayerTurn) return;
-                //cardDetails.hide();
-                
                 EventEmitter.emit(EVENTS.cardEvent.CANCEL);
             });
         this.add(this.cancelCardButton);
@@ -34,33 +31,32 @@ export default class HandUIObject extends Phaser.GameObjects.Container{
 
     update(hand: Card[], discardMode:boolean){
         hand.forEach(
-            (card:Card, index:number)=>{
-            let cardGO = card.getGameObject();
-            if (!cardGO) {
-                cardGO = GameObjectFactory.createCardGO(this.scene,card,{x:index*CARD_SIZE.width*1.05,y:0});
+            (card: Card, index: number) => {
+                let cardGO = card.getGameObject();
+                if (cardGO) return;
+
+                cardGO = GameObjectFactory.createCardGO(this.scene, card, { x: index * CARD_SIZE.width * 1.05, y: 0 });
                 card.linkGameObject(cardGO);
-            }
-            const container = cardGO.getAsContainer();
 
-            container.setInteractive(
-                new Phaser.Geom.Rectangle(
-                    0,
-                    0,
-                    CARD_SIZE.width,
-                    CARD_SIZE.height
+                const container = cardGO.getAsContainer();
+
+                container.setInteractive(
+                    new Phaser.Geom.Rectangle(
+                        0,
+                        0,
+                        CARD_SIZE.width,
+                        CARD_SIZE.height
+                    )
+                    , Phaser.Geom.Rectangle.Contains
                 )
-                ,Phaser.Geom.Rectangle.Contains
-            )
-            .on(
-                Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
-                ()=>{
-                    EventEmitter.emit((discardMode)?EVENTS.cardEvent.SELECT_DISCARD:EVENTS.cardEvent.SELECT,card);
-                }
-            );
+                    .on(
+                        Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
+                        () => {
+                            EventEmitter.emit((discardMode) ? EVENTS.cardEvent.SELECT_DISCARD : EVENTS.cardEvent.SELECT, card);
+                        }
+                    );
 
-            this.add(container);
-            
-
+                this.add(container);
         });
     }
 

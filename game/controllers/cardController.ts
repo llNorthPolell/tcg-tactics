@@ -7,8 +7,6 @@ import { EventEmitter } from "../scripts/events";
 export default class CardController{
     private readonly cardManagers:Map<number,CardManager>;
 
-    private selected?:Card;
-
     constructor(playersInGame:GamePlayer[]){
         this.cardManagers=new Map();
         playersInGame.forEach(player=>this.cardManagers.set(player.id,player.cards));    
@@ -34,11 +32,15 @@ export default class CardController{
         return this.cardManagers.get(activePlayer.id)!.getHand();
     }
 
-    selectCard(card:Card){
-        this.selected=card;
+    selectCard(activePlayer:GamePlayer,card:Card){
+        this.cardManagers.get(activePlayer.id)!.selectCard(card);
     }
 
-    deselectCard(){
-        this.selected=undefined;
+    deselectCard(activePlayer:GamePlayer){
+        this.cardManagers.get(activePlayer.id)!.deselectCard();
+    }
+
+    getSelectedCard(activePlayer:GamePlayer){
+        return this.cardManagers.get(activePlayer.id)!.getSelected();
     }
 }

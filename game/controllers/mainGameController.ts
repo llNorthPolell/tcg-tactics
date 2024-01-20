@@ -7,7 +7,7 @@ import FieldSetupScripts from "../scripts/fieldSetupScripts";
 import EffectSystem from "../system/effectSystem";
 import CardController from "./cardController";
 import LandmarkController from "./landmarkController";
-import SelectionTileController from "./selectionTileController";
+import SelectionGridController from "./selectionGridController";
 import TurnController from "./turnController";
 import UnitController from "./unitController";
 
@@ -16,7 +16,7 @@ export default class MainGameController {
     private readonly turn: TurnController;
     private readonly landmarks: LandmarkController;
     private readonly units: UnitController;
-    private readonly selectionTiles: SelectionTileController;
+    private readonly selectionGrid: SelectionGridController;
     private readonly cards: CardController;
     private readonly effects: EffectSystem;
 
@@ -24,14 +24,14 @@ export default class MainGameController {
         landmarks: LandmarkController,
         turn: TurnController,
         units: UnitController,
-        selectionTiles: SelectionTileController,
+        selectionGrid: SelectionGridController,
         cards: CardController,
         effects: EffectSystem) {
         this.scene = scene;
         this.landmarks = landmarks;
         this.turn = turn;
         this.units = units;
-        this.selectionTiles = selectionTiles;
+        this.selectionGrid = selectionGrid;
         this.cards = cards;
         this.effects = effects;
     }
@@ -98,23 +98,45 @@ export default class MainGameController {
 
 // Card Events
     selectCard(card:Card){
-        this.selectionTiles.hide();
+        this.selectionGrid.hide();
         const activePlayer = this.turn.getActivePlayer();
-        this.cards.selectCard(card);
+        this.cards.selectCard(activePlayer,card);
         if (card.cardType!==CARD_TYPE.spell)
-            this.selectionTiles.showRallyPoints(activePlayer);
+            this.selectionGrid.showRallyPoints(activePlayer);
     }
 
 
     cancelCard(){
-        this.cards.deselectCard();
-        this.selectionTiles.hide();
+        const activePlayer = this.turn.getActivePlayer();
+        this.cards.deselectCard(activePlayer);
+        this.selectionGrid.hide();
+    }
+
+    playCard(position:Position){
+        const activePlayer = this.turn.getActivePlayer();
+        const card = this.cards.getSelectedCard(activePlayer);
+        if (!card)
+            throw new Error("Failed to play card; no card was selected...");
+        const resources = activePlayer.resources;
+
+        try {
+            resources.spend(card.cost);
+            this.cards.removeCard(activePlayer,card);
+            this.cancelCard();
+            this.units.summonUnitByCard(this.scene, card,position);
+            console.log(`Played ${card.name} !`)
+        }
+        catch(error){
+            console.error(error);
+        }
     }
 
 
 // Unit Events
     selectUnit(unit:Unit){
-        this.selectionTiles.hide();
+        console.log(`select ${unit.name}`)
+        if (unit === this.units.getSelected()) return;
+        this.cancelUnitMove();
         this.units.selectUnit(unit);
         const position = unit.position()?.get();
 
@@ -125,9 +147,9 @@ export default class MainGameController {
         const range = unit.getCurrentStats().rng;
 
         if (unit.isActive())
-            this.selectionTiles.showMoves(position,movement,false);
+            this.selectionGrid.showMoves(position,movement,false);
         else
-            this.selectionTiles.showAttackRange(position,range);
+            this.selectionGrid.showAttackRange(position,range);
     }
 
 
@@ -140,14 +162,13 @@ export default class MainGameController {
     waitUnit(){
         const selected= this.units.getSelected();
         selected?.position()?.confirm();
-        this.selectionTiles.hide();
+        this.selectionGrid.hide();
     }
 
 
     cancelUnitMove(){
-        const selected= this.units.getSelected();
-        selected?.position()?.cancel();
-        this.selectionTiles.hide();
+        this.units.cancelMove();
+        this.selectionGrid.hide();
     }
 
 // Get Data

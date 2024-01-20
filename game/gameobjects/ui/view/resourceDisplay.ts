@@ -1,9 +1,6 @@
 import { CANVAS_SIZE } from "@/game/config";
-import { Position } from "@/game/data/types/position";
 import { ASSETS } from "@/game/enums/keys/assets";
-import { EVENTS } from "@/game/enums/keys/events";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
-import { EventEmitter } from "@/game/scripts/events";
 
 
 const RESOURCE_DISPLAY_SIZE = {
@@ -56,7 +53,6 @@ export default class ResourceDisplay extends Phaser.GameObjects.Container{
                 fontSize:50
             }
         )
-
 
         const incomeRateIcon = scene.add.image(
             RESOURCE_DISPLAY_SIZE.width*0.3,

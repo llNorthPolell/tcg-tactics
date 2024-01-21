@@ -39,6 +39,10 @@ export default class UIController{
         this.deckStats=deckStats;
     }
 
+    handleDrawCard(card:Card){
+        this.hand.drawCard(card);
+    }
+
     handlePlayerTurn(activePlayer:GamePlayer){
         if(!activePlayer.isDevicePlayer) return;
 
@@ -49,7 +53,6 @@ export default class UIController{
         this.resources.setMax(max);
         this.resources.setIncome(income);
 
-        this.hand.update();
         this.deckStats.setDeckCount(activePlayer.cards.getDeckCount());
 
         this.endTurn.show();
@@ -104,9 +107,7 @@ export default class UIController{
         const {current} = activePlayer.resources.get();
 
         this.cardDetails.hide();
-        this.hand.cancel();
-
-        this.hand.update();
+        this.hand.handlePlayCard();
         this.endTurn.show();
         this.resources.setCurrent(current);
     }

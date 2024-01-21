@@ -60,13 +60,18 @@ export default class UnitController{
         this.movingUnit=undefined;
     }
 
-    confirmMove(unit:Unit, destination:Position){
-        const positionController = this.getPositionController(unit);
+    confirmMove(){
+        if(!this.movingUnit) 
+            throw new Error("No unit was selected...");
+        const positionController = this.getPositionController(this.movingUnit);
         const position = positionController.get();
 
         this.field.units.delete(`${position.x}_${position.y}`);
-        this.field.units.set(`${destination.x}_${destination.y}`,unit);
         positionController.confirm();
+        
+        const newPosition = this.movingUnit.position()!.get();
+        this.field.units.set(`${newPosition.x}_${newPosition.y}`,this.movingUnit);
+
         this.movingUnit=undefined;
     }
 

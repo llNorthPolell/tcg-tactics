@@ -5,12 +5,16 @@ import Card from "../../cards/card";
 import GameObjectFactory from "../../gameObjectFactory";
 import Button from "./button";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
+import CardGO from "../../cards/cardGO";
 
 export default class HandUIObject extends Phaser.GameObjects.Container{
     private readonly cancelCardButton : Button;
+    private readonly cardContainer: Phaser.GameObjects.Container;
 
     constructor(scene:Phaser.Scene){
         super(scene,0,0);
+
+        this.cardContainer = scene.add.container(0,0);
 
         this.cancelCardButton = new Button(
             scene,
@@ -25,39 +29,51 @@ export default class HandUIObject extends Phaser.GameObjects.Container{
                 this.cancelCardButton?.bg.setFillStyle(UI_COLORS.cancel);
                 EventEmitter.emit(EVENTS.cardEvent.CANCEL);
             });
+        this.add(this.cardContainer);
         this.add(this.cancelCardButton);
         this.cancelCardButton.hide();
     }
 
-    update(hand: Card[], discardMode:boolean){
+    insertCard(card:Card, hand:Card[]){
+        const cardGO = GameObjectFactory.createCardGO(this.scene,card,{x:(hand.length-1)*CARD_SIZE.width *1.05, y:0});
+        card.linkGameObject(cardGO);
+        const container = cardGO as Phaser.GameObjects.Container;
+        container.setInteractive(
+            new Phaser.Geom.Rectangle(
+                0,
+                0,
+                CARD_SIZE.width,
+                CARD_SIZE.height
+            )
+            , Phaser.Geom.Rectangle.Contains
+        )
+        .on(
+            Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
+            () => {
+                EventEmitter.emit(EVENTS.cardEvent.SELECT, card);
+            }
+        );
+        this.cardContainer.add(cardGO);
+    }
+
+    removeCard(hand:Card[],card:Card){
+        const cardGO = card.getGameObject();
+        if (!cardGO)
+            throw new Error(`${card.name} does not have a game object defined...`);
+        this.cardContainer.remove(cardGO as CardGO);
+        this.repositionHand(hand);
+        cardGO.setVisible(false);
+        cardGO.setPosition(-100,-100);
+    }
+
+
+    private repositionHand(hand:Card[]){
         hand.forEach(
-            (card: Card, index: number) => {
-                let cardGO = card.getGameObject();
-                if (cardGO) return;
-
-                cardGO = GameObjectFactory.createCardGO(this.scene, card, { x: index * CARD_SIZE.width * 1.05, y: 0 });
-                card.linkGameObject(cardGO);
-
-                const container = cardGO.getAsContainer();
-
-                container.setInteractive(
-                    new Phaser.Geom.Rectangle(
-                        0,
-                        0,
-                        CARD_SIZE.width,
-                        CARD_SIZE.height
-                    )
-                    , Phaser.Geom.Rectangle.Contains
-                )
-                    .on(
-                        Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
-                        () => {
-                            EventEmitter.emit((discardMode) ? EVENTS.cardEvent.SELECT_DISCARD : EVENTS.cardEvent.SELECT, card);
-                        }
-                    );
-
-                this.add(container);
-        });
+            (card:Card, index:number)=>{
+                const cardGO = card.getGameObject() as CardGO;
+                cardGO.setPosition(index * CARD_SIZE.width * 1.05, 0);
+            }
+        )
     }
 
     showCancelButton(){

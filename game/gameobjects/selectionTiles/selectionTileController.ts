@@ -34,6 +34,8 @@ export default class SelectionTileController{
         this.tile.show();
         if (status!==TileStatus.SUCCESS)
             this.tile.disable();
+        else
+            this.tile.setInteractive();
     }
 
     hide(){

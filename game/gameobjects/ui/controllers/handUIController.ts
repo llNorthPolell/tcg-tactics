@@ -37,6 +37,17 @@ export default class HandUIController{
         this.ui.hideCancelButton();       
     }
 
+    drawCard(card:Card){
+        const hand = this.cards.getHand();
+        this.ui.insertCard(card,hand);
+    }
+
+    handlePlayCard(){
+        if(!this.selected) return;
+        this.ui.removeCard(this.cards.getHand(),this.selected);
+        this.cancel();
+    }
+
     setDiscardMode(discardMode:boolean){
         this.discardMode=discardMode;
     }

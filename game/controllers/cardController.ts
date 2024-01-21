@@ -18,10 +18,10 @@ export default class CardController{
         if (!cardManager)
             throw new Error (`${activePlayer.name} does not have a card manager...`);
 
-        cardManager.drawCard();
+        const card = cardManager.drawCard();
 
         if(activePlayer.isDevicePlayer)
-            EventEmitter.emit(EVENTS.uiEvent.UPDATE_HAND,cardManager.getHand());
+            EventEmitter.emit(EVENTS.cardEvent.DRAW,card);
     }
 
     removeCard(activePlayer:GamePlayer,card:Card){

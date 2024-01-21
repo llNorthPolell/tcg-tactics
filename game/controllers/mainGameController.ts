@@ -100,6 +100,8 @@ export default class MainGameController {
     selectCard(card:Card){
         this.selectionGrid.hide();
         const activePlayer = this.turn.getActivePlayer();
+        if(card.getOwner()!== activePlayer) return;
+        
         this.cards.selectCard(activePlayer,card);
         if (card.cardType!==CARD_TYPE.spell)
             this.selectionGrid.showRallyPoints(activePlayer);
@@ -146,7 +148,7 @@ export default class MainGameController {
         const movement = unit.getCurrentStats().mvt;
         const range = unit.getCurrentStats().rng;
 
-        if (unit.isActive())
+        if (unit.isActive() && this.turn.isDevicePlayerTurn())
             this.selectionGrid.showMoves(position,movement,false);
         else
             this.selectionGrid.showAttackRange(position,range);
@@ -160,8 +162,7 @@ export default class MainGameController {
 
 
     waitUnit(){
-        const selected= this.units.getSelected();
-        selected?.position()?.confirm();
+        this.units.confirmMove();
         this.selectionGrid.hide();
     }
 

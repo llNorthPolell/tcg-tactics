@@ -4,6 +4,11 @@ export const EVENTS = {
      */
     cardEvent: Object.freeze({
         /**
+         * When player draws a card
+         */
+        DRAW: "draw-card",
+        
+        /**
          * When player selects a card
          * @Params card:Card<CardData>
          * @Params discard?:boolean
@@ -40,34 +45,11 @@ export const EVENTS = {
      */
     uiEvent: Object.freeze({
         /**
-         * Signal HUD to update resource display
-         * @Params currResource:number
-         * @Params maxResource:number
-         * @Params incomeRate?:number
-         */
-        UPDATE_RESOURCE_DISPLAY: "update-resource-display",
-
-        /**
          * Signal HUD to update hand display
          * @Params hand:Card<CardData>[]
          * @Params heroCard:HeroCard
          */
         UPDATE_HAND: "update-hand-ui",
-
-        /**
-         * Signal HUD to update unit stats display
-         */
-        UPDATE_UNIT_STAT_DISPLAY: "update-unit-stat-display",
-
-        /**
-         * Signal HUD to update deck count
-         */
-        UPDATE_DECK_COUNTER: "update-deck-counter",
-
-        /**
-         * Signal HUD to update casualty count
-         */
-        UPDATE_CASUALTY_COUNTER: "update-casualty-counter",
 
         /**
          * Signal for damage numbers, healing numbers, status ailments etc.

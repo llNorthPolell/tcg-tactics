@@ -54,6 +54,12 @@ export default class EventDispatcher {
     handleCardEvents(){
         EventEmitter
         .on(
+            EVENTS.cardEvent.DRAW,
+            (card:Card)=>{
+                this.ui.handleDrawCard(card);
+            }
+        )
+        .on(
             EVENTS.cardEvent.SELECT,
             (card:Card)=>{
                 this.main.selectCard(card);

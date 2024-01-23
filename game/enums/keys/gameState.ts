@@ -46,6 +46,8 @@ export const GAME_STATE = Object.freeze({
 
     effectsSystem: "effects-system",
 
+    combatSystem: "combat-system",
+
     eventDispatcher: "event-dispatcher",
 
     mainController: "main-controller",

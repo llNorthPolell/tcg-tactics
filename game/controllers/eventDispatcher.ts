@@ -56,6 +56,7 @@ export default class EventDispatcher {
         .on(
             EVENTS.cardEvent.DRAW,
             (card:Card)=>{
+                // TODO: This will be called if opponent draws cards...
                 this.ui.handleDrawCard(card);
             }
         )
@@ -75,9 +76,15 @@ export default class EventDispatcher {
         )
         .on(
             EVENTS.cardEvent.PLAY,
-            (position:Position)=>{
-                this.main.playCard(position);
-                this.ui.handlePlayCard();
+            (target:Unit|Position)=>{
+                try{
+                    this.main.playCard(target);
+                    this.ui.handlePlayCard();
+                }
+                catch(error){
+                    console.log((error as Error).message);
+                    return false;
+                }
             }
         )
     }
@@ -110,6 +117,19 @@ export default class EventDispatcher {
             ()=>{
                 this.main.cancelUnitMove();
                 this.ui.handleDeselectUnit();
+            }
+        )
+        .on(
+            EVENTS.unitEvent.ATTACK,
+            (defender:Unit)=>{
+                this.main.attackUnit(defender);
+                this.ui.handleDeselectUnit();
+            }
+        )
+        .on(
+            EVENTS.unitEvent.DEATH,
+            (unit:Unit)=>{
+                this.ui.handleKillUnit(unit);
             }
         )
     }

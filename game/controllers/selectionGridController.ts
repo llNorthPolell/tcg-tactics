@@ -1,4 +1,5 @@
 import { Position } from "../data/types/position";
+import { GAME_CONSTANT } from "../enums/keys/gameConstants";
 import { LandmarkType } from "../enums/landmarkType";
 import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus } from "../enums/tileStatus";
@@ -72,6 +73,30 @@ export default class SelectionGridController{
         )
     }
 
+    showSpellRange(activePlayer:GamePlayer,selectionType:TileSelectionType=TileSelectionType.NONE){
+        const heroes = activePlayer.units.getActiveChampions();
+        let locations : Position[] = [];
+        heroes.forEach(
+            hero=>{
+                const heroPosition = hero.position()?.get();
+                if(!heroPosition)
+                    throw new Error(`${hero.name} does not have a position controller initialized...`);
+
+                locations.push(...this.getTilesInRange(heroPosition,GAME_CONSTANT.MAX_SPELL_RANGE,true));
+            }
+        )
+
+        locations.forEach(
+            position=>{
+                const selectionTile = this.selectionGrid![position.y][position.x];
+                this.activeTiles.push(selectionTile);
+                
+                selectionTile.setSelectionType(selectionType);
+                selectionTile.show(selectionType===TileSelectionType.PLAY_CARD? TileStatus.SUCCESS: TileStatus.WARNING);
+            }
+        )
+    }
+
     hide(){
         this.activeTiles?.forEach(
             selectionTile=>{
@@ -99,7 +124,7 @@ export default class SelectionGridController{
             if(!passObstacles && obstacleLayer.getTileAt(current.x, current.y)) return;
 
             const unitOnTile = units.getUnitByPosition(current);
-
+            
             if(!passObstacles && 
                 unitOnTile &&
                 current.x !== root.x && 

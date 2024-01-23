@@ -42,20 +42,22 @@ export default class LandmarkController{
         landmark.capturable.resetCapture();
     }
 
-    updateLandmarks(){
+    updateLandmarks(activePlayer:GamePlayer){
         const landmarks = this.field.landmarksByLocation;
 
         landmarks.forEach(landmark=>{
+            const occupant = landmark.occupant;
+            if(!occupant) return;
+
+            const occupantOwner = occupant.getOwner();
+            if(!occupantOwner) return;
+
+            if(occupant.getOwner()!==activePlayer) return;
             const captured = landmark.capturable?.attemptCapture();
-            if (captured){
-                const occupant = landmark.occupant;
-                if (!occupant)
-                    throw new Error ("Failed to capture landmark; no occupant was found...");
-                const newOwner = occupant.getOwner();
-                if (!newOwner)
-                    throw new Error (`Failed to capture landmark; ${occupant} does not have an owner...`);
-                this.transferLandmark(landmark,newOwner);
-            }
+            
+            if (captured)
+                this.transferLandmark(landmark,occupantOwner);
+            
         });
     }
 }

@@ -36,4 +36,8 @@ export default class GameState{
     getPlayers(){
         return this.playersInGame;
     }
+
+    getTurnNumber(){
+        return this.turn;
+    }
 }

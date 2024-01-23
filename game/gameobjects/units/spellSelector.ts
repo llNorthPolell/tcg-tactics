@@ -1,15 +1,16 @@
 import { TILESIZE } from "@/game/config";
-import SpellCard from "../cards/spellCard";
 import Unit from "./unit";
 import { ASSETS } from "@/game/enums/keys/assets";
 import { EVENTS } from "@/game/enums/keys/events";
 import { EventEmitter } from "@/game/scripts/events";
+import GamePlayer from "../player/gamePlayer";
 import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
+import { GAME_CONSTANT } from "@/game/enums/keys/gameConstants";
+import { inRange } from "@/game/scripts/util";
 import { AMITY_COLORS } from "@/game/enums/keys/amityColors";
 
 export default class SpellSelector extends Phaser.GameObjects.Container{
     private unit:Unit;
-    private spellCard?: SpellCard;
     private selector:Phaser.GameObjects.Image;
 
     constructor(scene:Phaser.Scene,unit:Unit){
@@ -27,35 +28,46 @@ export default class SpellSelector extends Phaser.GameObjects.Container{
             .on(
                 Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
                 ()=>{
-                    if (!this.spellCard) return;
-                    console.log(`Cast ${this.spellCard.data.name} onto ${this.unit.name}!`)
                     EventEmitter.emit(EVENTS.cardEvent.PLAY, this.unit);
                 }
             )
         this.hide();
+
+        EventEmitter
+        .on(
+            EVENTS.uiEvent.SHOW_SPELL_SELECTOR,
+            (sourcePlayer:GamePlayer, targetType:string)=>{
+                if (targetType===TARGET_TYPES.none) return;
+                if (targetType===TARGET_TYPES.ally && sourcePlayer !== this.unit.getOwner()) return;
+                if (targetType===TARGET_TYPES.enemy && sourcePlayer === this.unit.getOwner()) return;
+                
+                const heroes = sourcePlayer.units.getActiveChampions();
+                const thisPosition = this.unit.position()!.get();
+                let nearHero = false;
+                heroes.forEach(
+                    hero=>{
+                        const heroPosition = hero.position()?.get();
+                        if (!heroPosition)
+                            throw new Error(`${hero.name} does not have a position controller initialized...`);
+
+                        if (inRange(heroPosition,thisPosition,GAME_CONSTANT.MAX_SPELL_RANGE))
+                            nearHero=true;
+                    }
+                )
+                if(nearHero)
+                    this.show((this.unit.getOwner()===sourcePlayer)? AMITY_COLORS.success : AMITY_COLORS.danger);
+            }
+        )
+        .on(
+            EVENTS.uiEvent.HIDE_SPELL_SELECTOR,
+            ()=>{
+                this.hide();
+            }
+        )
     }
 
-    show(spellCard:SpellCard){
-        const spellCardOwnerId = spellCard.getOwner()!.id;
-        const unitOwnerId = this.unit.getOwner()!.id;
-        const targetType = spellCard.data.targetType;
-
-        if (spellCardOwnerId===unitOwnerId && targetType===TARGET_TYPES.enemy) return;
-        if (spellCardOwnerId!==unitOwnerId && targetType===TARGET_TYPES.ally) return;
-
-        this.spellCard=spellCard;
-
-        this.selector.tint = (spellCard.data.targetType === TARGET_TYPES.ally)?
-            AMITY_COLORS.success :
-            (spellCard.data.targetType === TARGET_TYPES.enemy)?
-                AMITY_COLORS.danger :
-                AMITY_COLORS.none;
-
-        // TODO: Allies currently show up as danger since they are not owned by player
-        if (spellCard.data.targetType === TARGET_TYPES.position){
-            if (spellCardOwnerId == unitOwnerId) this.selector.tint = AMITY_COLORS.success
-            else this.selector.tint = AMITY_COLORS.danger;
-        }
+    show(color:number){
+        this.selector.tint = color;
         this.setVisible(true);
     }
 

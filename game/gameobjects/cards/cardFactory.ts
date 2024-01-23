@@ -1,5 +1,4 @@
 import Card from "./card";
-import Unit from "../units/unit";
 import { CARD_TYPE } from "@/game/enums/keys/cardType";
 import { CardData } from "@/game/data/types/cardData";
 import { UnitData } from "@/game/data/types/unitData";
@@ -25,7 +24,7 @@ export default class CardFactory{
         else {
             const effectData = cardData.contents as EffectData[];
             const effects = EffectFactory.createEffects(effectData);
-            card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,effects);
+            card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,effects,undefined,effects[0].targetType);
         }
         return card;
     }

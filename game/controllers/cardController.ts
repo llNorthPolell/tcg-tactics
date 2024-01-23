@@ -20,7 +20,7 @@ export default class CardController{
 
         const card = cardManager.drawCard();
 
-        if(activePlayer.isDevicePlayer)
+        if(activePlayer.isDevicePlayer && card)
             EventEmitter.emit(EVENTS.cardEvent.DRAW,card);
     }
 

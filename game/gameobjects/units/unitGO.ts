@@ -158,6 +158,7 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
             }
         );
 
+
         this.scene.add.existing(this);
     }
 

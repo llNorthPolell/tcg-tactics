@@ -65,6 +65,7 @@ export default class UIController{
 
     handleSelectCard(card:Card){
         if(!this.turn.isDevicePlayerTurn()) return;
+        this.handleDeselectUnit();
         this.hand.select(card);
         this.cardDetails.show(card);
         this.endTurn.hide();
@@ -83,6 +84,7 @@ export default class UIController{
     }
 
     handleSelectUnit(activePlayer:GamePlayer,unit:Unit){
+        this.handleCancelCard();
         this.handleDeselectUnit();
         this.hand.hide();
         this.endTurn.hide();
@@ -110,5 +112,15 @@ export default class UIController{
         this.hand.handlePlayCard();
         this.endTurn.show();
         this.resources.setCurrent(current);
+    }
+
+
+    handleKillUnit(unit:Unit){
+        const owner = unit.getOwner();
+        if(!owner)
+            throw new Error(`${unit.name} does not have an owner...`);
+        console.log(`Owner of ${unit.name}: ${owner.name}`)
+        if (!owner.isDevicePlayer)return;
+        this.deckStats.setDeathCount(owner.units.getCasualties());
     }
 }

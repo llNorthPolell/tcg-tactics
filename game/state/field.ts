@@ -2,7 +2,6 @@
 import { TilemapData } from "@/game/data/types/tilemapData";
 import Landmark from "../gameobjects/landmarks/landmark";
 import Unit from "../gameobjects/units/unit";
-import SelectionTile from "../gameobjects/selectionTiles/selectionTile";
 import Game from "./gameState";
 import SelectionTileController from "../gameobjects/selectionTiles/selectionTileController";
 

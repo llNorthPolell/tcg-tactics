@@ -19,7 +19,7 @@ export default class EffectFactory{
                     data.targetType,
                     data.duration,
                     data.range,
-                    data.triggers,
+                    data.trigger,
                     data.isRemovable);
 
                 newEffect.addComponents(components);

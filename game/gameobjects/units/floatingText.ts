@@ -1,5 +1,7 @@
+import { EventEmitter } from "@/game/scripts/events";
 import { TILESIZE } from "../../config";
 import { FONT } from "../../enums/keys/font";
+import { EVENTS } from "@/game/enums/keys/events";
 
 export default class FloatingText extends Phaser.GameObjects.Text{
     private animation:Phaser.Tweens.Tween;
@@ -22,7 +24,7 @@ export default class FloatingText extends Phaser.GameObjects.Text{
             onComplete: ()=>{
                 this.setVisible(false);
             }
-        })
+        });
     }
 
     play(text:string,color:number){

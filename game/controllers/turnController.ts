@@ -31,4 +31,8 @@ export default class TurnController{
         console.log(`Player ${playerId} is not implemented, so will pass...`);
         EventEmitter.emit(EVENTS.gameEvent.NEXT_TURN);
     }
+
+    getTurnNumber(){
+        return this.gameState.getTurnNumber();
+    }
 }

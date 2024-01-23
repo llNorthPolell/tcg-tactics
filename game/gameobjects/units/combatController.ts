@@ -18,12 +18,12 @@ export default class CombatController {
         if (amount > 0){
             console.log(`${this.unit.name} heals ${amount} hp!`);
             gameObject.updateHpText();
-            EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,this,amount,UI_COLORS.heal);
+            gameObject.floatingText.play(`${amount}`,UI_COLORS.heal);
         }
         else {
             console.log(`${this.unit.name} takes ${amount} damage!`);
             gameObject.updateHpText();
-            EventEmitter.emit(EVENTS.uiEvent.PLAY_FLOATING_TEXT,this,-amount,UI_COLORS.damage);    
+            gameObject.floatingText.play(`-${amount}`,UI_COLORS.damage);
         }
         
         
@@ -35,6 +35,9 @@ export default class CombatController {
         console.log(`${this.unit.id} has been slain...`);
         this.unit.setActive(false);
         this.unit.getGameObject()?.setVisible(false);
-        EventEmitter.emit(EVENTS.unitEvent.DEATH, this);
+        const owner = this.unit.getOwner();
+        if(!owner)return;
+        owner.units.moveUnitToGraveyard(this.unit);
+        EventEmitter.emit(EVENTS.unitEvent.DEATH, this.unit);
     }
 }

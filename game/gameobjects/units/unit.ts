@@ -5,6 +5,7 @@ import PositionController from "./positionController";
 import { UnitStats } from "../../data/types/unitStats";
 import { UnitStatuses } from "@/game/data/types/unitStatuses";
 import CombatController from "./combatController";
+import EffectHandler from "./effectHandler";
 
 export default class Unit{
     /**
@@ -48,9 +49,9 @@ export default class Unit{
     private status: UnitStatuses;
 
     /**
-     * Effects casted by this unit
+     * List of effects casted by this unit
      */
-    private effects:Effect[];
+    private effects:Effect[]
 
     /**
      * Reference to physicalization of the unit rendered on screen
@@ -65,8 +66,13 @@ export default class Unit{
     /**
      * Reference to Combat controller object to handle unit combat functions.
      */
-    readonly combat:CombatController
+    readonly combat:CombatController;
     
+    /**
+     * Reference to Effect controller object to handle spell effects
+     */
+    readonly effectHandler:EffectHandler;
+
     /**
      * If true, unit can move and attack
      */
@@ -95,9 +101,9 @@ export default class Unit{
         this.cardId=cardId;
         this.unitClass=unitClass;
         this.unitType=unitType;
-        this.base=stats;
-        this.effects=effects;
-        this.current=stats;
+        this.base={...stats};
+        this.effects=[...effects];
+        this.current={...stats};
         this.active=false;
 
         this.status = {
@@ -107,6 +113,7 @@ export default class Unit{
             rush:false
         }
         this.combat = new CombatController(this);
+        this.effectHandler = new EffectHandler(this);
     }
 
     getCurrentStats():UnitStats{

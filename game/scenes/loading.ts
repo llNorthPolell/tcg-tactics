@@ -34,6 +34,7 @@ import CardDetailsDisplay from "../gameobjects/ui/view/cardDetailsDisplay";
 import CardDetailsDisplayController from "../gameobjects/ui/controllers/cardDetailsDisplayController";
 import DeckStatDisplay from "../gameobjects/ui/view/deckStatDisplay";
 import DeckStatDisplayController from "../gameobjects/ui/controllers/deckStatDisplayController";
+import CombatSystem from "../system/combatSystem";
 
 export default class LoadingScene extends Phaser.Scene {
 
@@ -115,8 +116,10 @@ export default class LoadingScene extends Phaser.Scene {
         const landmarksController = new LandmarkController(field);
         const cardController = new CardController(playersInGame);
         const effectsSystem = new EffectSystem(field,playersInGame);
+        const combatSystem = new CombatSystem(unitsController,effectsSystem)
         const mainController = new MainGameController(gameplayScene,landmarksController,
-            turnController,unitsController,selectionGridController,cardController,effectsSystem);
+            turnController,unitsController,selectionGridController,cardController,effectsSystem,
+            combatSystem);
 
         console.log("Initializing UI");
         const hudScene = this.game.scene.getScene(SCENES.HUD);
@@ -157,10 +160,9 @@ export default class LoadingScene extends Phaser.Scene {
         this.game.registry.set(GAME_STATE.landmarksController, landmarksController);
         this.game.registry.set(GAME_STATE.cardController,cardController);
         this.game.registry.set(GAME_STATE.effectsSystem, effectsSystem);
+        this.game.registry.set(GAME_STATE.combatSystem,combatSystem);
         this.game.registry.set(GAME_STATE.mainController,mainController)
-        this.game.registry.set(GAME_STATE.cardDetailsDisplay,cardDetailsDisplay)
-        this.game.registry.set(GAME_STATE.deckStatDisplay,deckStatDisplay);
-
+        
         this.game.registry.set(GAME_STATE.handUIObject, handUIObject);
         this.game.registry.set(GAME_STATE.unitControlsPanel, unitControlsPanel);
         this.game.registry.set(GAME_STATE.unitStatDisplay, unitStatDisplay);
@@ -168,6 +170,8 @@ export default class LoadingScene extends Phaser.Scene {
         this.game.registry.set(GAME_STATE.resourceDisplay,resourceDisplay);
         this.game.registry.set(GAME_STATE.cardDetailsDisplayController,cardDetailsDisplayController)
         this.game.registry.set(GAME_STATE.deckStatDisplayController,deckStatDisplayController);
+        this.game.registry.set(GAME_STATE.cardDetailsDisplay,cardDetailsDisplay)
+        this.game.registry.set(GAME_STATE.deckStatDisplay,deckStatDisplay);
 
         this.game.registry.set(GAME_STATE.handUIController, handUIController);
         this.game.registry.set(GAME_STATE.unitCtrlPanelController, unitControlsPanelController);

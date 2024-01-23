@@ -49,7 +49,32 @@ export const EVENTS = {
          * @Params hand:Card<CardData>[]
          * @Params heroCard:HeroCard
          */
-        UPDATE_HAND: "update-hand-ui",
+        //UPDATE_HAND: "update-hand-ui",
+
+        /**
+         * Signal units on field to show attack selectors
+         * @Params attacker:Unit
+         * @Params destination?:Position
+         */
+        SHOW_ATTACK_SELECTOR: "show-attack-selector",
+
+        /**
+         * Signal units to hide attack selectors
+         */
+        HIDE_ATTACK_SELECTOR: "hide-attack-selector",
+
+        /**
+         * Signal units on field to show spell selectors
+         * @Params spellCard:Card
+         * @Params sourcePlayer:GamePlayer
+         * @Params targetType:string
+         */
+        SHOW_SPELL_SELECTOR: "show-spell-selector",
+
+        /**
+         * Signal units to hide spell selectors
+         */
+        HIDE_SPELL_SELECTOR: "hide-spell-selector",
 
         /**
          * Signal for damage numbers, healing numbers, status ailments etc.
@@ -62,7 +87,7 @@ export const EVENTS = {
          * @Params heroCard:HeroCard
          * @Params discard:Card
          */
-        SHOW_DISCARD_WINDOW: "show-discard-window"
+        //SHOW_DISCARD_WINDOW: "show-discard-window"
     }),
     /**
      * For game events like player turns, game over

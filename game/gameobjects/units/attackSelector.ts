@@ -3,6 +3,8 @@ import Unit from "./unit";
 import { ASSETS } from "@/game/enums/keys/assets";
 import { EVENTS } from "@/game/enums/keys/events";
 import { EventEmitter } from "@/game/scripts/events";
+import { Position } from "@/game/data/types/position";
+import { inRange } from "@/game/scripts/util";
 
 export default class AttackSelector extends Phaser.GameObjects.Container{
     private readonly unit:Unit;
@@ -24,10 +26,32 @@ export default class AttackSelector extends Phaser.GameObjects.Container{
                 Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
                 ()=>{
                     if (!this.attacker) return;
-                    EventEmitter.emit(EVENTS.unitEvent.ATTACK, this.attacker, unit);
+                    EventEmitter.emit(EVENTS.unitEvent.ATTACK, unit);
                 }
             )
         this.hide();
+
+        EventEmitter
+        .on(
+            EVENTS.uiEvent.SHOW_ATTACK_SELECTOR,
+            (attacker:Unit, destination?:Position)=>{
+                const attackerPosition = (destination)? destination: attacker.position()?.get(); 
+                const thisPosition = this.unit.position()!.get();
+                const attackerRange = attacker.getCurrentStats().rng;
+
+                if (!attackerPosition || !thisPosition) return;
+                if(attacker.getOwner() === this.unit.getOwner()) return;
+                if(!inRange(attackerPosition,thisPosition,attackerRange)) return;
+
+                this.show(attacker);
+            }
+        )
+        .on(
+            EVENTS.uiEvent.HIDE_ATTACK_SELECTOR,
+            ()=>{
+                this.hide();
+            }
+        )
     }
 
     show(attacker: Unit){

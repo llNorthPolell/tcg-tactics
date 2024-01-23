@@ -92,8 +92,11 @@ export default class Capturable{
         if(unitOwner == this.owner) return false;
 
         this.captureTick++;
-        if (this.captureTick < GAME_CONSTANT.LANDMARK_CAPTURE_TURNS)
+        if (this.captureTick < GAME_CONSTANT.LANDMARK_CAPTURE_TURNS){
+            console.log(`${occupant.name} has attempted to capture ${this.landmark.id}. 
+                ${GAME_CONSTANT.LANDMARK_CAPTURE_TURNS-this.captureTick} turns until capture...`);
             return false;
+        }
 
         this.capture(unitOwner);
         return true;

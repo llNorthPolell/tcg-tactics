@@ -1,3 +1,4 @@
+import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
 import GameObject from "../common/gameObject";
 import GamePlayer from "../player/gamePlayer";
 import Unit from "../units/unit";
@@ -19,6 +20,11 @@ export default class Card {
      * Spell,Hero, or Unit card?
      */
     readonly cardType: string;
+
+    /**
+     * Card target type
+     */
+    readonly targetType: string;
 
     /**
      * Cost to play this card
@@ -46,13 +52,14 @@ export default class Card {
     private gameObject?:GameObject;
 
     
-    constructor(id:string,name:string,cardType:string,cost:number,effects?:Effect[],unit?:Unit){
+    constructor(id:string,name:string,cardType:string,cost:number,effects?:Effect[],unit?:Unit,targetType:string=TARGET_TYPES.rallyPoint){
         this.id=id;
         this.name=name;
         this.cardType=cardType;
         this.cost=cost;
-        this.effects=effects;
-        this.unit=unit;
+        this.effects=(effects)?[...effects]:undefined;
+        this.unit=(unit)? unit: undefined;
+        this.targetType=targetType;
     }
 
     linkGameObject(gameObject:GameObject):void{

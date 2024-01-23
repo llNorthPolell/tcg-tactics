@@ -23,5 +23,10 @@ export const TARGET_TYPES = Object.freeze({
     /**
      * Spell card can be applied to a target position. If a unit is standing on a tile, its attack/support selector will be displayed.
      */
-    position: "position"
+    position: "position",
+
+    /**
+     * For units only
+     */
+    rallyPoint: "rally"
 })

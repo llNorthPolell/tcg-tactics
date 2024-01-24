@@ -34,7 +34,6 @@ export default class UnitController{
         this.field.units.set(`${position.x}_${position.y}`,unit);
         owner.units.register(unit);
 
-        console.log(this.field.units);
         return unit;
     }
 
@@ -79,7 +78,6 @@ export default class UnitController{
         this.field.units.set(`${newPosition.x}_${newPosition.y}`,this.movingUnit);
         
         this.movingUnit=undefined;
-        console.log(this.field.units);
     }
 
     removeUnit(unit:Unit){

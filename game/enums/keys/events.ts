@@ -110,16 +110,6 @@ export const EVENTS = {
         NEXT_TURN:"next-turn",
     }),
     /**
-     * For player-specific events, like generating resources
-     */
-    playerEvent: Object.freeze({
-        /**
-         * Signal card manager to generate resources for the player
-         * @Params income:number
-         */
-        GENERATE_RESOURCES: "generate-resources",
-    }),
-    /**
      * For events happening on the playing field, such as summoning a unit, casting a spell, capturing landmarks
      */
     fieldEvent: Object.freeze({

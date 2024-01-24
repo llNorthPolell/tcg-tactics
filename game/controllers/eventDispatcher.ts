@@ -129,6 +129,7 @@ export default class EventDispatcher {
         .on(
             EVENTS.unitEvent.DEATH,
             (unit:Unit)=>{
+                this.main.killUnit(unit);
                 this.ui.handleKillUnit(unit);
             }
         )

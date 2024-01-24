@@ -114,6 +114,7 @@ export default class Effect{
      * Applies the effect onto the assigned target unit or position on the field. 
      */
     apply(){
+        console.log(`Applied ${this.name} onto ${(this.target instanceof Unit)?this.target?.name: `${this.target?.x},${this.target?.y}`}...`);
         this.components.forEach(
             component=>{
                 component.apply(this.target);
@@ -122,7 +123,9 @@ export default class Effect{
         if(this.duration<=0)return;
         this.currTime++;
         
-        if (this.currTime==this.duration)return;
+        if (this.currTime<this.duration)return;
+        console.log(`${this.name} has ended...`);
+        this.forceRemove();
     }
 
     /**
@@ -130,6 +133,11 @@ export default class Effect{
      */
     setTarget(target:Unit|Position){
         this.target=target;
+        this.components.forEach(
+            component=>{
+                component.setActive(true);
+            }
+        )
     }
 
     /**

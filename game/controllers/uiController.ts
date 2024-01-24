@@ -65,6 +65,7 @@ export default class UIController{
 
     handleSelectCard(card:Card){
         if(!this.turn.isDevicePlayerTurn()) return;
+        this.cardDetails.hide();
         this.handleDeselectUnit();
         this.hand.select(card);
         this.cardDetails.show(card);

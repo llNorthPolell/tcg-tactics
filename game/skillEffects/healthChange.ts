@@ -14,14 +14,15 @@ export default class HealthChange extends BaseEffectComponent{
     }
     
     apply(target:Unit): void {
+        if (!this.active) return;
         const baseCurrHp = target.getCurrentStats().hp;
         const deltaCurrHp = (this.valueType===ValueType.VALUE)? 
             this.amount : 
             Math.ceil(baseCurrHp*(this.amount/100));
 
-        target.getCurrentStats().hp += deltaCurrHp;
+        target.combat.changeHealth(deltaCurrHp);
 
         if (target.getCurrentStats().hp > 0)return;
-        this.remove();
+        target.combat.killUnit();
     }
 }

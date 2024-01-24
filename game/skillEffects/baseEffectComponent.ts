@@ -11,6 +11,7 @@ export default abstract class BaseEffectComponent implements EffectComponent{
     readonly stat?: string;
     readonly unit?: Unit;
     readonly children?: Effect[];
+    protected active:boolean;
 
     constructor(type:string,amount?:number,valueType:string=ValueType.VALUE,stat?:string,unit?:Unit,children?:Effect[]){
         this.type=type;
@@ -19,13 +20,22 @@ export default abstract class BaseEffectComponent implements EffectComponent{
         this.stat=stat;
         this.unit=unit;
         this.children=children;
+        this.active=false;
     }
 
 
     abstract apply(target?: Unit | Position | undefined): void;
     
     remove(): void {
-        throw new Error("Method not implemented.");
+        this.active=false;
+    }
+
+    setActive(active:boolean){
+        this.active=active;
+    }
+
+    isActive(){
+        return this.active;
     }
 
 }

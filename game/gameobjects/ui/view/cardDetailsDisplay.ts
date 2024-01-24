@@ -187,8 +187,9 @@ export default class CardDetailsDisplay extends Phaser.GameObjects.Container{
         this.cardType.setText(cardType);
     }
 
-    setEffects(){
-        throw new Error("Not implemented yet");
+    setSpellEffects(description:string){
+        this.spellEffects.setVisible(true);
+        this.spellEffectsDesc.setText(description);
     }
 
     /*sshow(card:Card){

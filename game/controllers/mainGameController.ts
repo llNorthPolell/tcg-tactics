@@ -1,5 +1,6 @@
 import { Position } from "../data/types/position";
 import { CARD_TYPE } from "../enums/keys/cardType";
+import { EffectTrigger } from "../enums/keys/effectTriggers";
 import { EVENTS } from "../enums/keys/events";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
 import { TileSelectionType } from "../enums/tileSelectionType";
@@ -67,6 +68,7 @@ export default class MainGameController {
 
         // TODO: Ensure unit GO updates when changing active
         activePlayer.units.getAllActiveUnits().forEach(unit => {
+            unit.effectHandler.applyOnTrigger(EffectTrigger.onTurnEnd);
             if (!unit.isActive()) return;
             unit.setActive(false);
             console.log(`${unit.name} has not moved, so it was set to inactive...`);
@@ -87,9 +89,9 @@ export default class MainGameController {
         activePlayer.resources.generate(income);
 
         this.cards.drawCard(activePlayer);
-        //this.effects.onTurnStart(activePlayer);
-
+        
         activePlayer.units.getAllActiveUnits().forEach(unit => {
+            unit.effectHandler.applyOnTrigger(EffectTrigger.onTurnStart);
             unit.setActive(true);
         });
 
@@ -279,6 +281,10 @@ export default class MainGameController {
         this.waitUnit();
         this.combat.initiateFight(attacker,target);
         
+    }
+
+    killUnit(unit:Unit){
+        this.units.removeUnit(unit);
     }
 
 // Get Data

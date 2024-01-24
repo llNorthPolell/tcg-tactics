@@ -5,6 +5,7 @@ import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus } from "../enums/tileStatus";
 import GamePlayer from "../gameobjects/player/gamePlayer";
 import SelectionTileController from "../gameobjects/selectionTiles/selectionTileController";
+import Unit from "../gameobjects/units/unit";
 import Field from "../state/field";
 
 import UnitController from "./unitController";
@@ -43,7 +44,11 @@ export default class SelectionGridController{
     }
 
     showMoves(root:Position,movement:number,passObstacles:boolean=false){
-        const locations = this.getTilesInRange(root,movement,passObstacles);
+        const unit = this.units.getUnitByPosition(root);
+        if(!unit)
+            throw new Error("Selected unit was not found...");
+        const locations = this.getTilesInRange(unit,movement,passObstacles);
+        
         locations.forEach(
             position=>{
                 const selectionTile = this.selectionGrid![position.y][position.x];
@@ -52,7 +57,7 @@ export default class SelectionGridController{
                 
                 selectionTile.setSelectionType(TileSelectionType.MOVE_UNIT);
 
-                if (unitOnTile && position.x !== root.x && position.y !== root.y)
+                if (unitOnTile && unit!==unitOnTile)
                     selectionTile.show(TileStatus.DANGER);
                 else
                     selectionTile.show();
@@ -61,8 +66,10 @@ export default class SelectionGridController{
     }
 
     showAttackRange(root:Position,range:number,status:TileStatus=TileStatus.WARNING){
-        console.log("SHOW");
-        const locations = this.getTilesInRange(root,range,true);
+        const unit = this.units.getUnitByPosition(root);
+        if(!unit)
+            throw new Error("Selected unit was not found...");
+        const locations = this.getTilesInRange(unit,range,true);
         locations.forEach(
             position=>{
                 const selectionTile = this.selectionGrid![position.y][position.x];
@@ -82,7 +89,7 @@ export default class SelectionGridController{
                 if(!heroPosition)
                     throw new Error(`${hero.name} does not have a position controller initialized...`);
 
-                locations.push(...this.getTilesInRange(heroPosition,GAME_CONSTANT.MAX_SPELL_RANGE,true));
+                locations.push(...this.getTilesInRange(hero,GAME_CONSTANT.MAX_SPELL_RANGE,true));
             }
         )
 
@@ -107,11 +114,12 @@ export default class SelectionGridController{
         this.activeTiles= [];
     }
 
-    private getTilesInRange(root:Position,range:number, passObstacles: boolean):Position[]{
+    private getTilesInRange(unit:Unit,range:number, passObstacles: boolean):Position[]{
         const maxPosition = {x:this.field.mapData.map.width-1,y:this.field.mapData.map.height-1};
         const obstacleLayer = this.field.mapData.layers.obstacle!;
         const units = this.units;
-        
+        const selected = unit;
+
         let accum :Map<string,Position> = new Map();
     
         function inRangeTilesRecursive(current:Position,tilesLeft:number){
@@ -124,12 +132,11 @@ export default class SelectionGridController{
             if(!passObstacles && obstacleLayer.getTileAt(current.x, current.y)) return;
 
             const unitOnTile = units.getUnitByPosition(current);
-            
+
             if(!passObstacles && 
                 unitOnTile &&
-                current.x !== root.x && 
-                current.y !== root.y) 
-                     return;
+                unitOnTile!== selected) 
+                    return;
                 
 
             inRangeTilesRecursive({x:current.x-1,y:current.y},tilesLeft-1);
@@ -138,7 +145,7 @@ export default class SelectionGridController{
             inRangeTilesRecursive({x:current.x,y:current.y+1},tilesLeft-1);
         }
     
-        inRangeTilesRecursive(root,range+1);
+        inRangeTilesRecursive(selected.position()?.get()!,range+1);
         const output = Array.from(accum.values());
         return output;
     }

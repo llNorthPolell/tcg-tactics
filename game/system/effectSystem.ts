@@ -2,6 +2,7 @@ import Unit from "../gameobjects/units/unit";
 import Field from "../state/field";
 import Effect from "@/game/skillEffects/effect";
 import GamePlayer from "../gameobjects/player/gamePlayer";
+import { EffectTrigger } from "../enums/keys/effectTriggers";
 
 /**
  * Centralized location to handle effects
@@ -11,9 +12,19 @@ export default class EffectSystem{
 
     private readonly units: Map<string,Unit>;
 
+    private passives:Map<number,Effect[]>;
+
     constructor(field:Field,playersInGame:GamePlayer[]){
         this.field=field;
         this.units=field.units;
+
+        this.passives=new Map();
+
+        playersInGame.forEach(
+            player=>{
+                this.passives.set(player.id,[]);
+            }
+        )
     }
 
     /**
@@ -24,9 +35,15 @@ export default class EffectSystem{
     cast(effects:Effect[],target:Unit){
         effects.forEach(
             effect=>{
-                effect.setTarget(target);
-                effect.apply();
-                console.log(`Applied ${effect.name} onto ${target.name}`);
+                switch (effect.trigger){
+                    case EffectTrigger.onTurnStart:
+                        target.effectHandler.insertToTriggerList(EffectTrigger.onTurnStart,effect);
+                        break;
+                    default:
+                        target.effectHandler.applyInstant(effect);
+                        break;
+                }
+
             }
         )
     }

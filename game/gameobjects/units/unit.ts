@@ -3,9 +3,9 @@ import GameObject from "../common/gameObject";
 import GamePlayer from "../player/gamePlayer";
 import PositionController from "./positionController";
 import { UnitStats } from "../../data/types/unitStats";
-import { UnitStatuses } from "@/game/data/types/unitStatuses";
 import CombatController from "./combatController";
 import EffectHandler from "./effectHandler";
+import UnitStatuses from "./unitStatuses";
 
 export default class Unit{
     /**
@@ -106,12 +106,7 @@ export default class Unit{
         this.current={...stats};
         this.active=false;
 
-        this.status = {
-            isFrozen:false,
-            isSleeping:false,
-            isStunned:false,
-            rush:false
-        }
+        this.status = new UnitStatuses(this);
         this.combat = new CombatController(this);
         this.effectHandler = new EffectHandler(this);
     }

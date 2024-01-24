@@ -19,12 +19,12 @@ export default class CardFactory{
         if ((cardData.cardType === CARD_TYPE.hero || cardData.cardType === CARD_TYPE.unit) && cardData.contents){
             const unitData = cardData.contents as UnitData;
             const unit =  UnitFactory.createUnit(cardData,unitData);
-            card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,undefined,unit);
+            card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,cardData.description,undefined,unit);
         }
         else {
             const effectData = cardData.contents as EffectData[];
             const effects = EffectFactory.createEffects(effectData);
-            card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,effects,undefined,effects[0].targetType);
+            card = new Card(cardData.id,cardData.name,cardData.cardType,cardData.cost,cardData.description,effects,undefined,effects[0].targetType);
         }
         return card;
     }

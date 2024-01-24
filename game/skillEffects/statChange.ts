@@ -24,6 +24,7 @@ export default class StatChange extends BaseEffectComponent{
     }
 
     apply(target:Unit){
+        if(!this.active) return;
         this.target = target;
         switch(this.stat){
             case UnitStatField.PWR:
@@ -73,6 +74,6 @@ export default class StatChange extends BaseEffectComponent{
             default:
                 break;
         }
-        this.target=undefined;
+        this.active=false;
     }
 }

@@ -44,4 +44,14 @@ export default interface EffectComponent{
      * before a debuff when the debuff expires)
      */
     remove():void;
+
+    /**
+     * @param active If true, skill component will run apply method
+     */
+    setActive(active:boolean):void;
+
+    /**
+     * If true, skill component will run apply method
+     */
+    isActive():boolean;
 }

@@ -3,12 +3,16 @@ import Landmark from "../gameobjects/landmarks/landmark";
 import GamePlayer from "../gameobjects/player/gamePlayer";
 import Field from "../state/field";
 import Unit from "../gameobjects/units/unit";
+import EffectSystem from "../system/effectSystem";
 
 export default class LandmarkController{
     private readonly field:Field;
 
-    constructor(field:Field){
+    private readonly effectSystem:EffectSystem;
+
+    constructor(field:Field, effectSystem:EffectSystem){
         this.field=field;
+        this.effectSystem=effectSystem;
     }
 
     transferLandmark(landmark:Landmark, player:GamePlayer){
@@ -30,10 +34,25 @@ export default class LandmarkController{
 
     enterLandmark(landmark:Landmark,occupant:Unit){
         landmark.occupant=occupant;
+
+        if (occupant.getOwner() !== landmark.capturable?.getOwner()) return;
+        const effects = landmark.effects?.getEffects();
+
+        if (effects)
+            this.effectSystem.cast(effects,occupant);
     }
 
     leaveLandmark(landmark:Landmark){
-        this.resetLandmark(landmark)
+        const effects = landmark.effects?.getEffects();
+        
+        if (effects)
+            effects.forEach(
+                effect=>{
+                    this.effectSystem.forceRemove(effect);
+                }
+            );
+            
+        this.resetLandmark(landmark);
         landmark.occupant=undefined;       
     }
 
@@ -55,8 +74,10 @@ export default class LandmarkController{
             if(occupant.getOwner()!==activePlayer) return;
             const captured = landmark.capturable?.attemptCapture();
             
-            if (captured)
-                this.transferLandmark(landmark,occupantOwner);
+            if (!captured) return;
+            this.transferLandmark(landmark,occupantOwner);
+            this.leaveLandmark(landmark);
+            this.enterLandmark(landmark,occupant);
             
         });
     }

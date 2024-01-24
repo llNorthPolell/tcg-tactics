@@ -2,6 +2,7 @@ import { Position } from "@/game/data/types/position";
 import Unit from "../units/unit";
 import { LandmarkType } from "@/game/enums/landmarkType";
 import Capturable from "./capturable";
+import EffectProvider from "./effectProvider";
 
 export default class Landmark{
     /**
@@ -30,6 +31,11 @@ export default class Landmark{
     readonly capturable?:Capturable;
 
     /**
+     * 
+     */
+    readonly effects?: EffectProvider;
+
+    /**
      * The unit that is standing on this landmark
      */
     occupant?:Unit;
@@ -41,5 +47,8 @@ export default class Landmark{
         this.tile=tile;
 
         this.capturable=(capturable)? new Capturable(this,directCapturable):undefined;
+
+        if ([LandmarkType.STRONGHOLD, LandmarkType.OUTPOST, LandmarkType.CAMP].includes(type))
+            this.effects=new EffectProvider(this);
     }
 }

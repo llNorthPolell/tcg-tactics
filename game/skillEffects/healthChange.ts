@@ -21,7 +21,7 @@ export default class HealthChange extends BaseEffectComponent{
             Math.ceil(baseCurrHp*(this.amount/100));
 
         target.combat.changeHealth(deltaCurrHp);
-
+        
         if (target.getCurrentStats().hp > 0)return;
         target.combat.killUnit();
     }

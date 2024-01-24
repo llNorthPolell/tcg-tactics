@@ -10,7 +10,7 @@ export default class EffectProvider{
      */
     private readonly landmark: Landmark;
 
-    private effects:Effect[];
+    private readonly effects:Effect[];
     
     constructor(landmark:Landmark){
         this.landmark=landmark;
@@ -111,11 +111,8 @@ export default class EffectProvider{
         } 
     }
 
-    // TODO: Call effect system and insert buffs
-    buffOccupant(){
-        const occupant = this.landmark.occupant;
-        if(!occupant) return;
 
-        
+    getEffects(){
+        return this.effects;
     }
 }

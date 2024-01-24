@@ -129,7 +129,7 @@ export default class Effect{
     }
 
     /**
-     * Sets the target for this skill
+     * Sets the target for this effect
      */
     setTarget(target:Unit|Position){
         this.target=target;
@@ -138,6 +138,13 @@ export default class Effect{
                 component.setActive(true);
             }
         )
+    }
+
+    /**
+     * @returns The target of this effect
+     */
+    getTarget(){
+        return this.target;
     }
 
     /**

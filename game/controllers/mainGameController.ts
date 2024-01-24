@@ -49,7 +49,7 @@ export default class MainGameController {
 
     startGame() {
         const playersInGame = this.turn.getPlayersInGame();
-        FieldSetupScripts.spawnDeckLeaders(this.scene, playersInGame, this.units);
+        FieldSetupScripts.spawnDeckLeaders(this.scene, playersInGame, this.units, this.landmarks);
         playersInGame.forEach(
             (player: GamePlayer) => {
                 for (let i = 0; i < 2; i++)
@@ -98,7 +98,7 @@ export default class MainGameController {
         if (!activePlayer.isDevicePlayer)
             // TODO: Currently make other players pass after 3 seconds for testing purposes. Add AI later.
 
-            /*if (this.turn.getTurnNumber()===1){
+            if (this.turn.getTurnNumber()===1){
                 this.selectUnit(this.units.getUnitByPosition({x:0,y:0})!);
                 this.scene.time.addEvent({
                     delay: 1000, callback: () => {
@@ -108,7 +108,7 @@ export default class MainGameController {
                     }
                 })
             }
-            else if (this.turn.getTurnNumber()===2){
+            else if (this.turn.getTurnNumber()===5){
                 this.selectUnit(this.units.getUnitByPosition({x:2,y:0})!);
                 this.scene.time.addEvent({
                     delay: 2000, callback: () => {
@@ -118,7 +118,7 @@ export default class MainGameController {
                     }
                 })
             }
-            else*/
+            else
                 this.scene.time.addEvent({
                     delay: 3000, callback: () => {
                         this.turn.pass(activePlayer.id);

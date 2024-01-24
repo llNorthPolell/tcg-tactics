@@ -12,7 +12,11 @@ export default class CombatController {
     }
 
     changeHealth(amount:number){
-        this.unit.getCurrentStats().hp += amount;
+        if(this.unit.getCurrentStats().hp + amount < this.unit.base.hp)
+            this.unit.getCurrentStats().hp += amount;
+        else
+            this.unit.getCurrentStats().hp = this.unit.base.hp;
+        
         const gameObject = this.unit.getGameObject() as UnitGO;
 
         if (amount > 0){
@@ -23,9 +27,9 @@ export default class CombatController {
         else {
             console.log(`${this.unit.name} takes ${amount} damage!`);
             gameObject.updateHpText();
-            gameObject.floatingText.play(`-${amount}`,UI_COLORS.damage);
+            gameObject.floatingText.play(`${amount}`,UI_COLORS.damage);
         }
-        
+        (this.unit.getGameObject()! as UnitGO).updatePwrText();
         
         if (this.unit.getCurrentStats().hp <=0) 
             this.killUnit();

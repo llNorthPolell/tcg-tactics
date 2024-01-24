@@ -47,4 +47,11 @@ export default class EffectSystem{
             }
         )
     }
+
+    /**
+     * Forcefully ends an effect
+     */
+    forceRemove(effect:Effect){
+        effect.forceRemove();
+    }
 }

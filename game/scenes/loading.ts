@@ -113,10 +113,10 @@ export default class LoadingScene extends Phaser.Scene {
         const turnController = new TurnController(gameState);
         const unitsController = new UnitController(field);
         const selectionGridController = new SelectionGridController(field,unitsController);
-        const landmarksController = new LandmarkController(field);
         const cardController = new CardController(playersInGame);
         const effectsSystem = new EffectSystem(field,playersInGame);
         const combatSystem = new CombatSystem(unitsController,effectsSystem)
+        const landmarksController = new LandmarkController(field,effectsSystem);
         const mainController = new MainGameController(gameplayScene,landmarksController,
             turnController,unitsController,selectionGridController,cardController,effectsSystem,
             combatSystem);

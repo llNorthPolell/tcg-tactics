@@ -2,6 +2,7 @@ import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
 import { UnitStatField } from "../enums/keys/unitStatField";
 import { ValueType } from "../enums/keys/valueType";
 import Unit from "../gameobjects/units/unit";
+import UnitGO from "../gameobjects/units/unitGO";
 import BaseEffectComponent from "./baseEffectComponent";
 
 export default class StatChange extends BaseEffectComponent{
@@ -32,6 +33,7 @@ export default class StatChange extends BaseEffectComponent{
                     this.amount:
                     Math.floor(target.base.pwr * this.amount/100);
                 target.getCurrentStats().pwr +=this.delta;
+                (target.getGameObject()! as UnitGO).updatePwrText();
                 break;
             case UnitStatField.DEF:
                 this.delta = (this.valueType===ValueType.VALUE)?
@@ -61,6 +63,7 @@ export default class StatChange extends BaseEffectComponent{
         switch(this.stat){
             case UnitStatField.PWR:
                 this.target.getCurrentStats().pwr -=this.delta;
+                (this.target.getGameObject()! as UnitGO).updatePwrText();
                 break;
             case UnitStatField.DEF:
                 this.target.getCurrentStats().def -=this.delta;

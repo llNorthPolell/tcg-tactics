@@ -5,7 +5,7 @@ import { TileSelectionType } from "../enums/tileSelectionType";
 import { TileStatus } from "../enums/tileStatus";
 import GamePlayer from "../gameobjects/player/gamePlayer";
 import SelectionTileController from "../gameobjects/selectionTiles/selectionTileController";
-import Unit from "../gameobjects/units/unit";
+import { getPositionsInRange } from "../scripts/util";
 import Field from "../state/field";
 
 import UnitController from "./unitController";
@@ -47,7 +47,7 @@ export default class SelectionGridController{
         const unit = this.units.getUnitByPosition(root);
         if(!unit)
             throw new Error("Selected unit was not found...");
-        const locations = this.getTilesInRange(unit,movement,passObstacles);
+        const locations = getPositionsInRange(this.field,root,movement,passObstacles);
         
         locations.forEach(
             position=>{
@@ -69,7 +69,7 @@ export default class SelectionGridController{
         const unit = this.units.getUnitByPosition(root);
         if(!unit)
             throw new Error("Selected unit was not found...");
-        const locations = this.getTilesInRange(unit,range,true);
+        const locations = getPositionsInRange(this.field,root,range,true);
         locations.forEach(
             position=>{
                 const selectionTile = this.selectionGrid![position.y][position.x];
@@ -89,7 +89,7 @@ export default class SelectionGridController{
                 if(!heroPosition)
                     throw new Error(`${hero.name} does not have a position controller initialized...`);
 
-                locations.push(...this.getTilesInRange(hero,GAME_CONSTANT.MAX_SPELL_RANGE,true));
+                locations.push(...getPositionsInRange(this.field,heroPosition,GAME_CONSTANT.MAX_SPELL_RANGE,true));
             }
         )
 
@@ -114,39 +114,5 @@ export default class SelectionGridController{
         this.activeTiles= [];
     }
 
-    private getTilesInRange(unit:Unit,range:number, passObstacles: boolean):Position[]{
-        const maxPosition = {x:this.field.mapData.map.width-1,y:this.field.mapData.map.height-1};
-        const obstacleLayer = this.field.mapData.layers.obstacle!;
-        const units = this.units;
-        const selected = unit;
-
-        let accum :Map<string,Position> = new Map();
     
-        function inRangeTilesRecursive(current:Position,tilesLeft:number){
-            if (tilesLeft===0)return;
-
-            if (current.x <0 || current.y<0)return;
-            if (current.x >maxPosition.x || current.y>maxPosition.y) return;
-            
-            accum.set(`${current.x}_${current.y}`,current);
-            if(!passObstacles && obstacleLayer.getTileAt(current.x, current.y)) return;
-
-            const unitOnTile = units.getUnitByPosition(current);
-
-            if(!passObstacles && 
-                unitOnTile &&
-                unitOnTile!== selected) 
-                    return;
-                
-
-            inRangeTilesRecursive({x:current.x-1,y:current.y},tilesLeft-1);
-            inRangeTilesRecursive({x:current.x,y:current.y-1},tilesLeft-1);
-            inRangeTilesRecursive({x:current.x+1,y:current.y},tilesLeft-1);
-            inRangeTilesRecursive({x:current.x,y:current.y+1},tilesLeft-1);
-        }
-    
-        inRangeTilesRecursive(selected.position()?.get()!,range+1);
-        const output = Array.from(accum.values());
-        return output;
-    }
 }

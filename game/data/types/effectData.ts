@@ -25,14 +25,6 @@ export type EffectData = {
     duration?:number,
 
     /**
-     * Range of area of effect
-     * @note > 0 = Area of Effect
-     * @note 0 or undefined = Single Target
-     * @note -1 = Global
-     */
-    range?:number,
-    
-    /**
      * Applies this effect only on specified condition
      * @note On Cast/Removal (casted once): onCast, onRemove, onSummon
      * @note Turn-based (casted every turn): onTurnStart, onTurnEnd 
@@ -44,9 +36,19 @@ export type EffectData = {
     trigger: string,
 
     /**
-     * 
+     * Parts of this effect (e.g. health change, stat change, summon)
      */
-    components: EffectDataComponent[],
+    components?: EffectDataComponent[],
+
+    /**
+     * Effects to create from this effect. Used for things like area of effect or counter spells.
+     */
+    creates?: EffectData[],
+
+    /**
+     * Only applies if there is a "creates" property. The max distance in tiles to apply the "creates" effects.
+     */
+    range?:number,
 
     /**
      * If true, can be removed with normal cleansing skill. If false,

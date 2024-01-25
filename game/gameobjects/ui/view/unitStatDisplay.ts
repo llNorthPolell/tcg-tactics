@@ -118,6 +118,10 @@ export default class UnitStatDisplay extends Phaser.GameObjects.Container{
         this.setVisible(false);
     }
 
+    isVisible(){
+        return this.visible;
+    }
+
     setUnitName(name:string){
         this.unitNameText.setText(name);
     }

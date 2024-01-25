@@ -18,7 +18,16 @@ export default class UnitManager{
      */
     private activeChampions:Unit[];
 
+    /**
+     * List of units under the player's control that were killed
+     */
     private graveyard:Unit[];
+
+    /**
+     * Unit selected by the player. This is the moving unit if the player is active, otherwise
+     * the unit that is being viewed.
+     */
+    private selected?:Unit;
 
     /**
      * @param player Reference to parent
@@ -73,5 +82,28 @@ export default class UnitManager{
                     .filter(activeChampion => activeChampion != unit);
 
         this.graveyard.push(unit);
+    }
+
+    /**
+     * Select the unit to move (if this player is active) or to view
+     * @param unit Unit to select
+     */
+    selectUnit(unit:Unit){
+        this.selected=unit;
+    }
+
+    /**
+     * Deselect the selected unit
+     */
+    deselectUnit(){
+        this.selected=undefined;
+    }
+
+    /**
+     * @returns The unit selected by this player to move (if this player is active) 
+     * or to view
+     */
+    getSelected(){
+        return this.selected;
     }
 }

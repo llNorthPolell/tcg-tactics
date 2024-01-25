@@ -38,8 +38,8 @@ export default class LandmarkController{
         if (occupant.getOwner() !== landmark.capturable?.getOwner()) return;
         const effects = landmark.effects?.getEffects();
 
-        if (effects)
-            this.effectSystem.cast(effects,occupant);
+        if (effects && occupant.getOwner())
+            this.effectSystem.cast(occupant.getOwner()!,effects,occupant);
     }
 
     leaveLandmark(landmark:Landmark){

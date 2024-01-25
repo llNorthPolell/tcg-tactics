@@ -1,6 +1,8 @@
+import { EffectData } from "../data/types/effectData";
 import { Position } from "../data/types/position";
 import Unit from "../gameobjects/units/unit";
 import EffectComponent from "./effectComponent";
+import EffectFactory from "./effectFactory";
 
 export default class Effect{
     /**
@@ -33,14 +35,6 @@ export default class Effect{
     private currTime:number;
 
     /**
-     * Range of area of effect
-     * @note > 0 = Area of Effect
-     * @note 0 or undefined = Single Target
-     * @note -1 = Global
-     */
-    readonly range:number;
-
-    /**
      * Applies this effect only on specified condition
      * @note On Cast/Removal (casted once): onCast, onRemove, onSummon
      * @note Turn-based (casted every turn): onTurnStart, onTurnEnd 
@@ -55,6 +49,20 @@ export default class Effect{
      * Modular effect handlers that actually apply effects
      */
     readonly components:EffectComponent[];
+
+    /**
+     * List of effects created by this one on trigger (used for things like Area of Effect, Counter Spells)
+     */
+    readonly creates:EffectData[];
+
+    /**
+     * Specifies range in tiles to create the effects in the "creates" list.
+     * Only applies if this effect creates other effects (i.e. "creates" list is not empty).
+     * @note range = -1 means created effects are applied globally
+     * @note range = 0 means created effects are applied to one target
+     * @note range > 0 means created effects are applied only to units within the specified range in tiles
+     */
+    readonly range:number;
 
     /**
      * Active If true, will run apply() method
@@ -74,26 +82,19 @@ export default class Effect{
      */
     private target?:Unit|Position;
 
-    constructor(name:string, description:string, targetType:string, duration:number=0, range:number=0, trigger:string, isRemovable:boolean=false){
-        this.name=name;
-        this.description=description;
-        this.targetType=targetType;
-        this.duration=duration;
-        this.range=range;
-        this.trigger=trigger;
-        this.components=[];
+    constructor(effectData:EffectData,components:EffectComponent[]){
+        this.name=effectData.name;
+        this.description=effectData.description;
+        this.targetType=effectData.targetType;
+        this.duration=(effectData.duration)?effectData.duration:0;
+        this.trigger=effectData.trigger;
+        this.components=components;
+        this.creates=(effectData.creates)? effectData.creates:[];
+        this.range=(effectData.range)? effectData.range: 0;
+        this.isRemovable=effectData.isRemovable;
         this.active=false;
-        this.isRemovable=isRemovable;
-        this.currTime=0;
-    }
 
-    /**
-     * Adds effect components to this effect. For example, add two statChange components for a skill
-     * that has a description (+2 PWR/DEF).
-     * @param newComponents New effect components to add to this effect
-     */
-    addComponents(newComponents:EffectComponent[]){
-        this.components.push(...newComponents);
+        this.currTime=0;
     }
 
     /**
@@ -128,6 +129,11 @@ export default class Effect{
         this.forceRemove();
     }
 
+    createSubEffect(){
+        return EffectFactory.createEffects(this.creates);
+    }
+
+
     /**
      * Sets the target for this effect
      */
@@ -138,6 +144,7 @@ export default class Effect{
                 component.setActive(true);
             }
         )
+        this.active=true;
     }
 
     /**

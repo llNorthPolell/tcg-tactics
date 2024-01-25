@@ -13,16 +13,7 @@ export default class EffectFactory{
             data=>{ 
                 const components = this.createEffectComponents(data.components);
 
-                const newEffect = new Effect(
-                    data.name,
-                    data.description,
-                    data.targetType,
-                    data.duration,
-                    data.range,
-                    data.trigger,
-                    data.isRemovable);
-
-                newEffect.addComponents(components);
+                const newEffect = new Effect(data,components);
 
                 effects.push(newEffect);
             }
@@ -32,13 +23,15 @@ export default class EffectFactory{
     }
 
 
-    private static createEffectComponents(components:EffectDataComponent[]):EffectComponent[]{
+    private static createEffectComponents(components?:EffectDataComponent[]):EffectComponent[]{
+        if (!components) return [];
         let effectComponents :EffectComponent[]=[];
         components.forEach(
             component=>{
                 const stat = component.stat;
                 const amount = component.amount;
                 const valueType = component.valueType;
+
                 let newComponent:EffectComponent|undefined;
                 switch(component.type){
                     case SPELL_EFFECT_TYPE.healthChange:

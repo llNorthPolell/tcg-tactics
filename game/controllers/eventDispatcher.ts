@@ -38,8 +38,8 @@ export default class EventDispatcher {
         .on(
             EVENTS.gameEvent.NEXT_TURN,
             ()=>{
-                this.ui.handleEndTurn();
                 this.main.endTurn();
+                this.ui.handleEndTurn();
             }
         )
         .on(

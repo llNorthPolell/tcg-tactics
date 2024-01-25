@@ -16,14 +16,20 @@ export const TARGET_TYPES = Object.freeze({
     enemy: "enemy",
 
     /**
-     * Spell effects can be applied to both ally and enemy units
+     * Spell effects can be applied to both ally and enemy units.
      */
     unit: "unit",
     
     /**
-     * Spell card can be applied to a target position. If a unit is standing on a tile, its attack/support selector will be displayed.
+     * Spell card can be applied to a target position.
      */
     position: "position",
+
+    
+    /**
+     * Spell card can be applied to both units and positions (both selection tiles and spell selectors will be displayed).
+     */
+    all: "all",
 
     /**
      * For units only

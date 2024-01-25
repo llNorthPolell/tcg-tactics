@@ -24,6 +24,15 @@ export default class TurnController{
     isDevicePlayerTurn(){
         return this.getActivePlayer().isDevicePlayer;
     }
+
+    getDevicePlayer(){
+        const devicePlayer = this.gameState.getDevicePlayer();
+
+        if (!devicePlayer)
+            throw new Error("Device player not found...")
+        
+        return devicePlayer;
+    }
     
     //TODO: Temporary, causes AI to automatically pass
     pass(playerId:number){

@@ -11,7 +11,7 @@ export default class GameState{
         this.playersInGame=playersInGame;
 
         this.activePlayerIndex=-1;
-        this.turn = 0;
+        this.turn = 1;
     }
 
     goToNextPlayer(){
@@ -39,5 +39,9 @@ export default class GameState{
 
     getTurnNumber(){
         return this.turn;
+    }
+
+    getDevicePlayer(){
+        return this.playersInGame.find(player=>player.isDevicePlayer);
     }
 }

@@ -44,4 +44,8 @@ export default class UnitStatDisplayController{
     hide(){
         this.ui.hide();
     }
+
+    isVisible(){
+        return this.ui.visible;
+    }
 }

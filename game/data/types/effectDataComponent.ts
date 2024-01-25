@@ -13,7 +13,9 @@ export type EffectDataComponent = {
     type:string,
 
     /**
-     * Amount to apply (for healthChange and statChanges)
+     * An amount. How this amount will be used depends on the effect type:
+     * @Note Amount to apply (for healthChange and statChanges)
+     * @Note Range (for creational effects)
      */
     amount?:number,
 

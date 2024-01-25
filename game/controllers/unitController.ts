@@ -4,16 +4,14 @@ import Unit from "../gameobjects/units/unit";
 import Field from "../state/field";
 import { Position } from "@/game/data/types/position";
 import GameObjectFactory from "../gameobjects/gameObjectFactory";
+import GamePlayer from "../gameobjects/player/gamePlayer";
 
 export default class UnitController{
 
     private readonly field:Field;
 
-    private movingUnit?:Unit;
-
     constructor(field:Field){
         this.field=field;
-        this.movingUnit=undefined;
     }
 
     summonUnitByCard(scene:Phaser.Scene, card:Card,position:Position) : Unit{
@@ -50,34 +48,38 @@ export default class UnitController{
         this.field.units.set(`${position.x}_${position.y}`,unit);
     }
 
-    selectUnit(unit:Unit){
-        this.movingUnit=unit;
+    selectUnit(selectingPlayer:GamePlayer,unit:Unit){
+        selectingPlayer.units.selectUnit(unit);
     }
 
-    cancelMove(){
-        if(!this.movingUnit) return;
-        const positionController = this.getPositionController(this.movingUnit);
+    cancelMove(selectingPlayer:GamePlayer){
+        const selected = selectingPlayer.units.getSelected();
+        if(!selected) return;
+        const positionController = this.getPositionController(selected);
         positionController.cancel()
-        this.movingUnit=undefined;
+        selectingPlayer.units.deselectUnit();
     }
 
-    moveTo(destination:Position){
-        this.movingUnit?.position()?.moveTo(destination);
+    moveTo(unit:Unit,destination:Position){
+        unit.position()?.moveTo(destination);
     }
 
-    confirmMove(){
-        if(!this.movingUnit) 
+    confirmMove(activePlayer:GamePlayer,unit:Unit){
+        const movingUnit = activePlayer.units.getSelected();
+        if(!movingUnit)
             throw new Error("No unit was selected...");
-        const positionController = this.getPositionController(this.movingUnit);
+        if (unit !== movingUnit)
+            throw new Error("Unit provided is not the selected unit...");
+        const positionController = this.getPositionController(movingUnit);
         const position = positionController.get();
 
         this.field.units.delete(`${position.x}_${position.y}`);
         positionController.confirm();
         
-        const newPosition = this.movingUnit.position()!.get();
-        this.field.units.set(`${newPosition.x}_${newPosition.y}`,this.movingUnit);
-        
-        this.movingUnit=undefined;
+        const newPosition = movingUnit.position()!.get();
+        this.field.units.set(`${newPosition.x}_${newPosition.y}`,movingUnit);
+
+        activePlayer.units.deselectUnit();
     }
 
     removeUnit(unit:Unit){
@@ -94,8 +96,8 @@ export default class UnitController{
         return this.field.units.get(`${position.x}_${position.y}`);
     }
 
-    getSelected(){
-        return this.movingUnit;
+    getSelected(player:GamePlayer){
+        return player.units.getSelected();
     }
 
     private getPositionController(unit:Unit){

@@ -34,7 +34,10 @@ export default class EffectHandler{
         const list = this.getList(trigger);
         list.forEach(
             (effect:Effect,index:number)=>{
-                effect.apply();
+                console.log(`Apply ${effect.name} onto ${this.unit.name}!`)
+                if (effect.isActive())
+                    effect.apply();
+
                 if (!effect.isActive())
                     toRemove.push(index);
             }

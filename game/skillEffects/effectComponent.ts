@@ -1,6 +1,8 @@
+import { EffectData } from "../data/types/effectData";
 import { Position } from "../data/types/position";
+import { UnitData } from "../data/types/unitData";
 import Unit from "../gameobjects/units/unit";
-import Effect from "./effect";
+import EffectSystem from "../system/effectSystem";
 
 export default interface EffectComponent{  
     /**
@@ -9,7 +11,9 @@ export default interface EffectComponent{
     readonly type: string;
 
     /**
-     * Amount to change for stat manipulation and health change effects
+     * An amount. How this amount will be used depends on the effect type:
+     * @Note Amount to apply (for healthChange and statChanges)
+     * @Note Range (for creational effects)
      */
     readonly amount?:number;
 
@@ -26,18 +30,14 @@ export default interface EffectComponent{
     /**
      * Unit to be summoned if this is a summon skill
      */
-    readonly unit?:Unit;
-
-    /**
-     * Additional effects to apply (for creational effects)
-     */
-    readonly children?: Effect[];
+    readonly unit?:UnitData;
     
     /**
      * Apply the effect component scripts.
      * @param target The unit or location to apply this effect component to
+     * @param effectSystem? Reference to effect system to use; for creational effects
      */
-    apply(target?:Unit|Position):void;
+    apply(target?:Unit|Position, effectSystem?:EffectSystem):void;
 
     /**
      * Run cleanup script for removal of effect (e.g. Reverse stat changes to values 

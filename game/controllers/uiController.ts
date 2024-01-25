@@ -55,12 +55,14 @@ export default class UIController{
 
         this.deckStats.setDeckCount(activePlayer.cards.getDeckCount());
 
+        console.log("SHOW");
         this.endTurn.show();
     }
 
     handleEndTurn(){
-        if(!this.turn.isDevicePlayerTurn()) return;
-        this.endTurn.hide();
+        this.handleDeselectUnit();
+        if(!this.turn.getActivePlayer().isDevicePlayer)
+            this.endTurn.hide();
     }
 
     handleSelectCard(card:Card){
@@ -101,6 +103,8 @@ export default class UIController{
         this.unitControls.hide();
         this.unitStats.hide();
         this.hand.show();
+
+        if(!this.turn.getActivePlayer().isDevicePlayer) return;
         this.endTurn.show();
     }
 

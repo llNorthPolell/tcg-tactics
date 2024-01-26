@@ -1,16 +1,11 @@
 export const SPELL_EFFECT_TYPE = Object.freeze({
     /**
-     * Deals damage to target instantly, over time, or after specified number of turns
+     * Deals damage or heals.
      */
-    dealDamage: "deal-damage",   
+    healthChange: "health-change",   
 
     /**
-     * Heals target instantly, over time, or after specified number of turns
-     */
-    heal: "heal",   
-
-    /**
-     * Change a stat on a unit 
+     * Change a stat (PWR,DEF,MVT,RNG) on a unit. Recovers on removal.
      */
     statChange: "stat-change",
 

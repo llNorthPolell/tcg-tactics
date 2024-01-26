@@ -6,5 +6,7 @@ export const UI_COLORS = Object.freeze({
     background: 0x1C1C1C,
     damage:0xFF0000,
     heal:0x00FF00,
-    mana:0x4C76E7
+    mana:0x4C76E7,
+    buff: 0x00FFF0,
+    white:0xFFFFFF
 })

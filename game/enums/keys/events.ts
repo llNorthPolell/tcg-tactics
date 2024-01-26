@@ -4,8 +4,14 @@ export const EVENTS = {
      */
     cardEvent: Object.freeze({
         /**
+         * When player draws a card
+         */
+        DRAW: "draw-card",
+        
+        /**
          * When player selects a card
-         * @Params card : Card<CardData>
+         * @Params card:Card<CardData>
+         * @Params discard?:boolean
          */
         SELECT: "select-card",
 
@@ -18,55 +24,82 @@ export const EVENTS = {
         /**
          * When player clicks cancel button after selecting a card
          */
-        CANCEL: "cancel-card-select"
+        CANCEL: "cancel-card-select",
+
+        /**
+         * Select card to discard
+         * @Params card:Card
+         */
+        SELECT_DISCARD: "select-discard",
+
+        
+        /**
+         * When player clicks the OK button on the discard window to confirm discarding a card to make room for the hero card.
+         * @Params heroCard:HeroCard
+         * @Params discard:Card
+         */
+        CONFIRM_DISCARD: "confirm-discard"
     }),
     /**
      * Triggers updates for specific UI elements
      */
     uiEvent: Object.freeze({
         /**
-         * Signal HUD to update resource display
-         * @Params currResource:number
-         * @Params maxResource:number
-         * @Params incomeRate?:number
-         */
-        UPDATE_RESOURCE_DISPLAY: "update-resource-display",
-
-        /**
          * Signal HUD to update hand display
          * @Params hand:Card<CardData>[]
+         * @Params heroCard:HeroCard
          */
-        UPDATE_HAND: "update-hand-ui",
+        //UPDATE_HAND: "update-hand-ui",
 
         /**
-         * Signal HUD to update unit stats display
+         * Signal units on field to show attack selectors
+         * @Params attacker:Unit
+         * @Params destination?:Position
          */
-        UPDATE_UNIT_STAT_DISPLAY: "update-unit-stat-display",
+        SHOW_ATTACK_SELECTOR: "show-attack-selector",
 
         /**
-         * Signal HUD to update deck count
+         * Signal units to hide attack selectors
          */
-        UPDATE_DECK_COUNTER: "update-deck-counter",
+        HIDE_ATTACK_SELECTOR: "hide-attack-selector",
 
         /**
-         * Signal HUD to update casualty count
+         * Signal units on field to show spell selectors
+         * @Params spellCard:Card
+         * @Params sourcePlayer:GamePlayer
+         * @Params targetType:string
          */
-        UPDATE_CASUALTY_COUNTER: "update-casualty-counter",
+        SHOW_SPELL_SELECTOR: "show-spell-selector",
+
+        /**
+         * Signal units to hide spell selectors
+         */
+        HIDE_SPELL_SELECTOR: "hide-spell-selector",
 
         /**
          * Signal for damage numbers, healing numbers, status ailments etc.
          */
-        PLAY_FLOATING_TEXT: "play-floating-text"
+        PLAY_FLOATING_TEXT: "play-floating-text",
+
+        /**
+         * Signal to open the discard window and change hand to take clicks as selecting the card for disposal. 
+         * Typically opened when player reaches max hand size and draws a hero card.
+         * @Params heroCard:HeroCard
+         */
+        HANDLE_DISCARD: "handle-discard"
     }),
     /**
      * For game events like player turns, game over
      */
     gameEvent: Object.freeze({
         /**
+         * Called at the beginning of the game
+         */
+        START_GAME: "start-game",
+        
+        /**
          * When entering a player's turn.
-         * @Params playerId:number
-         * @Params index:number
-         * @Params isDevicePlayerTurn:boolean
+         * @Params activePlayer:GamePlayer
          */
         PLAYER_TURN: "player-turn",
         
@@ -76,16 +109,6 @@ export const EVENTS = {
         NEXT_TURN:"next-turn",
     }),
     /**
-     * For player-specific events, like generating resources
-     */
-    playerEvent: Object.freeze({
-        /**
-         * Signal card manager to generate resources for the player
-         * @Params income:number
-         */
-        GENERATE_RESOURCES: "generate-resources",
-    }),
-    /**
      * For events happening on the playing field, such as summoning a unit, casting a spell, capturing landmarks
      */
     fieldEvent: Object.freeze({
@@ -93,12 +116,13 @@ export const EVENTS = {
          * Signal field manager to create a unit at the specified location on the field and assign it to the specified player
          * @Params location:Position
          * @Params unitData:UnitCardData
-         * @Params cardOwner:Player
+         * @Params cardOwner:GamePlayer
          */
         SUMMON_UNIT: "summon-unit",
 
         /**
          * Signal field manager to apply spell effects (in progress)
+         * @Params caster?:  GamePlayer
          * @Params skillEffects: SkillEffect[]
          * @Params target: Unit | Position | undefined
          */
@@ -109,7 +133,13 @@ export const EVENTS = {
          * @Params unit:Unit
          * @Params landmark:CapturableLandmark
          */
-        CAPTURE_LANDMARK: "capture-landmark"
+        CAPTURE_LANDMARK: "capture-landmark",
+
+        /**
+         * Signal to apply area of effect
+         * @Params effect: AreaOfEffect
+         */
+        AREA_OF_EFFECT: "area-of-effect"
     }),
     /**
      * For unit-specific events, like moving a unit, attacking another unit, unit waiting
@@ -135,8 +165,7 @@ export const EVENTS = {
 
         /**
          * When player clicks on a selection tile after selecting a unit
-         * @Params unit:Unit
-         * @Params targetPosition:Position
+         * @Params destination:Position
          */
         MOVE: "move-unit",
 

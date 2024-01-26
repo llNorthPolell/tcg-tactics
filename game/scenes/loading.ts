@@ -1,23 +1,43 @@
-import Player from "../data/player";
 import { ASSETS } from "../enums/keys/assets";
 import { SCENES } from "../enums/keys/scenes";
 
-import { v4 as uuidv4 } from 'uuid';
-import GamePlayer from "../gameobjects/gamePlayer";
 import { getPlayerColor } from "../enums/keys/playerTints";
-import HeroCard from "../gameobjects/cards/heroCard";
-import HeroCardData from "../data/cards/heroCardData";
-import { UNIT_CLASS } from "../enums/keys/unitClass";
-import UnitCard from "../gameobjects/cards/unitCard";
-import UnitCardData from "../data/cards/unitCardData";
 import { GAME_STATE } from "../enums/keys/gameState";
-import SpellCardData from "../data/cards/spellCardData";
-import SpellCard from "../gameobjects/cards/spellCard";
-import Deck from "../gameobjects/deck";
-import { TARGET_TYPES } from "../enums/keys/targetTypes";
-import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
-import { ValueType } from "../enums/keys/valueType";
-import { UnitStatField } from "../enums/keys/unitStatField";
+import { testPlayer, testPlayer2 } from "../data/dummyData/testPlayers";
+import { testFireballCardData, testGuardianCardData, testHealingLightCardData, testMageHeroCardData, testMagicBombCardData, testNaturesBlessingCardData, testRangerCardData, testRangerHeroCardData, testSoldierCardData, testSoldierHeroCardData } from "../data/dummyData/testCards";
+import CardFactory from "../gameobjects/cards/cardFactory";
+import Deck from "../gameobjects/cards/deck";
+import GamePlayer from "../gameobjects/player/gamePlayer";
+import FieldSetupScripts from "../scripts/fieldSetupScripts";
+import EventDispatcher from "../controllers/eventDispatcher";
+import EffectSystem from "../system/effectSystem";
+import LandmarkController from "../controllers/landmarkController";
+import SelectionGridController from "../controllers/selectionGridController";
+import UnitController from "../controllers/unitController";
+import TurnController from "../controllers/turnController";
+import Field from "../state/field";
+import GameState from "../state/gameState";
+import CardController from "../controllers/cardController";
+import HandUIObject from "../gameobjects/ui/view/handUIObject";
+import HandUIController from "../gameobjects/ui/controllers/handUIController";
+import UIController from "../controllers/uiController";
+import MainGameController from "../controllers/mainGameController";
+import UnitControlPanelController from "../gameobjects/ui/controllers/unitCtrlPanelController";
+import UnitControlsPanel from "../gameobjects/ui/view/unitControlsPanel";
+import UnitStatDisplayController from "../gameobjects/ui/controllers/unitStatDisplayController";
+import UnitStatDisplay from "../gameobjects/ui/view/unitStatDisplay";
+import EndTurnButtonController from "../gameobjects/ui/controllers/endTurnButtonController";
+import EndTurnButton from "../gameobjects/ui/view/endTurnButton";
+import ResourceDisplay from "../gameobjects/ui/view/resourceDisplay";
+import ResourceDisplayController from "../gameobjects/ui/controllers/resourceDisplayController";
+import CardDetailsDisplay from "../gameobjects/ui/view/cardDetailsDisplay";
+import CardDetailsDisplayController from "../gameobjects/ui/controllers/cardDetailsDisplayController";
+import DeckStatDisplay from "../gameobjects/ui/view/deckStatDisplay";
+import DeckStatDisplayController from "../gameobjects/ui/controllers/deckStatDisplayController";
+import CombatSystem from "../system/combatSystem";
+import DiscardWindow from "../gameobjects/ui/view/discardWindow";
+import DiscardWindowController from "../gameobjects/ui/controllers/discardWindowController";
+import { DEPENDENCIES } from "../enums/keys/dependencies";
 
 export default class LoadingScene extends Phaser.Scene {
 
@@ -36,6 +56,7 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.image(ASSETS.HP_ICON, "./assets/icons/hp.png");
         this.load.image(ASSETS.SP_ICON, "./assets/icons/sp.png");
         this.load.image(ASSETS.PWR_ICON, "./assets/icons/pwr.png");
+        this.load.image(ASSETS.DEF_ICON, "./assets/icons/def.png");
         this.load.image(ASSETS.ATTACK_SELECTOR, "./assets/icons/attack.png");
         this.load.image(ASSETS.SPELL_SELECTOR, "./assets/icons/spell.png");
         this.load.image(ASSETS.INCOME_RATE,"./assets/icons/incomeRate.png");
@@ -50,301 +71,125 @@ export default class LoadingScene extends Phaser.Scene {
 
     create() {
         console.log("Now Loading...");
-        const testPlayer = new Player(uuidv4().toString(), "TestPlayer");
-        const testPlayer2 = new Player(uuidv4().toString(), "Enemy");
 
-        const testPlayerLeader = new HeroCard(
-            "0",
-            new HeroCardData(
-                "3",
-                "test_mage_hero",
-                UNIT_CLASS.MAGE,
-                20,
-                30,
-                3,
-                0,
-                2,
-                2,
-                "pwr +25% to mages",
-                {
-                    name: "Magic Aura",
-                    targetType: TARGET_TYPES.none,
-                    effectType: SPELL_EFFECT_TYPE.statChange,
-                    childEffects: [],
-                    amount:25,
-                    valueType: ValueType.PERCENTAGE,
-                    stat: UnitStatField.PWR,
-                    duration:-1,
-                    isRemovable:false
-                },
-                "recover 2sp per turn",
-                {
-                    name: "Meditate",
-                    targetType: TARGET_TYPES.none,
-                    effectType: SPELL_EFFECT_TYPE.statChange,
-                    amount:25,
-                    valueType: ValueType.VALUE,
-                    stat: UnitStatField.SP,
-                    duration:-1,
-                    overTime:true,
-                    isRemovable:false
-                },
-                "deal 2 damage to targets (radius 1)",
-                {
-                    name: "Magic Burst",
-                    targetType: TARGET_TYPES.enemy,
-                    effectType: SPELL_EFFECT_TYPE.dealDamage,
-                    childEffects: [],
-                    amount:2,
-                    valueType: ValueType.VALUE
-                },
-                [UNIT_CLASS.MAGE, UNIT_CLASS.MAGE, UNIT_CLASS.MAGE, UNIT_CLASS.MAGE],
-                5
-            ),
-            testPlayer
-        );
+        console.log("Loading Player Information...");
+        const testPlayerLeader = CardFactory.createCard(testMageHeroCardData);
+        const testOpponentLeader = CardFactory.createCard(testRangerHeroCardData);
 
-        const testOpponentLeader = new HeroCard(
-            "0",
-            new HeroCardData(
-                "2",
-                "test_ranger_hero",
-                UNIT_CLASS.RANGER,
-                22,
-                15,
-                3,
-                0,
-                3,
-                3,
-                "pwr +25% to rangers",
-                {
-                    name: "Precision Aura",
-                    targetType: TARGET_TYPES.none,
-                    effectType: SPELL_EFFECT_TYPE.statChange,
-                    childEffects: [],
-                    amount:25,
-                    valueType: ValueType.PERCENTAGE,
-                    stat: UnitStatField.PWR,
-                    duration:-1,
-                    isRemovable:false
-                },
-                "+20% pwr when target is 3 tiles away",
-                {
-                    name: "Snipe",
-                    targetType: TARGET_TYPES.none,
-                    effectType: SPELL_EFFECT_TYPE.statChange,
-                    childEffects: [],
-                    amount:25,
-                    valueType: ValueType.PERCENTAGE,
-                    stat: UnitStatField.PWR,
-                    duration:-1,
-                    isRemovable:false
-                },
-                "move unit 2 tiles",
-                {
-                    name: "Chase",
-                    targetType: TARGET_TYPES.none,
-                    effectType: SPELL_EFFECT_TYPE.statChange,
-                    amount:0,
-                    valueType: ValueType.PERCENTAGE,
-                    stat: UnitStatField.PWR
-                },
-                [UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.ASSASSIN, UNIT_CLASS.ASSASSIN, UNIT_CLASS.SOLDIER],
-                5
-            ),
-            testPlayer2
-        );
-
-
-
+        console.log("Loading Player Decks...");
         const testPlayerDeckCards = [
-            new HeroCard(
-                "1",
-                new HeroCardData(
-                    "1",
-                    "test_soldier_hero",
-                    UNIT_CLASS.SOLDIER,
-                    30,
-                    10,
-                    5,
-                    5,
-                    3,
-                    1,
-                    "pwr +25% to all",
-                    {
-                        name: "Assault Aura",
-                        targetType: TARGET_TYPES.none,
-                        effectType: SPELL_EFFECT_TYPE.statChange,
-                        childEffects: [],
-                        amount:25,
-                        valueType: ValueType.PERCENTAGE,
-                        stat: UnitStatField.PWR,
-                        duration:-1,
-                        isRemovable:false
-                    },
-                    "+2 pwr to units 1 tile adjacent to this unit",
-                    {
-                        name: "Charisma",
-                        targetType: TARGET_TYPES.none,
-                        effectType: SPELL_EFFECT_TYPE.statChange,
-                        childEffects: [],
-                        amount:2,
-                        valueType: ValueType.VALUE,
-                        stat: UnitStatField.PWR,
-                        duration:-1,
-                        isRemovable:false
-                    },
-                    "deal 5 damage to target",
-                    {
-                        name: "Cleave",
-                        targetType: TARGET_TYPES.none,
-                        effectType: SPELL_EFFECT_TYPE.dealDamage,
-                        amount:5,
-                        valueType: ValueType.VALUE,
-                        stat: UnitStatField.PWR
-                    },
-                    [UNIT_CLASS.SOLDIER, UNIT_CLASS.SOLDIER, UNIT_CLASS.SOLDIER, UNIT_CLASS.RANGER, UNIT_CLASS.RANGER, UNIT_CLASS.GUARDIAN],
-                    5
-                ),
-                testPlayer),
-            new UnitCard(
-                "2",
-                new UnitCardData(
-                    "1",
-                    "test_soldier",
-                    UNIT_CLASS.SOLDIER,
-                    10,
-                    0,
-                    1,
-                    1,
-                    3,
-                    1,
-                    1
-                ),
-                testPlayer),
-            new UnitCard(
-                "3",
-                new UnitCardData(
-                    "1",
-                    "test_soldier",
-                    UNIT_CLASS.SOLDIER,
-                    10,
-                    0,
-                    1,
-                    1,
-                    3,
-                    1,
-                    1
-                ),
-                testPlayer),
-            new UnitCard(
-                "4",
-                new UnitCardData(
-                    "1",
-                    "test_soldier",
-                    UNIT_CLASS.SOLDIER,
-                    10,
-                    0,
-                    1,
-                    1,
-                    3,
-                    1,
-                    1
-                ),
-                testPlayer),
-            new UnitCard(
-                "5",
-                new UnitCardData(
-                    "3",
-                    "test_ranger",
-                    UNIT_CLASS.RANGER,
-                    8,
-                    0,
-                    2,
-                    1,
-                    2,
-                    3,
-                    2
-                ),
-                testPlayer),
-            new UnitCard(
-                "6",
-                new UnitCardData(
-                    "3",
-                    "test_ranger",
-                    UNIT_CLASS.RANGER,
-                    8,
-                    0,
-                    2,
-                    1,
-                    2,
-                    3,
-                    2
-                ),
-                testPlayer),
-            new UnitCard(
-                "7",
-                new UnitCardData(
-                    "6",
-                    "test_guardian",
-                    UNIT_CLASS.GUARDIAN,
-                    15,
-                    0,
-                    1,
-                    1,
-                    1,
-                    1,
-                    3
-                ),
-                testPlayer),
-            new SpellCard(
-                "8",
-                new SpellCardData(
-                    "1",
-                    "test_fire_spell",
-                    TARGET_TYPES.enemy,
-                    5,
-                    "Deal 1 burn damage per turn for 3 turns",
-                    {
-                        name: "Burn",
-                        targetType: TARGET_TYPES.enemy,
-                        effectType: SPELL_EFFECT_TYPE.dealDamage,
-                        amount: 1,
-                        valueType: ValueType.VALUE,
-                        duration: 3,
-                        overTime: true,
-                        isRemovable: true
-                    }
-                ),
-                testPlayer),
-            new SpellCard(
-                "9",
-                new SpellCardData(
-                    "2",
-                    "test_heal_spell",
-                    TARGET_TYPES.ally,
-                    2,
-                    "Heal target by 10 hp",
-                    {
-                        name: "Heal",
-                        targetType: TARGET_TYPES.ally,
-                        effectType: SPELL_EFFECT_TYPE.heal,
-                        amount: 10,
-                        valueType: ValueType.VALUE,
-                        isRemovable: true
-                    }
-                ),
-                testPlayer),
-        ];
+            CardFactory.createCard(testSoldierHeroCardData),
+            CardFactory.createCard(testSoldierCardData),
+            CardFactory.createCard(testSoldierCardData),
+            CardFactory.createCard(testSoldierCardData),
+            CardFactory.createCard(testRangerCardData),
+            CardFactory.createCard(testRangerCardData),
+            CardFactory.createCard(testGuardianCardData),
+            CardFactory.createCard(testFireballCardData),
+            CardFactory.createCard(testHealingLightCardData),
+            CardFactory.createCard(testMagicBombCardData),
+            CardFactory.createCard(testNaturesBlessingCardData),
+        ]
 
         const testPlayerDeck = new Deck(testPlayerDeckCards, testPlayerLeader);
         const testOpponentDeck = new Deck([], testOpponentLeader);
 
-        const testGamePlayer = new GamePlayer(1, testPlayer, 1, getPlayerColor(1), testPlayerDeck,true);
-        const testGameOpponent = new GamePlayer(2, testPlayer2, 2, getPlayerColor(2), testOpponentDeck);
+        const testGamePlayer = new GamePlayer(1, testPlayer, getPlayerColor(1), 1, testPlayerDeck, true);
+        const testGameOpponent = new GamePlayer(2, testPlayer2, getPlayerColor(2), 2, testOpponentDeck);
 
-        this.game.registry.set(GAME_STATE.player, testGamePlayer);
-        this.game.registry.set(GAME_STATE.opponents, [testGameOpponent])
+        const playersInGame= [testGamePlayer,testGameOpponent];
+
+        console.log("Generating Field...");
+        const gameplayScene = this.game.scene.getScene(SCENES.GAMEPLAY);
+        
+        const tilemapData = FieldSetupScripts.generateMap(gameplayScene);
+        const selectionGrid = FieldSetupScripts.generateSelectionGrid(gameplayScene,tilemapData);
+        const landmarksData = FieldSetupScripts.loadLandmarks(tilemapData);
+        FieldSetupScripts.assignInitialLandmarks(tilemapData,landmarksData.byType,playersInGame);
+
+        console.log("Initializing Game State");
+        const gameState = new GameState(playersInGame);
+        const field = new Field(gameState,tilemapData,landmarksData.byLocation,selectionGrid);
+        
+
+        console.log("Initializing Controllers");
+        const turnController = new TurnController(gameState);
+        const unitsController = new UnitController(field);
+        const selectionGridController = new SelectionGridController(field,unitsController);
+        const cardController = new CardController(playersInGame);
+        const effectsSystem = new EffectSystem(field,playersInGame);
+        const combatSystem = new CombatSystem(unitsController,effectsSystem)
+        const landmarksController = new LandmarkController(field,effectsSystem);
+        const mainController = new MainGameController(gameplayScene,landmarksController,
+            turnController,unitsController,selectionGridController,cardController,effectsSystem,
+            combatSystem);
+
+        console.log("Initializing UI");
+        const hudScene = this.game.scene.getScene(SCENES.HUD);
+        const handUIObject = new HandUIObject(hudScene);
+        const unitControlsPanel = new UnitControlsPanel(hudScene);
+        const unitStatDisplay = new UnitStatDisplay(hudScene);
+        const endTurnButton = new EndTurnButton(hudScene);
+        const resourceDisplay = new ResourceDisplay(hudScene);
+        const cardDetailsDisplay = new CardDetailsDisplay(hudScene);
+        const deckStatDisplay = new DeckStatDisplay(hudScene);
+        const discardWindow = new DiscardWindow(hudScene);
+
+        const handUIController = new HandUIController(handUIObject,testGamePlayer);
+        const unitControlsPanelController = new UnitControlPanelController(unitControlsPanel);
+        const unitStatDisplayController = new UnitStatDisplayController(unitStatDisplay)
+        const endTurnButtonController = new EndTurnButtonController(endTurnButton);
+        const resourceDisplayController = new ResourceDisplayController(resourceDisplay);
+        const cardDetailsDisplayController = new CardDetailsDisplayController(cardDetailsDisplay);
+        const deckStatDisplayController = new DeckStatDisplayController(deckStatDisplay);
+        const discardWindowController = new DiscardWindowController(discardWindow);
+
+        const uiController = new UIController(turnController,
+            handUIController,unitControlsPanelController,unitStatDisplayController,endTurnButtonController,
+            resourceDisplayController, cardDetailsDisplayController,deckStatDisplayController,
+            discardWindowController);
+
+        const eventDispatcher = new EventDispatcher(gameplayScene,mainController,uiController);
+
+        console.log("Starting game...")
+        this.game.registry.set(GAME_STATE.playersInGame, playersInGame);
+        this.game.registry.set(GAME_STATE.tilemapData, tilemapData);
+        this.game.registry.set(GAME_STATE.selectionGrid, selectionGrid);
+        this.game.registry.set(GAME_STATE.landmarksData, landmarksData);
+
+        this.game.registry.set(GAME_STATE.state, gameState);
+        this.game.registry.set(GAME_STATE.field, field);
+
+        this.game.registry.set(DEPENDENCIES.turnController, turnController);
+        this.game.registry.set(DEPENDENCIES.unitsController, unitsController);
+        this.game.registry.set(DEPENDENCIES.selectionGridController, selectionGridController);
+        this.game.registry.set(DEPENDENCIES.landmarksController, landmarksController);
+        this.game.registry.set(DEPENDENCIES.cardController,cardController);
+        this.game.registry.set(DEPENDENCIES.effectsSystem, effectsSystem);
+        this.game.registry.set(DEPENDENCIES.combatSystem,combatSystem);
+        this.game.registry.set(DEPENDENCIES.mainController,mainController)
+        
+        this.game.registry.set(DEPENDENCIES.handUIObject, handUIObject);
+        this.game.registry.set(DEPENDENCIES.unitControlsPanel, unitControlsPanel);
+        this.game.registry.set(DEPENDENCIES.unitStatDisplay, unitStatDisplay);
+        this.game.registry.set(DEPENDENCIES.endTurnButton,endTurnButton);
+        this.game.registry.set(DEPENDENCIES.resourceDisplay,resourceDisplay);
+        this.game.registry.set(DEPENDENCIES.cardDetailsDisplay,cardDetailsDisplay)
+        this.game.registry.set(DEPENDENCIES.deckStatDisplay,deckStatDisplay);
+        this.game.registry.set(DEPENDENCIES.discardWindow,discardWindow);
+
+        this.game.registry.set(DEPENDENCIES.handUIController, handUIController);
+        this.game.registry.set(DEPENDENCIES.unitCtrlPanelController, unitControlsPanelController);
+        this.game.registry.set(DEPENDENCIES.unitStatDisplayController, unitStatDisplayController);
+        this.game.registry.set(DEPENDENCIES.endTurnButtonController,endTurnButtonController)
+        this.game.registry.set(DEPENDENCIES.resourceDisplayController,resourceDisplayController);
+        this.game.registry.set(DEPENDENCIES.cardDetailsDisplayController,cardDetailsDisplayController)
+        this.game.registry.set(DEPENDENCIES.deckStatDisplayController,deckStatDisplayController);
+        this.game.registry.set(DEPENDENCIES.discardWindowController,discardWindowController);
+
+
+        this.game.registry.set(DEPENDENCIES.uiController,uiController);
+        this.game.registry.set(DEPENDENCIES.eventDispatcher, eventDispatcher);
 
         this.game.scene.start(SCENES.GAMEPLAY);
     }

@@ -1,51 +1,94 @@
-import { CardData } from "@/game/data/cardData";
-import { Position } from "@/game/data/types/position";
-import Player from "@/game/data/player";
-import Unit from "../unit";
-import CardGO from "./cardGO";
+import { TARGET_TYPES } from "@/game/enums/keys/targetTypes";
+import GameObject from "../common/gameObject";
+import GamePlayer from "../player/gamePlayer";
+import Unit from "../units/unit";
+import Effect from "@/game/skillEffects/effect";
 
-export abstract class Card<T extends CardData> {
+
+export default class Card {
+    /**
+     * Id of this card in the database
+     */
     readonly id: string;
-    readonly data: T;
-    protected owner: Player;
 
-    protected position: Position;
+    /**
+     * Name of this card
+     */
+    readonly name: string;
 
-    protected gameObject? : CardGO<T>;
+    /**
+     * Spell,Hero, or Unit card?
+     */
+    readonly cardType: string;
+
+    /**
+     * Card target type
+     */
+    readonly targetType: string;
+
+    /**
+     * Cost to play this card
+     */
+    readonly cost: number;
     
-    constructor(id:string, data:T, owner:Player){
+    /**
+     * If linked, the unit that is summoned by playing this card
+     */
+    private unit?:Unit;
+
+    /**
+     * If linked, the effects that are cast by playing this card
+     */
+    private effects?: Effect[];
+
+    /**
+     * If effects linked to this card, this should show what the effects are.
+     */
+    readonly description?: string;
+
+    /**
+     * If linked, the owner of this card
+     */
+    private owner?:GamePlayer
+
+    /**
+     * Reference to physicalization of the card rendered on screen
+     */
+    private gameObject?:GameObject;
+
+    
+    constructor(id:string,name:string,cardType:string,cost:number,description?:string,effects?:Effect[],unit?:Unit,targetType:string=TARGET_TYPES.rallyPoint){
         this.id=id;
-        this.data=data;
-        this.owner=owner;
-        this.position = {x:0,y:0};
+        this.name=name;
+        this.cardType=cardType;
+        this.cost=cost;
+        this.effects=(effects)?[...effects]:undefined;
+        this.description=(description)?description: (effects)? effects[0].description: undefined;
+        this.unit=(unit)? unit: undefined;
+        this.targetType=targetType;
     }
 
-    setPosition(position:Position){
-        this.position=position;
-        this.gameObject?.setPosition(position.x,position.y);
-    }
-
-    getPosition(){
-        return this.position;
-    }
-
-    abstract play(target?:Unit | Position) : void;
-
-    abstract render(scene : Phaser.Scene) : CardGO<T>;
-
-    setOwner(owner:Player){
-        this.owner=owner;
-    }
-
-    getOwner(){
-        return this.owner;
+    linkGameObject(gameObject:GameObject):void{
+        this.gameObject=gameObject;
     }
     
-    getGameObject(){
+    setOwner(owner:GamePlayer){
+        this.owner=owner;
+    }
+
+    getGameObject():GameObject|undefined{
         return this.gameObject;
     }
-    
-    hide(){
-        this.gameObject?.setVisible(false);
+
+    getUnit() : Unit | undefined{
+        return this.unit;
+    }
+
+    getEffects():Effect[] | undefined{
+        return this.effects;
+    }
+
+    getOwner():GamePlayer | undefined{
+        return this.owner;
     }
 }

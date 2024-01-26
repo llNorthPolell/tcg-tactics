@@ -10,9 +10,8 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "predeploy" : "npm run build",
-		"deploy" : "gh-pages -d build",
-    "export": "next build"
+    "compile:sass": "node-sass styles/main.scss styles/App.css",
+    "watch:sass": "node-sass styles/main.scss styles/App.css -w"
   },
   "dependencies": {
     "gh-pages": "^6.1.1",
@@ -36,6 +35,8 @@
     "jest": "^29.7.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^29.7.0",
+    "node-sass": "^9.0.0",
+    "phaser3spectorjs": "^0.0.8",
     "ts-jest": "^29.1.1",
     "typescript": "^5"
   }

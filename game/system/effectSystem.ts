@@ -50,7 +50,7 @@ export default class EffectSystem {
     }
 
     /**
-     * Applies the provided effect onto a target unit. If thne effect trigger is "onCast", will be applied immediately.
+     * Applies the provided effect onto a target unit. If the effect trigger is "onCast", will be applied immediately.
      * Otherwise, the effect will be stored in the appropriate list to be applied when the trigger is met.
      * @param effect
      * @param target 

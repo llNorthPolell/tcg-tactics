@@ -58,7 +58,7 @@ export function getUnitsInRange(field:Field, root:Position,range:number){
     const maxPosition = {x:field.mapData.map.width-1,y:field.mapData.map.height-1};
     const units = field.units;
 
-    let unitsInRange:Unit[]=[];
+    let unitsInRange:Set<Unit>=new Set();
 
     function inRangeUnitsRecursive(current:Position,tilesLeft:number){
         if (tilesLeft===0)return;
@@ -70,7 +70,7 @@ export function getUnitsInRange(field:Field, root:Position,range:number){
         const unitOnTile = units.get(`${current.x}_${current.y}`);
 
         if(unitOnTile)
-            unitsInRange.push(unitOnTile);
+            unitsInRange.add(unitOnTile);
             
         inRangeUnitsRecursive({x:current.x-1,y:current.y},tilesLeft-1);
         inRangeUnitsRecursive({x:current.x,y:current.y-1},tilesLeft-1);
@@ -79,5 +79,5 @@ export function getUnitsInRange(field:Field, root:Position,range:number){
     }
 
     inRangeUnitsRecursive(root,range+1);
-    return unitsInRange;
+    return Array.from(unitsInRange);
 } 

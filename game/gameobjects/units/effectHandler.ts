@@ -46,7 +46,7 @@ export default class EffectHandler{
         this.clearInactive(trigger,toRemove)
     }
 
-    private getList(trigger:string){
+    getList(trigger:string){
         const list = this.effects.get(trigger);
         if (!list)
             throw new Error(`No such effect trigger named ${trigger}...`);
@@ -56,8 +56,9 @@ export default class EffectHandler{
     private clearInactive(effectList:string,inactiveIndices:number[]){
         inactiveIndices.forEach(
             (effectIndex:number)=>{
-                this.effects.set(effectList, this.effects.get(effectList)!.splice(effectIndex,1));
+                this.effects.get(effectList)!.splice(effectIndex,1);
             }
         )
     }
+    
 }

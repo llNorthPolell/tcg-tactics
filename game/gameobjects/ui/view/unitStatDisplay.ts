@@ -1,10 +1,8 @@
 import { ASSETS } from "@/game/enums/keys/assets";
 import { HAND_UI_SIZE, PORTRAIT_SIZE } from "@/game/config";
-import { CLASS_ICON_MAPPING, getClassIcon } from "@/game/enums/keys/unitClass";
+import { CLASS_ICON_MAPPING } from "@/game/enums/keys/unitClass";
 import { FONT } from "@/game/enums/keys/font";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
-import Unit from "../../units/unit";
-import UnitGO from "../../units/unitGO";
 
 
 const UNIT_STAT_ICON_SIZE = {

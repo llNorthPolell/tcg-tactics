@@ -1,5 +1,5 @@
 import { CANVAS_SIZE, HAND_UI_SIZE } from "../config";
-import { GAME_STATE } from "../enums/keys/gameState";
+import { DEPENDENCIES } from "../enums/keys/dependencies";
 import { SCENES } from "../enums/keys/scenes";
 import { UI_COLORS } from "../enums/keys/uiColors";
 
@@ -18,7 +18,7 @@ export default class HUD extends Phaser.Scene{
     preload(){}
 
     create(){
-        const turn = this.game.registry.get(GAME_STATE.turnController);
+        const turn = this.game.registry.get(DEPENDENCIES.turnController);
              
         this.bottomPanel = this.add.container(0,CANVAS_SIZE.height*0.8);
         this.rightPanel = this.add.container(CANVAS_SIZE.width*0.87,0);
@@ -34,67 +34,35 @@ export default class HUD extends Phaser.Scene{
         this.bottomPanel.add(bg);
         
         //      hand 
-        const handUIObject = this.game.registry.get(GAME_STATE.handUIObject);
+        const handUIObject = this.game.registry.get(DEPENDENCIES.handUIObject);
         this.bottomPanel.add(handUIObject);
 
-        const endTurnButton = this.game.registry.get(GAME_STATE.endTurnButton);
+        const endTurnButton = this.game.registry.get(DEPENDENCIES.endTurnButton);
         this.bottomPanel.add(endTurnButton);
 
         
         //      unit display 
-        const unitStatDisplay = this.game.registry.get(GAME_STATE.unitStatDisplay);
+        const unitStatDisplay = this.game.registry.get(DEPENDENCIES.unitStatDisplay);
         this.bottomPanel.add(unitStatDisplay);
 
-        const unitControlsPanel = this.game.registry.get(GAME_STATE.unitControlsPanel);
+        const unitControlsPanel = this.game.registry.get(DEPENDENCIES.unitControlsPanel);
         unitStatDisplay.add(unitControlsPanel);
-        
-
         unitStatDisplay.hide();
   
  
         // right panel
-        const resourceDisplay = this.game.registry.get(GAME_STATE.resourceDisplay);
+        const resourceDisplay = this.game.registry.get(DEPENDENCIES.resourceDisplay);
         this.rightPanel.add(resourceDisplay);       
 
-        const deckStatDisplay = this.game.registry.get(GAME_STATE.deckStatDisplay);
+        const deckStatDisplay = this.game.registry.get(DEPENDENCIES.deckStatDisplay);
         this.rightPanel.add(deckStatDisplay);
 
-        const cardDetails = this.game.registry.get(GAME_STATE.cardDetailsDisplay);
+        const cardDetails = this.game.registry.get(DEPENDENCIES.cardDetailsDisplay);
         this.add.existing(cardDetails);
 
-        /*
-        const discardWindow = new DiscardWindow(this);
+        
+        // other
+        const discardWindow = this.game.registry.get(DEPENDENCIES.discardWindow);
         this.add.existing(discardWindow);
-        discardWindow.hide();
-
-        EventEmitter
-        .on(
-            EVENTS.cardEvent.CONFIRM_DISCARD,
-            ()=>{
-                endTurnButton.show();
-                handUIObject.setDiscardMode(false);
-            }
-        )
-        .on(
-            EVENTS.uiEvent.UPDATE_HAND,
-            (hand:Card<CardData>[], heroCard:HeroCard)=>{
-                if (heroCard && hand.length === GAME_CONSTANT.MAX_HAND_SIZE) 
-                    handUIObject.setDiscardMode(true);
-                else
-                    handUIObject.render(hand);
-            }
-        )
-        .on(
-            EVENTS.uiEvent.SHOW_DISCARD_WINDOW,
-            (heroCard:HeroCard)=>{
-                if (!heroCard)return;
-
-                discardWindow!.show(heroCard);
-                endTurnButton.hide();
-
-                console.log(`End Turn button visible = ${endTurnButton.visible}`);
-            }
-        )
-    }*/
     }
 }

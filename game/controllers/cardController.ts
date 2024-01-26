@@ -40,6 +40,10 @@ export default class CardController{
         this.cardManagers.get(activePlayer.id)!.deselectCard();
     }
 
+    handleDiscard(activePlayer:GamePlayer,heroCard:Card, discard:Card){
+        this.cardManagers.get(activePlayer.id)!.handleDiscard(heroCard,discard);
+    }
+
     getSelectedCard(activePlayer:GamePlayer){
         return this.cardManagers.get(activePlayer.id)!.getSelected();
     }

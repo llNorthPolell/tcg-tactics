@@ -82,12 +82,11 @@ export const EVENTS = {
         PLAY_FLOATING_TEXT: "play-floating-text",
 
         /**
-         * Signal to open the discard window. Typically opened when player reaches max hand size
-         * and draws a hero card.
+         * Signal to open the discard window and change hand to take clicks as selecting the card for disposal. 
+         * Typically opened when player reaches max hand size and draws a hero card.
          * @Params heroCard:HeroCard
-         * @Params discard:Card
          */
-        //SHOW_DISCARD_WINDOW: "show-discard-window"
+        HANDLE_DISCARD: "handle-discard"
     }),
     /**
      * For game events like player turns, game over

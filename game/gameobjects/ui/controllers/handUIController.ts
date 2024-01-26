@@ -5,14 +5,12 @@ import GamePlayer from "../../player/gamePlayer";
 import HandUIObject from "../view/handUIObject";
 
 export default class HandUIController{
-    private discardMode : boolean;
     private selected?:Card;
     
     private readonly ui : HandUIObject;
     private readonly cards: CardManager;
 
     constructor(ui: HandUIObject, devicePlayer:GamePlayer){
-        this.discardMode=false;
         this.ui=ui;
         this.cards=devicePlayer.cards;
     }
@@ -49,17 +47,11 @@ export default class HandUIController{
     }
 
     setDiscardMode(discardMode:boolean){
-        this.discardMode=discardMode;
+        this.ui.setDiscardMode(discardMode);
     }
 
     getDiscardMode(){
-        return this.discardMode;
-    }
-
-
-    update(){
-        const hand = this.cards.getHand();
-        this.ui.update(hand,this.discardMode);
+        return this.ui.getDiscardMode();
     }
 
     hide(){
@@ -68,5 +60,10 @@ export default class HandUIController{
 
     show(){
         this.ui.setVisible(true);
+    }
+
+    handleConfirmDiscard(heroCard:Card,discard:Card){
+        this.ui.removeCard(this.cards.getHand(),discard);
+        this.drawCard(heroCard);
     }
 }

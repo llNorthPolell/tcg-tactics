@@ -12,16 +12,14 @@ export default abstract class BaseEffectComponent implements EffectComponent{
     readonly valueType: string;
     readonly stat?: string;
     readonly unit?: UnitData;
-    readonly children?: EffectData[];
     protected active:boolean;
 
-    constructor(type:string,amount?:number,valueType:string=ValueType.VALUE,stat?:string,unit?:UnitData,children?:EffectData[]){
+    constructor(type:string,amount?:number,valueType:string=ValueType.VALUE,stat?:string,unit?:UnitData){
         this.type=type;
         this.amount=amount;
         this.valueType=valueType;
         this.stat=stat;
         this.unit=unit;
-        this.children=children;
         this.active=false;
     }
 

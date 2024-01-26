@@ -35,6 +35,9 @@ import CardDetailsDisplayController from "../gameobjects/ui/controllers/cardDeta
 import DeckStatDisplay from "../gameobjects/ui/view/deckStatDisplay";
 import DeckStatDisplayController from "../gameobjects/ui/controllers/deckStatDisplayController";
 import CombatSystem from "../system/combatSystem";
+import DiscardWindow from "../gameobjects/ui/view/discardWindow";
+import DiscardWindowController from "../gameobjects/ui/controllers/discardWindowController";
+import { DEPENDENCIES } from "../enums/keys/dependencies";
 
 export default class LoadingScene extends Phaser.Scene {
 
@@ -130,6 +133,7 @@ export default class LoadingScene extends Phaser.Scene {
         const resourceDisplay = new ResourceDisplay(hudScene);
         const cardDetailsDisplay = new CardDetailsDisplay(hudScene);
         const deckStatDisplay = new DeckStatDisplay(hudScene);
+        const discardWindow = new DiscardWindow(hudScene);
 
         const handUIController = new HandUIController(handUIObject,testGamePlayer);
         const unitControlsPanelController = new UnitControlPanelController(unitControlsPanel);
@@ -138,10 +142,12 @@ export default class LoadingScene extends Phaser.Scene {
         const resourceDisplayController = new ResourceDisplayController(resourceDisplay);
         const cardDetailsDisplayController = new CardDetailsDisplayController(cardDetailsDisplay);
         const deckStatDisplayController = new DeckStatDisplayController(deckStatDisplay);
+        const discardWindowController = new DiscardWindowController(discardWindow);
 
         const uiController = new UIController(turnController,
             handUIController,unitControlsPanelController,unitStatDisplayController,endTurnButtonController,
-            resourceDisplayController, cardDetailsDisplayController,deckStatDisplayController);
+            resourceDisplayController, cardDetailsDisplayController,deckStatDisplayController,
+            discardWindowController);
 
         const eventDispatcher = new EventDispatcher(gameplayScene,mainController,uiController);
 
@@ -154,33 +160,36 @@ export default class LoadingScene extends Phaser.Scene {
         this.game.registry.set(GAME_STATE.state, gameState);
         this.game.registry.set(GAME_STATE.field, field);
 
-        this.game.registry.set(GAME_STATE.turnController, turnController);
-        this.game.registry.set(GAME_STATE.unitsController, unitsController);
-        this.game.registry.set(GAME_STATE.selectionGridController, selectionGridController);
-        this.game.registry.set(GAME_STATE.landmarksController, landmarksController);
-        this.game.registry.set(GAME_STATE.cardController,cardController);
-        this.game.registry.set(GAME_STATE.effectsSystem, effectsSystem);
-        this.game.registry.set(GAME_STATE.combatSystem,combatSystem);
-        this.game.registry.set(GAME_STATE.mainController,mainController)
+        this.game.registry.set(DEPENDENCIES.turnController, turnController);
+        this.game.registry.set(DEPENDENCIES.unitsController, unitsController);
+        this.game.registry.set(DEPENDENCIES.selectionGridController, selectionGridController);
+        this.game.registry.set(DEPENDENCIES.landmarksController, landmarksController);
+        this.game.registry.set(DEPENDENCIES.cardController,cardController);
+        this.game.registry.set(DEPENDENCIES.effectsSystem, effectsSystem);
+        this.game.registry.set(DEPENDENCIES.combatSystem,combatSystem);
+        this.game.registry.set(DEPENDENCIES.mainController,mainController)
         
-        this.game.registry.set(GAME_STATE.handUIObject, handUIObject);
-        this.game.registry.set(GAME_STATE.unitControlsPanel, unitControlsPanel);
-        this.game.registry.set(GAME_STATE.unitStatDisplay, unitStatDisplay);
-        this.game.registry.set(GAME_STATE.endTurnButton,endTurnButton);
-        this.game.registry.set(GAME_STATE.resourceDisplay,resourceDisplay);
-        this.game.registry.set(GAME_STATE.cardDetailsDisplayController,cardDetailsDisplayController)
-        this.game.registry.set(GAME_STATE.deckStatDisplayController,deckStatDisplayController);
-        this.game.registry.set(GAME_STATE.cardDetailsDisplay,cardDetailsDisplay)
-        this.game.registry.set(GAME_STATE.deckStatDisplay,deckStatDisplay);
+        this.game.registry.set(DEPENDENCIES.handUIObject, handUIObject);
+        this.game.registry.set(DEPENDENCIES.unitControlsPanel, unitControlsPanel);
+        this.game.registry.set(DEPENDENCIES.unitStatDisplay, unitStatDisplay);
+        this.game.registry.set(DEPENDENCIES.endTurnButton,endTurnButton);
+        this.game.registry.set(DEPENDENCIES.resourceDisplay,resourceDisplay);
+        this.game.registry.set(DEPENDENCIES.cardDetailsDisplay,cardDetailsDisplay)
+        this.game.registry.set(DEPENDENCIES.deckStatDisplay,deckStatDisplay);
+        this.game.registry.set(DEPENDENCIES.discardWindow,discardWindow);
 
-        this.game.registry.set(GAME_STATE.handUIController, handUIController);
-        this.game.registry.set(GAME_STATE.unitCtrlPanelController, unitControlsPanelController);
-        this.game.registry.set(GAME_STATE.unitStatDisplayController, unitStatDisplayController);
-        this.game.registry.set(GAME_STATE.endTurnButtonController,endTurnButtonController)
-        this.game.registry.set(GAME_STATE.resourceDisplayController,resourceDisplayController);
+        this.game.registry.set(DEPENDENCIES.handUIController, handUIController);
+        this.game.registry.set(DEPENDENCIES.unitCtrlPanelController, unitControlsPanelController);
+        this.game.registry.set(DEPENDENCIES.unitStatDisplayController, unitStatDisplayController);
+        this.game.registry.set(DEPENDENCIES.endTurnButtonController,endTurnButtonController)
+        this.game.registry.set(DEPENDENCIES.resourceDisplayController,resourceDisplayController);
+        this.game.registry.set(DEPENDENCIES.cardDetailsDisplayController,cardDetailsDisplayController)
+        this.game.registry.set(DEPENDENCIES.deckStatDisplayController,deckStatDisplayController);
+        this.game.registry.set(DEPENDENCIES.discardWindowController,discardWindowController);
 
-        this.game.registry.set(GAME_STATE.uiController,uiController);
-        this.game.registry.set(GAME_STATE.eventDispatcher, eventDispatcher);
+
+        this.game.registry.set(DEPENDENCIES.uiController,uiController);
+        this.game.registry.set(DEPENDENCIES.eventDispatcher, eventDispatcher);
 
         this.game.scene.start(SCENES.GAMEPLAY);
     }

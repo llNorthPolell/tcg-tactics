@@ -3,6 +3,8 @@ import Card from "../cards/card";
 import Deck from "../cards/deck";
 import GamePlayer from "./gamePlayer";
 import { CARD_TYPE } from "@/game/enums/keys/cardType";
+import { EventEmitter } from "@/game/scripts/events";
+import { EVENTS } from "@/game/enums/keys/events";
 
 export default class CardManager{
     /**
@@ -31,16 +33,18 @@ export default class CardManager{
         let roll = Math.floor(Math.random()*this.deck.length);
 
         // Uncomment to debug handling situation of drawing hero card when at max hand size
-        /*while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll].cardType === CARD_TYPE.hero){
+        while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll].cardType === CARD_TYPE.hero){
             console.log(`Testing: Rolled a hero, roll again!`);
             roll = Math.floor(Math.random()*this.deck.length);
-        }*/
+        }
 
         const card = this.deck.splice(roll,1)[0];
 
         if(this.hand.length >= GAME_CONSTANT.MAX_HAND_SIZE){
-            if (card.cardType === CARD_TYPE.hero)
+            if (card.cardType === CARD_TYPE.hero){
                 console.log("Maximum hand size reached! You've drawn a hero. Please discard a card from your hand.");
+                EventEmitter.emit(EVENTS.uiEvent.HANDLE_DISCARD,card);
+            }
             else
                 console.log(`Maximum hand size reached! Card ${card.name} was discarded...`)
             return;
@@ -60,6 +64,11 @@ export default class CardManager{
         this.hand=this.hand.toSpliced(cardIndex,1);
     }
     
+    handleDiscard(heroCard:Card,discard:Card){
+        this.removeCardFromHand(discard);
+        this.insertCardToHand(heroCard);
+    }
+
     getHand(){
         return this.hand;
     }

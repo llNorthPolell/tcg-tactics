@@ -33,15 +33,17 @@ export default class EffectSystem {
     cast(sourcePlayer:GamePlayer, effects: Effect[], target: Unit | Position){
         effects.forEach(
             effect=>{
-                if (effect.targetType===TARGET_TYPES.position && target instanceof Unit)
-                    throw new Error("Attempted to cast an effect meant for positions on a unit...");
                 if (effect.targetType!==TARGET_TYPES.position && !(target instanceof Unit))
                     throw new Error("Attempted to cast an effect meant for units on a location...")
 
-                if (effect.targetType===TARGET_TYPES.position){
-                    this.castPosition(sourcePlayer, effect, target as Position);
-                    return;
+
+                else if (effect.targetType === TARGET_TYPES.position){
+                    if (target instanceof Unit)
+                        this.castPosition(sourcePlayer, effect, target.position()!.get());
+                    else
+                        this.castPosition(sourcePlayer, effect, target as Position);
                 }
+
                 this.castSingleUnit(sourcePlayer,effect,target as Unit);
             }
         )

@@ -24,6 +24,7 @@ export default class EventDispatcher {
         this.handleGameEvents();
         this.handleCardEvents();
         this.handleUnitEvents();
+        this.handleUIEvents();
     }
 
 
@@ -135,5 +136,26 @@ export default class EventDispatcher {
         )
     }
 
-
+    handleUIEvents(){
+        EventEmitter
+        .on(
+            EVENTS.uiEvent.HANDLE_DISCARD,
+            (heroCard:Card)=>{
+                this.ui.setDiscardMode(heroCard);
+            }
+        )
+        .on(
+            EVENTS.cardEvent.SELECT_DISCARD,
+            (discard:Card)=>{
+                this.ui.handleSelectDiscard(discard);
+            }
+        )
+        .on(
+            EVENTS.cardEvent.CONFIRM_DISCARD,
+            (heroCard:Card,discard:Card)=>{
+                this.main.confirmDiscard(heroCard,discard);
+                this.ui.handleConfirmDiscard(heroCard,discard);
+            }
+        )
+    }
 }

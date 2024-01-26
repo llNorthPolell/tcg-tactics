@@ -8,11 +8,13 @@ import { UI_COLORS } from "@/game/enums/keys/uiColors";
 import CardGO from "../../cards/cardGO";
 
 export default class HandUIObject extends Phaser.GameObjects.Container{
+    private discardMode:boolean;
     private readonly cancelCardButton : Button;
     private readonly cardContainer: Phaser.GameObjects.Container;
 
     constructor(scene:Phaser.Scene){
         super(scene,0,0);
+        this.discardMode=false;
 
         this.cardContainer = scene.add.container(0,0);
 
@@ -50,7 +52,8 @@ export default class HandUIObject extends Phaser.GameObjects.Container{
         .on(
             Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
             () => {
-                EventEmitter.emit(EVENTS.cardEvent.SELECT, card);
+                EventEmitter.emit((this.discardMode)?EVENTS.cardEvent.SELECT_DISCARD:
+                    EVENTS.cardEvent.SELECT,card);
             }
         );
         this.cardContainer.add(cardGO);
@@ -71,6 +74,7 @@ export default class HandUIObject extends Phaser.GameObjects.Container{
         hand.forEach(
             (card:Card, index:number)=>{
                 const cardGO = card.getGameObject() as CardGO;
+                if(!cardGO) return;
                 cardGO.setPosition(index * CARD_SIZE.width * 1.05, 0);
             }
         )
@@ -84,4 +88,11 @@ export default class HandUIObject extends Phaser.GameObjects.Container{
         this.cancelCardButton.hide();
     }
 
+    setDiscardMode(discardMode:boolean){
+        this.discardMode=discardMode;
+    }
+
+    getDiscardMode(){
+        return this.discardMode;
+    }
 }

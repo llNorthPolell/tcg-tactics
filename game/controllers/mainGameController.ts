@@ -143,7 +143,7 @@ export default class MainGameController {
         });
 
         if (!activePlayer.isDevicePlayer)
-            // TODO: Currently make other players pass after 3 seconds for testing purposes. Add AI later.
+            // TODO: Temporary bot player test script
 
             if (this.turn.getTurnNumber()===1){
                 this.selectUnit(this.units.getUnitByPosition({x:0,y:0})!,activePlayer);
@@ -267,9 +267,14 @@ export default class MainGameController {
         if (!effects)
             throw new Error(`No effects were defined in ${card.name}...`);
 
+
         this.effects.cast(sourcePlayer,effects,target);
     }
 
+    confirmDiscard(heroCard:Card, discard:Card){
+        const activePlayer = this.turn.getActivePlayer();
+        this.cards.handleDiscard(activePlayer,heroCard,discard);
+    }
 // Unit Events
     /**
      * Call to select a unit. All existing selectors should be hidden first. The previous selected unit

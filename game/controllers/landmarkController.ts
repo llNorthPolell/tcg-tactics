@@ -78,7 +78,6 @@ export default class LandmarkController{
             this.transferLandmark(landmark,occupantOwner);
             this.leaveLandmark(landmark);
             this.enterLandmark(landmark,occupant);
-            
         });
     }
 }

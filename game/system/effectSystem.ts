@@ -50,7 +50,7 @@ export default class EffectSystem {
     }
 
     /**
-     * Applies the provided effect onto a target unit. If thne effect trigger is "onCast", will be applied immediately.
+     * Applies the provided effect onto a target unit. If the effect trigger is "onCast", will be applied immediately.
      * Otherwise, the effect will be stored in the appropriate list to be applied when the trigger is met.
      * @param effect
      * @param target 
@@ -78,7 +78,7 @@ export default class EffectSystem {
      */
     castPosition(sourcePlayer: GamePlayer, effect:Effect, target: Position) {
         const unitsAffected = getUnitsInRange(this.field, target,effect.range);
-
+        console.log(unitsAffected);
         unitsAffected.forEach(
             unit => {
                 const subEffects = effect.createSubEffect();

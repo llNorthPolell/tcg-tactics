@@ -63,3 +63,6 @@ https://llnorthpolell.github.io/tcg-tactics/
 a window will popup prompting the user to discard a card from their hand to make room for the hero card. The user will be unable to act until
 a card is discarded and the OK button is pressed.
 
+
+5. Spell cards can only be played within 2 tiles from a hero. However, spells that cause area of effect can hit targets further away with the 
+splash.

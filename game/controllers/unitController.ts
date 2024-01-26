@@ -35,7 +35,7 @@ export default class UnitController{
         return unit;
     }
 
-    summonUnitByEffect(effect:Effect, index:number=0,position:Position){
+    /*summonUnitByEffect(effect:Effect, index:number=0,position:Position){
         const effectComponents = effect.getComponentsByType("summon");
         if (effectComponents.length === 0)
             throw new Error(`No summon effects found in ${effect.name}`);
@@ -46,7 +46,7 @@ export default class UnitController{
             throw new Error(`Unit was not found in ${effect.name}`);
 
         this.field.units.set(`${position.x}_${position.y}`,unit);
-    }
+    }*/
 
     selectUnit(selectingPlayer:GamePlayer,unit:Unit){
         selectingPlayer.units.selectUnit(unit);

@@ -26,7 +26,7 @@ export type CardData = {
     /**
      * If effects linked to this card, this should show what the effects are.
      */
-    description:string,
+    description?:string,
 
     /**
      * A list of effects if this card is a spell card, or a unit if it is a hero or unit card.

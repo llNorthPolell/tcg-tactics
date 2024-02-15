@@ -1,5 +1,3 @@
-import { TileStatus } from "../tileStatus";
-
 export const AMITY_COLORS = Object.freeze({
     none: 0x000000,
     success: 0x00FFF0,

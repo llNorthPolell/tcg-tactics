@@ -3,15 +3,14 @@ import Unit from "./unit";
 import { EffectTrigger } from "@/game/enums/keys/effectTriggers";
 
 export default class EffectHandler{
-    /**
-     * Reference to parent
-     */
-    private readonly unit:Unit;
-
     private effects: Map<string,Effect[]>;
 
-    constructor(unit:Unit){
-        this.unit=unit;
+    constructor(    
+        /**
+        * Reference to parent
+        */
+        private readonly unit:Unit
+    ){
         this.effects= new Map();
 
         this.effects.set(EffectTrigger.onTurnStart,[]);
@@ -34,11 +33,11 @@ export default class EffectHandler{
         const list = this.getList(trigger);
         list.forEach(
             (effect:Effect,index:number)=>{
-                console.log(`Apply ${effect.name} onto ${this.unit.name}!`)
-                if (effect.isActive())
+                if (effect.isActive()){
+                    console.log(`Apply ${effect.name} onto ${this.unit.name}!`)
                     effect.apply();
-
-                if (!effect.isActive())
+                }
+                else
                     toRemove.push(index);
             }
         );

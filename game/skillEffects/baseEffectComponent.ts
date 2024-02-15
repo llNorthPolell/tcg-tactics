@@ -7,19 +7,15 @@ import EffectSystem from "../system/effectSystem";
 import EffectComponent from "./effectComponent";
 
 export default abstract class BaseEffectComponent implements EffectComponent{
-    readonly type: string;
-    readonly amount?: number;
-    readonly valueType: string;
-    readonly stat?: string;
-    readonly unit?: UnitData;
     protected active:boolean;
 
-    constructor(type:string,amount?:number,valueType:string=ValueType.VALUE,stat?:string,unit?:UnitData){
-        this.type=type;
-        this.amount=amount;
-        this.valueType=valueType;
-        this.stat=stat;
-        this.unit=unit;
+    constructor(
+        public readonly type: string,
+        public readonly amount?: number,
+        public readonly valueType: string=ValueType.VALUE,
+        public readonly stat?: string,
+        public readonly unit?: UnitData
+    ){
         this.active=false;
     }
 

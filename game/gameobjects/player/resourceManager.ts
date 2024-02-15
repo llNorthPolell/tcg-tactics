@@ -5,11 +5,6 @@ import { GAME_CONSTANT } from "@/game/enums/keys/gameConstants";
 
 export default class ResourceManager{
     /**
-     * Reference to parent
-     */
-    readonly player:GamePlayer;
-
-    /**
      * Current resources on hand
      */
     private currResource: number;
@@ -19,8 +14,12 @@ export default class ResourceManager{
      */
     private maxResource:number;
 
-    constructor(player:GamePlayer){
-        this.player=player;
+    constructor(
+        /**
+         * Reference to parent
+         */
+        public readonly player:GamePlayer
+    ){
         this.currResource=0;
         this.maxResource=1;
     }
@@ -72,8 +71,12 @@ export default class ResourceManager{
      * @returns Calculated resource income per turn from landmarks
      */
     calculateIncome(){
-        return this.player.landmarks.get(LandmarkType.STRONGHOLD)!.length * 2 +
-            this.player.landmarks.get(LandmarkType.OUTPOST)!.length +
-            this.player.landmarks.get(LandmarkType.RESOURCE_NODE)!.length;
+        const strongholds = this.player.landmarks.get(LandmarkType.STRONGHOLD)!.length;
+        const outposts = this.player.landmarks.get(LandmarkType.OUTPOST)!.length;
+        const resourceNodes = this.player.landmarks.get(LandmarkType.RESOURCE_NODE)!.length
+        console.log(`${this.player.name} owns: {Strongholds:${strongholds}, Outposts = ${outposts}, resource nodes = ${resourceNodes}}`)
+        return (strongholds * 2) +
+            outposts +
+            resourceNodes;
     }
 }

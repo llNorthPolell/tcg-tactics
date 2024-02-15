@@ -5,11 +5,9 @@ import UnitGO from "../../units/unitGO";
 import { UI_COLORS } from "@/game/enums/keys/uiColors";
 
 export default class UnitStatDisplayController{
-    private readonly ui:UnitStatDisplay;
-
-    constructor(ui:UnitStatDisplay){
-        this.ui=ui;
-    }
+    constructor(
+        private readonly ui:UnitStatDisplay
+    ){}
 
     show(unit:Unit){
         const current = unit.getCurrentStats();

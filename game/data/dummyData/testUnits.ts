@@ -1,6 +1,7 @@
 import { UNIT_TYPE } from "@/game/enums/keys/unitType"
 import { UnitData } from "../types/unitData"
 import { UNIT_CLASS } from "@/game/enums/keys/unitClass"
+import { testTestMageLeaderSkill } from "./testEffects"
 
 // Heroes
 export const testMageHero : UnitData = {
@@ -14,7 +15,10 @@ export const testMageHero : UnitData = {
         def: 0,
         mvt: 2,
         rng: 2
-    }
+    },
+    effects:[
+        testTestMageLeaderSkill
+    ]
 }
 
 
@@ -57,7 +61,7 @@ export const testMageHero : UnitData = {
 
 
 export const testSoldierHero : UnitData = {
-    name: "test_mage_hero",
+    name: "test_soldier_hero",
     unitType: UNIT_TYPE.hero,
     unitClass: UNIT_CLASS.SOLDIER,
     stats: {

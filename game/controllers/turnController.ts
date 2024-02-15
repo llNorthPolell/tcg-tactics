@@ -3,11 +3,9 @@ import { EventEmitter } from "../scripts/events";
 import GameState from "../state/gameState";
 
 export default class TurnController{    
-    private readonly gameState:GameState;
-
-    constructor(gameState:GameState){
-        this.gameState=gameState;
-    }
+    constructor(
+        private readonly gameState:GameState
+    ){}
 
     endTurn(){
         this.gameState.goToNextPlayer();

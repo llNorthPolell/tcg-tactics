@@ -6,14 +6,12 @@ import Unit from "../gameobjects/units/unit";
 import EffectSystem from "../system/effectSystem";
 
 export default class LandmarkController{
-    private readonly field:Field;
 
-    private readonly effectSystem:EffectSystem;
 
-    constructor(field:Field, effectSystem:EffectSystem){
-        this.field=field;
-        this.effectSystem=effectSystem;
-    }
+    constructor(
+        private readonly field:Field,
+        private readonly effectSystem:EffectSystem
+    ){}
 
     transferLandmark(landmark:Landmark, player:GamePlayer){
         if(!landmark.capturable)

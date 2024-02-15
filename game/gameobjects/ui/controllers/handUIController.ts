@@ -7,11 +7,12 @@ import HandUIObject from "../view/handUIObject";
 export default class HandUIController{
     private selected?:Card;
     
-    private readonly ui : HandUIObject;
     private readonly cards: CardManager;
 
-    constructor(ui: HandUIObject, devicePlayer:GamePlayer){
-        this.ui=ui;
+    constructor(
+        private readonly ui : HandUIObject, 
+        devicePlayer:GamePlayer
+    ){
         this.cards=devicePlayer.cards;
     }
 

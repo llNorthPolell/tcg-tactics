@@ -11,19 +11,18 @@ import Field from "../state/field";
 import UnitController from "./unitController";
 
 export default class SelectionGridController{
-    private readonly field:Field;
 
-    private readonly units: UnitController;
 
     private selectionGrid: SelectionTileController[][];
 
     private activeTiles:SelectionTileController[];
     
-    constructor(field:Field,unitController:UnitController){
-        this.field=field;
+    constructor(
+        private readonly field:Field,
+        private readonly units: UnitController
+    ){
         this.activeTiles=[];
         this.selectionGrid=field.selectionGrid;
-        this.units=unitController;
     }
 
     showRallyPoints(activePlayer:GamePlayer){

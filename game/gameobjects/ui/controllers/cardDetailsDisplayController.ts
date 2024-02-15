@@ -3,11 +3,9 @@ import Card from "../../cards/card";
 import CardDetailsDisplay from "../view/cardDetailsDisplay";
 
 export default class CardDetailsDisplayController{
-    private ui:CardDetailsDisplay;
-
-    constructor(ui:CardDetailsDisplay){
-        this.ui=ui;
-    }
+    constructor(
+        private readonly ui:CardDetailsDisplay
+    ){}
 
     show(card:Card){
         this.ui.setCardName(card.name);

@@ -7,12 +7,13 @@ import { Position } from "@/game/data/types/position";
 import { inRange } from "@/game/scripts/util";
 
 export default class AttackSelector extends Phaser.GameObjects.Container{
-    private readonly unit:Unit;
     private attacker?: Unit;
 
-    constructor(scene:Phaser.Scene,unit:Unit){
+    constructor(
+        scene:Phaser.Scene,
+        private readonly unit:Unit
+    ){
         super(scene,0,0);
-        this.unit=unit;
 
         const bg = scene.add.rectangle(0,0,TILESIZE.width, TILESIZE.height).setOrigin(0);
         this.add(bg);

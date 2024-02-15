@@ -1,13 +1,10 @@
 import Card from "./card";
 
 export default class Deck{
-    private cards:Card[];
-    private leader: Card;
-
-    constructor(cards:Card[], leader:Card){
-        this.cards=cards;
-        this.leader=leader;
-    }
+    constructor(
+        private cards:Card[], 
+        private leader: Card
+    ){}
 
     getCards(){
         return this.cards;

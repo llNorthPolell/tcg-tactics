@@ -4,10 +4,6 @@ import Landmark from "./landmark";
 import { LandmarkType } from "@/game/enums/landmarkType";
 
 export default class Capturable{
-    /**
-     * Reference to parent
-     */
-    private readonly landmark:Landmark;
 
     /**
      * Capturing this landmark will capture linked landmarks.
@@ -25,15 +21,17 @@ export default class Capturable{
      */
     private captureTick:number;
 
-    /**
-     * If true, landmark can be captured normally by a unit waiting on it for 3 turns. 
-     * In the case of a rally point, this value is false as unit must capture nearby stronghold/outpost.
-     */
-    private directCapture:boolean;
-
-    constructor(landmark:Landmark,directCapture:boolean=true){
-        this.landmark=landmark;
-
+    constructor(
+        /**
+         * Reference to parent
+         */
+        private readonly landmark:Landmark,
+        /**
+         * If true, landmark can be captured normally by a unit waiting on it for 3 turns. 
+         * In the case of a rally point, this value is false as unit must capture nearby stronghold/outpost.
+         */
+        private directCapture:boolean=true
+    ){
         this.captureTick=0;
         this.linkedLandmarks=[];
 

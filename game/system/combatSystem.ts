@@ -5,13 +5,10 @@ import { inRange } from "../scripts/util";
 import EffectSystem from "./effectSystem";
 
 export default class CombatSystem{
-    private readonly effects: EffectSystem
-    private readonly units: UnitController;
-
-    constructor(units:UnitController,effects: EffectSystem){
-        this.units=units;
-        this.effects=effects;
-    };
+    constructor(
+        private readonly units: UnitController,
+        private readonly effects: EffectSystem
+    ){}
 
     initiateFight(attacker:Unit, defender:Unit){
         this.attack(attacker,defender);

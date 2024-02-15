@@ -1,8 +1,12 @@
 import { EffectData } from "../data/types/effectData";
 import { EffectDataComponent } from "../data/types/effectDataComponent";
+import { TargetFilterData } from "../data/types/targetFilterData";
 import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
 import Effect from "./effect";
 import EffectComponent from "./effectComponent";
+import IsClass from "./filters/isClass";
+import StatIs from "./filters/statIs";
+import TargetFilter from "./filters/targetFilter";
 import HealthChange from "./healthChange";
 import StatChange from "./statChange";
 
@@ -12,8 +16,8 @@ export default class EffectFactory{
         effectData.forEach(
             data=>{ 
                 const components = this.createEffectComponents(data.components);
-
-                const newEffect = new Effect(data,components);
+                const targetFilters = this.createFilters(data.targetFilters)
+                const newEffect = new Effect(data,targetFilters,components);
 
                 effects.push(newEffect);
             }
@@ -50,5 +54,26 @@ export default class EffectFactory{
             }
         )
         return effectComponents;
+    }
+
+
+    private static createFilters(filterDataList?:TargetFilterData[]): TargetFilter[]{
+        if (!filterDataList) return [];
+        let filters : TargetFilter[] = [];
+        filterDataList.forEach(
+            (filterData:TargetFilterData)=>{
+                switch(filterData.type){
+                    case "isClass":
+                        filters.push(new IsClass(filterData.class!));
+                        break;
+                    case "statIs":
+                        filters.push(new StatIs(filterData.stat!, filterData.compareOp!, filterData.amount!));
+                    default:
+                        break;
+                }
+            }
+        )
+
+        return filters;
     }
 }

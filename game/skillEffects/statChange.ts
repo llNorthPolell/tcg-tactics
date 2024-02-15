@@ -5,22 +5,17 @@ import Unit from "../gameobjects/units/unit";
 import UnitGO from "../gameobjects/units/unitGO";
 import BaseEffectComponent from "./baseEffectComponent";
 
-export default class StatChange extends BaseEffectComponent{
-    readonly stat:string;
-
-    readonly amount:number;
-
-    readonly valueType:string;
-    
+export default class StatChange extends BaseEffectComponent{   
     private delta:number;
 
     private target?:Unit;
 
-    constructor(stat:string,amount:number,valueType:string=ValueType.VALUE){
+    constructor(
+        public readonly stat:string,
+        public readonly amount:number,
+        public readonly valueType:string=ValueType.VALUE
+    ){
         super(SPELL_EFFECT_TYPE.statChange,amount,valueType,stat);
-        this.stat=stat;
-        this.amount=amount;
-        this.valueType=valueType;
         this.delta=0;
     }
 

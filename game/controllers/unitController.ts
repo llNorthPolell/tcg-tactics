@@ -7,12 +7,9 @@ import GameObjectFactory from "../gameobjects/gameObjectFactory";
 import GamePlayer from "../gameobjects/player/gamePlayer";
 
 export default class UnitController{
-
-    private readonly field:Field;
-
-    constructor(field:Field){
-        this.field=field;
-    }
+    constructor(
+        private readonly field:Field
+    ){}
 
     summonUnitByCard(scene:Phaser.Scene, card:Card,position:Position) : Unit{
         const unit = card.getUnit();

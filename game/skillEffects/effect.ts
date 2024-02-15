@@ -3,6 +3,7 @@ import { Position } from "../data/types/position";
 import Unit from "../gameobjects/units/unit";
 import EffectComponent from "./effectComponent";
 import EffectFactory from "./effectFactory";
+import TargetFilter from "./filters/targetFilter";
 
 export default class Effect{
     /**
@@ -19,6 +20,11 @@ export default class Effect{
      * What this effect can be casted on
      */
     readonly targetType:string;
+
+    /**
+     * Further list of conditions to check 
+     */
+    readonly targetFilters:TargetFilter[];
 
     /**
      * How long this skill will last
@@ -82,10 +88,11 @@ export default class Effect{
      */
     private target?:Unit|Position;
 
-    constructor(effectData:EffectData,components:EffectComponent[]){
+    constructor(effectData:EffectData,targetFilters:TargetFilter[],components:EffectComponent[]){
         this.name=effectData.name;
         this.description=effectData.description;
         this.targetType=effectData.targetType;
+        this.targetFilters = targetFilters;
         this.duration=(effectData.duration)?effectData.duration:0;
         this.trigger=effectData.trigger;
         this.components=components;
@@ -115,6 +122,11 @@ export default class Effect{
      * Applies the effect onto the assigned target unit or position on the field. 
      */
     apply(){
+        // TODO : Add filter for things like leader skills, or spells that affect certain traits
+        /*let filtersMet = false;
+        this.checkFilters();
+        if (!filtersMet)return;*/
+
         console.log(`Applied ${this.name} onto ${(this.target instanceof Unit)?this.target?.name: `${this.target?.x},${this.target?.y}`}...`);
         this.components.forEach(
             component=>{
@@ -129,10 +141,24 @@ export default class Effect{
         this.forceRemove();
     }
 
+    /**
+     * @returns List of effects created by this effect
+     */
     createSubEffect(){
         return EffectFactory.createEffects(this.creates);
     }
 
+
+    checkFilters(){
+        if (!(this.target instanceof Unit)) return true;
+        this.targetFilters.forEach(
+            filter=>{
+                if (filter.check(this.target as Unit)===false) return false;
+            }
+        )
+
+        return true;
+    }
 
     /**
      * Sets the target for this effect

@@ -33,11 +33,7 @@ export default class CardManager{
         let roll = Math.floor(Math.random()*this.deck.length);
 
         // Uncomment to debug handling situation of drawing hero card when at max hand size
-<<<<<<< HEAD
-        /*while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll].cardType === CARD_TYPE.hero){
-=======
        /* while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll].cardType === CARD_TYPE.hero){
->>>>>>> master
             console.log(`Testing: Rolled a hero, roll again!`);
             roll = Math.floor(Math.random()*this.deck.length);
         }*/

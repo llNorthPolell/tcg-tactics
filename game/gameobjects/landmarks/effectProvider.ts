@@ -5,15 +5,16 @@ import { EffectData } from "@/game/data/types/effectData";
 import EffectFactory from "@/game/skillEffects/effectFactory";
 
 export default class EffectProvider{
-    /**
-     * Reference to parent
-     */
-    private readonly landmark: Landmark;
+
 
     private readonly effects:Effect[];
     
-    constructor(landmark:Landmark){
-        this.landmark=landmark;
+    constructor(
+        /**
+         * Reference to parent
+         */
+        private readonly landmark: Landmark
+    ){
         let data:EffectData[];
 
         switch(landmark.type){

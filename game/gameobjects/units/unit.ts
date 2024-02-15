@@ -8,35 +8,12 @@ import EffectHandler from "./effectHandler";
 import UnitStatuses from "./unitStatuses";
 
 export default class Unit{
-    /**
-     * Id of the unit
-     */
-    readonly id: string;
-
-    /**
-     * Name of the unit
-     */
-    readonly name: string;
 
     /**
      * Base stats (values shown on the card)
      */
     readonly base: UnitStats;
 
-    /**
-     * Id of this unit's card
-     */
-    readonly cardId: string;
-
-    /**
-     * Class of this unit (i.e. Soldier, Ranger, Mage, etc.)
-     */
-    readonly unitClass :string;
-
-    /**
-     * Hero or Unit?
-     */
-    readonly unitType:string;
 
     /**
      * Current Stats (values after damage, buffs and debuffs)
@@ -95,12 +72,30 @@ export default class Unit{
      * @param unitType Hero or Unit?
      * @param effects Effects casted by this unit
      */
-    constructor(id:string,name:string,cardId:string,unitClass:string,unitType:string,stats:UnitStats,effects:Effect[]){
-        this.id=id; 
-        this.name=name;
-        this.cardId=cardId;
-        this.unitClass=unitClass;
-        this.unitType=unitType;
+    constructor(
+        /**
+         * Id of the unit
+         */
+        public readonly id: string,
+        /**
+         * Name of the unit
+         */
+        public readonly name: string,
+        /**
+         * Id of this unit's card
+         */
+        public readonly cardId: string,
+        /**
+         * Class of this unit (i.e. Soldier, Ranger, Mage, etc.)
+         */
+        public readonly unitClass :string,
+        /**
+         * Hero or Unit?
+         */
+        public readonly unitType:string,
+        stats:UnitStats,
+        effects:Effect[]
+    ){
         this.base={...stats};
         this.effects=[...effects];
         this.current={...stats};

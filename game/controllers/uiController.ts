@@ -12,38 +12,20 @@ import Unit from "../gameobjects/units/unit";
 import TurnController from "./turnController";
 
 export default class UIController{
-    private readonly turn:TurnController;
-
-    private readonly hand: HandUIController;
-    private readonly unitControls: UnitControlPanelController;
-    private readonly unitStats: UnitStatDisplayController
-    private readonly endTurn: EndTurnButtonController;
-    private readonly resources:ResourceDisplayController;
-    private readonly cardDetails: CardDetailsDisplayController;
-    private readonly deckStats: DeckStatDisplayController;
-    private readonly discard: DiscardWindowController;
 
     private discardMode:boolean;
 
-    constructor(turn:TurnController,
-        hand: HandUIController,
-        unitControls: UnitControlPanelController,
-        unitStats:UnitStatDisplayController,
-        endTurn:EndTurnButtonController,
-        resources:ResourceDisplayController,
-        cardDetails: CardDetailsDisplayController,
-        deckStats: DeckStatDisplayController,
-        discard:DiscardWindowController){
-        this.turn=turn;
-        this.hand=hand;
-        this.unitControls=unitControls;
-        this.unitStats=unitStats;
-        this.endTurn=endTurn;
-        this.resources=resources;
-        this.cardDetails=cardDetails;
-        this.deckStats=deckStats;
-        this.discard=discard;
-
+    constructor(
+        private readonly turn:TurnController,
+        private readonly hand: HandUIController,
+        private readonly unitControls: UnitControlPanelController,
+        private readonly unitStats: UnitStatDisplayController,
+        private readonly endTurn: EndTurnButtonController,
+        private readonly resources:ResourceDisplayController,
+        private readonly cardDetails: CardDetailsDisplayController,
+        private readonly deckStats: DeckStatDisplayController,
+        private readonly discard: DiscardWindowController
+    ){
         this.discardMode=false;
     }
 
@@ -56,7 +38,7 @@ export default class UIController{
 
         const {current,max} = activePlayer.resources.get();
         const income = activePlayer.resources.calculateIncome();
-
+        console.log(`Income = ${income}`)
         this.resources.setCurrent(current);
         this.resources.setMax(max);
         this.resources.setIncome(income);

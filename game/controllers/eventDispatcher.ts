@@ -8,14 +8,12 @@ import MainGameController from "./mainGameController";
 import UIController from "./uiController";
 
 export default class EventDispatcher {
-    private readonly main:MainGameController;
-    private readonly ui:UIController;
+
 
     constructor(scene:Phaser.Scene,
-        main:MainGameController,
-        ui:UIController){
-        this.main = main;
-        this.ui= ui;
+        private readonly main:MainGameController,
+        private readonly ui:UIController
+    ){
         this.handleEvents();
     }
 
@@ -83,7 +81,12 @@ export default class EventDispatcher {
                     this.ui.handlePlayCard();
                 }
                 catch(error){
+                    if (target instanceof Unit)
+                        console.log(`Failed to play card on ${target.name}`);
+                    else
+                        console.log(`Failed to play card on (${target.x},${target.y})`)
                     console.log((error as Error).message);
+                    console.trace();
                     return false;
                 }
             }

@@ -6,20 +6,14 @@ import { EffectTrigger } from "../enums/keys/effectTriggers";
 import { Position } from "../data/types/position";
 import { getUnitsInRange } from "../scripts/util";
 import { TARGET_TYPES } from "../enums/keys/targetTypes";
-import { SPELL_EFFECT_TYPE } from "../enums/keys/spellEffectType";
-import { EffectData } from "../data/types/effectData";
-import EffectFactory from "../skillEffects/effectFactory";
 
 /**
  * Centralized location to handle effects
  */
 export default class EffectSystem {
-    private readonly field: Field;
-
     private passives: Map<number, Effect[]>;
 
-    constructor(field: Field, playersInGame: GamePlayer[]) {
-        this.field = field;
+    constructor(private readonly field: Field, playersInGame: GamePlayer[]) {
         this.passives = new Map();
 
         playersInGame.forEach(
@@ -44,7 +38,8 @@ export default class EffectSystem {
                         this.castPosition(sourcePlayer, effect, target as Position);
                 }
 
-                this.castSingleUnit(sourcePlayer,effect,target as Unit);
+                else
+                    this.castSingleUnit(sourcePlayer,effect,target as Unit);
             }
         )
     }
@@ -56,6 +51,7 @@ export default class EffectSystem {
      * @param target 
      */
     castSingleUnit(sourcePlayer: GamePlayer, effect: Effect, target: Unit) {
+        console.log(`In castSingleUnit with ${effect.name}, ${target.name}. Target.EffectHandler: ${target.effectHandler}`);
         if (effect.targetType === TARGET_TYPES.ally && target.getOwner()?.getTeam() !== sourcePlayer.getTeam())
             return;
         if (effect.targetType === TARGET_TYPES.enemy && target.getOwner()?.getTeam() === sourcePlayer.getTeam())
@@ -67,8 +63,12 @@ export default class EffectSystem {
             case EffectTrigger.onTurnStart:
                 targetUnit.effectHandler.insertToTriggerList(EffectTrigger.onTurnStart, effect);
                 break;
+            case EffectTrigger.passive:
+                targetUnit.effectHandler.insertToTriggerList(EffectTrigger.passive, effect);
+                break;
             default:
                 targetUnit.effectHandler.applyInstant(effect);
+                console.log(`Cast ${effect.name} successfully on ${target.name}`)
                 break;
         }
     }
@@ -77,8 +77,9 @@ export default class EffectSystem {
      * Applies the provided effect onto a target position
      */
     castPosition(sourcePlayer: GamePlayer, effect:Effect, target: Position) {
+        console.log(`In castPosition with ${effect.name}, (${target.x},${target.y}).`)
         const unitsAffected = getUnitsInRange(this.field, target,effect.range);
-
+        console.log(unitsAffected);
         unitsAffected.forEach(
             unit => {
                 const subEffects = effect.createSubEffect();

@@ -8,12 +8,14 @@ import { CARD_TYPE } from "@/game/enums/keys/cardType";
 import { Position } from "@/game/data/types/position";
 
 export default class CardGO extends Phaser.GameObjects.Container implements GameObject{
-    private readonly card:Card;
     private stats?:CardGOStats;
 
-    constructor(scene : Phaser.Scene, card:Card,initialPosition:Position){
+    constructor(
+        scene : Phaser.Scene, 
+        private readonly card:Card,
+        initialPosition:Position
+    ){
         super(scene,initialPosition.x,initialPosition.y);
-        this.card=card;
         this.renderCardBase(scene);
     }
 

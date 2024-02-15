@@ -7,25 +7,21 @@ import { EVENTS } from "@/game/enums/keys/events";
 export default class SelectionTileController{
     readonly id:string;
 
-    private readonly tile:SelectionTile;
-
     private tileSelectionType:TileSelectionType;
     
-    private initStatus:TileStatus;
-
-    constructor(tile:SelectionTile,initStatus:TileStatus){
+    constructor(
+        private readonly tile:SelectionTile,
+        private readonly initStatus:TileStatus
+    ){
         this.id=`${tile.position.x}_${tile.position.y}`;
-        this.tile=tile;
         this.tileSelectionType=TileSelectionType.NONE;
-        this.initStatus=initStatus;
         this.tile.setInteractive()
             .on(
                 Phaser.Input.Events.GAMEOBJECT_POINTER_UP,
                 ()=>{
                     this.handleClick();
                 }
-            )
-        
+            )  
     }
 
     show(status:TileStatus=this.initStatus){

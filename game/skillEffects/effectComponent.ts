@@ -1,4 +1,3 @@
-import { EffectData } from "../data/types/effectData";
 import { Position } from "../data/types/position";
 import { UnitData } from "../data/types/unitData";
 import Unit from "../gameobjects/units/unit";

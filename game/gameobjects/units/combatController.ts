@@ -5,11 +5,9 @@ import { EventEmitter } from "@/game/scripts/events";
 import UnitGO from "./unitGO";
 
 export default class CombatController {
-    private readonly unit:Unit;
-
-    constructor(unit:Unit){
-        this.unit=unit;
-    }
+    constructor(
+        private readonly unit:Unit
+    ){}
 
     changeHealth(amount:number){
         if(this.unit.getCurrentStats().hp + amount < this.unit.base.hp)

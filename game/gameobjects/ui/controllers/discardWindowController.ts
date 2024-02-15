@@ -4,13 +4,12 @@ import DiscardWindow from "../view/discardWindow";
 import { EVENTS } from "@/game/enums/keys/events";
 
 export default class DiscardWindowController{
-    private readonly ui: DiscardWindow;
     private heroCard?:Card;
     private cardToDiscard?: Card;
     
-    constructor(ui:DiscardWindow){
-        this.ui=ui;
-    }
+    constructor(
+        private readonly ui: DiscardWindow
+    ){}
 
     show(heroCard:Card){
         this.ui.setHeroCard(heroCard);

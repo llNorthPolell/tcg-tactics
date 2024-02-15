@@ -14,19 +14,18 @@ export default class PositionController{
     private destination?:Position;
 
     /**
-     * Reference to parent
-     */
-    private readonly unit:Unit;
-
-    /**
      * 
      * @param unit Reference to parent
      * @param initPosition Location of the gameObject (in tiles)
      */
-    constructor(unit:Unit,initPosition:Position){
-        this.unit=unit;
+    constructor(
+        /**
+         * Reference to parent
+         */
+        private readonly unit:Unit,
+        initPosition:Position
+    ){
         this.position=initPosition;
-
     }
 
     /**

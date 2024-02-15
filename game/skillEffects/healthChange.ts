@@ -4,13 +4,11 @@ import Unit from "../gameobjects/units/unit";
 import BaseEffectComponent from "./baseEffectComponent";
 
 export default class HealthChange extends BaseEffectComponent{
-    readonly amount: number;
-    readonly valueType:string;
-
-    constructor(amount:number, valueType:string=ValueType.VALUE){
+    constructor(
+        public readonly amount: number, 
+        public readonly valueType:string=ValueType.VALUE
+    ){
         super(SPELL_EFFECT_TYPE.healthChange,amount,valueType);
-        this.amount=amount;
-        this.valueType=valueType;
     }
     
     apply(target:Unit): void {

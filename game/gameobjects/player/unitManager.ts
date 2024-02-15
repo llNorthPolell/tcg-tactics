@@ -2,12 +2,7 @@ import { UNIT_TYPE } from "@/game/enums/keys/unitType";
 import Unit from "../units/unit";
 import GamePlayer from "./gamePlayer";
 
-export default class UnitManager{
-    /**
-     * Reference to parent 
-     */
-    readonly player:GamePlayer
-    
+export default class UnitManager{ 
     /**
      * List of followers under the player's control
      */
@@ -32,8 +27,12 @@ export default class UnitManager{
     /**
      * @param player Reference to parent
      */
-    constructor(player:GamePlayer){
-        this.player=player;
+    constructor(
+        /**
+         * Reference to parent 
+         */
+        public readonly player:GamePlayer
+    ){
         this.activeUnits=[];
         this.activeChampions=[];
         this.graveyard=[];

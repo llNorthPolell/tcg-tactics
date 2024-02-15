@@ -7,11 +7,6 @@ import { EventEmitter } from "@/game/scripts/events";
 import { EVENTS } from "@/game/enums/keys/events";
 
 export default class CardManager{
-    /**
-     * Reference to parent
-     */
-    readonly player:GamePlayer;
-
     private deck: Card[];
     private hand:Card[];
 
@@ -19,8 +14,13 @@ export default class CardManager{
 
     private selected?:Card;
 
-    constructor(player:GamePlayer, deck:Deck){
-        this.player=player;
+    constructor(
+        /**
+         * Reference to parent
+         */
+        readonly player:GamePlayer, 
+        deck:Deck
+    ){
         this.hand=[];
         this.deck=deck.getCards();
         this.deckLeader=deck.getLeader();
@@ -33,7 +33,11 @@ export default class CardManager{
         let roll = Math.floor(Math.random()*this.deck.length);
 
         // Uncomment to debug handling situation of drawing hero card when at max hand size
+<<<<<<< HEAD
         /*while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll].cardType === CARD_TYPE.hero){
+=======
+       /* while (this.hand.length < GAME_CONSTANT.MAX_HAND_SIZE && this.deck[roll].cardType === CARD_TYPE.hero){
+>>>>>>> master
             console.log(`Testing: Rolled a hero, roll again!`);
             roll = Math.floor(Math.random()*this.deck.length);
         }*/

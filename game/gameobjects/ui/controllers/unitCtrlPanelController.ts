@@ -1,11 +1,9 @@
 import UnitControlsPanel from "../view/unitControlsPanel";
 
 export default class UnitControlPanelController{
-    private readonly ui:UnitControlsPanel;
-
-    constructor(ui : UnitControlsPanel){
-        this.ui=ui;
-    }
+    constructor(
+        private readonly ui:UnitControlsPanel
+    ){}
 
     show(){
         this.ui.show();

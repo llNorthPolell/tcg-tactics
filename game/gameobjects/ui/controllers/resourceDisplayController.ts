@@ -1,11 +1,9 @@
 import ResourceDisplay from "../view/resourceDisplay";
 
 export default class ResourceDisplayController{
-    private readonly ui:ResourceDisplay;
-
-    constructor(ui:ResourceDisplay){
-        this.ui=ui;
-    }
+    constructor(
+        private readonly ui:ResourceDisplay
+    ){}
 
     setMax(max:number){
         this.ui.setMax(max);

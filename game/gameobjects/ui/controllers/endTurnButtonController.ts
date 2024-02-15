@@ -1,11 +1,10 @@
 import EndTurnButton from "../view/endTurnButton";
 
 export default class EndTurnButtonController{
-    private readonly ui:EndTurnButton;
 
-    constructor(ui:EndTurnButton){
-        this.ui=ui;
-    }
+    constructor(
+        private readonly ui:EndTurnButton
+    ){}
 
     show(){
         this.ui.show();

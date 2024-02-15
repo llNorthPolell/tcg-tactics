@@ -2,11 +2,6 @@ import Unit from "./unit";
 
 export default class UnitStatuses {
     /**
-     * Reference to parent
-     */
-    private readonly unit;
-
-    /**
      * If true, unit is unable to act.
      */
     private stunned:boolean
@@ -26,8 +21,12 @@ export default class UnitStatuses {
      */
     private rush:boolean
 
-    constructor(unit:Unit){
-        this.unit=unit;
+    constructor(
+        /**
+         * Reference to parent
+         */
+        private readonly unit:Unit
+    ){
         this.frozen=false;
         this.sleeping=false;
         this.stunned=false;

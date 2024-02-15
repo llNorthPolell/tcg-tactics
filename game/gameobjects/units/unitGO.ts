@@ -26,11 +26,13 @@ export default class UnitGO extends Phaser.GameObjects.Container implements Game
     private hpText:Phaser.GameObjects.Text;
     private pwrText:Phaser.GameObjects.Text;
 
-    private readonly unit:Unit;
     
-    constructor(scene : Phaser.Scene, unit:Unit){
+    
+    constructor(
+        scene : Phaser.Scene, 
+        private readonly unit:Unit
+    ){
         super(scene,-TILESIZE.width,-TILESIZE.height);
-        this.unit = unit;
 
         const unitType = unit.unitType;
         const baseColor = unit.getOwner()!.color;

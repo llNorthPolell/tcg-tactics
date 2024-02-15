@@ -2,9 +2,11 @@ import { TILESIZE } from "../../config";
 import { Position } from "../../data/types/position";
 
 export default class SelectionTile extends Phaser.GameObjects.Rectangle{    
-    readonly position:Position;
-
-    constructor(scene:Phaser.Scene,position:Position,initColor:number){
+    constructor(
+        scene:Phaser.Scene,
+        public readonly position:Position,
+        initColor:number
+    ){
         super(scene,
             position.x * TILESIZE.width,
             position.y * TILESIZE.height,

@@ -5,6 +5,7 @@ import { ValueType } from "@/game/enums/keys/valueType";
 import { SPELL_EFFECT_TYPE } from "@/game/enums/keys/spellEffectType";
 import { UNIT_TYPE } from "@/game/enums/keys/unitType";
 import { UNIT_CLASS } from "@/game/enums/keys/unitClass";
+import { UnitStatField } from "@/game/enums/keys/unitStatField";
 
 export const testFireball:EffectData[] = [
     {
@@ -102,6 +103,40 @@ export const testNaturesBlessing : EffectData[] = [
         isRemovable: true
     }
 ]
+
+export const testTestMageLeaderSkill: EffectData = {
+    name: "Elemental Eminence",
+    description: "+25% PWR to all allied mages",
+    targetType: TARGET_TYPES.position,
+    trigger: EffectTrigger.passive,
+    creates: [
+        {
+            name: "Elemental Eminence",
+            description: "+25% PWR to all allied mages",
+            duration: -1,
+            targetType: TARGET_TYPES.ally,
+            targetFilters:[
+                {
+                    type: "isClass",
+                    class: UNIT_CLASS.MAGE
+                }
+            ],
+            trigger: EffectTrigger.onCast,
+            components: [
+                {
+                    type: SPELL_EFFECT_TYPE.statChange,
+                    stat: UnitStatField.PWR,
+                    amount: 25,
+                    valueType: ValueType.PERCENTAGE
+                }
+            ],
+            isRemovable: false
+        }
+    ],
+    range: -1,
+    isRemovable: false
+}
+
 
 export const testFireGolem :EffectData[] = [
     {

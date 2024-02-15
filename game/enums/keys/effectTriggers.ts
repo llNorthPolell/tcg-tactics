@@ -10,6 +10,10 @@ export const EffectTrigger = Object.freeze({
      */
     onRemove : "onRemove",
 
+    /**
+     * Applied on summon and instantly to units already on the field
+     */
+    passive: "passive",
 
     // Turn-Based
     /**

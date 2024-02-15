@@ -7,29 +7,9 @@ import Deck from "../cards/deck";
 
 export default class GamePlayer{
     /**
-     * Id of this player (in game)
-     */
-    readonly id : number;    
-    
-    /**
      * Name of this player
      */
     readonly name: string;
-
-    /**
-     * Color representing player's team
-     */
-    readonly color: number;
-
-    /**
-     * If true, UI will update accordingly with this player's information
-     */
-    readonly isDevicePlayer:boolean;
-
-    /**
-     * Number representing which team this player is on
-     */
-    private team: number;
 
     /**
      * Resource manager for access to generate and spend resources, and get resources on hand
@@ -51,12 +31,27 @@ export default class GamePlayer{
      */
     readonly cards: CardManager;
 
-    constructor(id:number,playerInfo:Player, color:number, team:number,deck:Deck, isDevicePlayer:boolean=false){
-        this.id=id;
+    constructor(
+        /**
+         * Id of this player (in game)
+         */
+        readonly id : number,
+        playerInfo:Player, 
+        /**
+         * Color representing player's team
+         */
+        readonly color: number, 
+        /**
+         * Number representing which team this player is on
+         */
+        private team: number,
+        deck:Deck, 
+        /**
+         * If true, UI will update accordingly with this player's information
+         */
+        readonly isDevicePlayer:boolean=false
+    ){
         this.name=playerInfo.name;
-        this.color=color;
-        this.team=team;
-        this.isDevicePlayer=isDevicePlayer;
 
         this.resources=new ResourceManager(this);
         this.units=new UnitManager(this);

@@ -1,4 +1,5 @@
 import { EffectDataComponent } from "./effectDataComponent"
+import { TargetFilterData } from "./targetFilterData"
 
 export type EffectData = {
     /**
@@ -16,6 +17,12 @@ export type EffectData = {
      */
 	targetType: string,
     
+    /**
+     * If present, will also check if target meets these additional filters 
+     * (examples: class="Soldier", hp<50%, trait{fairy, etc. )
+     */
+    targetFilters?:TargetFilterData[],
+
     /**
      * How long this skill will last
      * @note 0 or undefined = instant

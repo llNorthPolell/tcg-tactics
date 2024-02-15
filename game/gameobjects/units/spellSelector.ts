@@ -10,12 +10,13 @@ import { inRange } from "@/game/scripts/util";
 import { AMITY_COLORS } from "@/game/enums/keys/amityColors";
 
 export default class SpellSelector extends Phaser.GameObjects.Container{
-    private unit:Unit;
     private selector:Phaser.GameObjects.Image;
 
-    constructor(scene:Phaser.Scene,unit:Unit){
+    constructor(
+        scene:Phaser.Scene,
+        private readonly unit:Unit
+    ){
         super(scene,0,0);
-        this.unit=unit;
 
         const bg = scene.add.rectangle(0,0,TILESIZE.width, TILESIZE.height).setOrigin(0);
         this.add(bg);

@@ -18,63 +18,39 @@ import TurnController from "./turnController";
 import UnitController from "./unitController";
 
 export default class MainGameController {
-    /**
-     * Scene where game objects are created
-     */
-    private readonly scene: Phaser.Scene;
-
-    /**
-     * Controller for managing turn-based system
-     */
-    private readonly turn: TurnController;
-
-    /**
-     * Controller for managing landmarks (capturing, buffing occupants, etc.)
-     */
-    private readonly landmarks: LandmarkController;
-
-    /**
-     * Controller for managing units (summoning, selecting, moving, etc.)
-     */
-    private readonly units: UnitController;
-
-    /**
-     * Controller for managing selection grid (show and hide selection tiles)
-     */
-    private readonly selectionGrid: SelectionGridController;
-
-    /**
-     * Controller for managing cards (draw, select, remove)
-     */
-    private readonly cards: CardController;
-
-    /**
-     * Centralized system for managing skill effects in play
-     */
-    private readonly effects: EffectSystem;
-
-    /**
-     * Centralized system for managing fights
-     */
-    private readonly combat:CombatSystem;
-
-    constructor(scene: Phaser.Scene,
-        landmarks: LandmarkController,
-        turn: TurnController,
-        units: UnitController,
-        selectionGrid: SelectionGridController,
-        cards: CardController,
-        effects: EffectSystem,
-        combat: CombatSystem) {
-        this.scene = scene;
-        this.landmarks = landmarks;
-        this.turn = turn;
-        this.units = units;
-        this.selectionGrid = selectionGrid;
-        this.cards = cards;
-        this.effects = effects;
-        this.combat=combat;
-    }
+    constructor(
+        /**
+         * Scene where game objects are created
+         */
+        private readonly scene: Phaser.Scene,
+        /**
+         * Controller for managing landmarks (capturing, buffing occupants, etc.)
+         */
+        private readonly landmarks: LandmarkController,
+        /**
+         * Controller for managing turn-based system
+         */
+        private readonly turn: TurnController,
+        /**
+         * Controller for managing units (summoning, selecting, moving, etc.)
+         */
+        private readonly units: UnitController,
+        /**
+         * Controller for managing selection grid (show and hide selection tiles)
+         */
+        private readonly selectionGrid: SelectionGridController,
+        /**
+         * Controller for managing cards (draw, select, remove)
+         */
+        private readonly cards: CardController,
+        /**
+         * Centralized system for managing skill effects in play
+         */
+        private readonly effects: EffectSystem,
+        /**
+         * Centralized system for managing fights
+         */
+        private readonly combat:CombatSystem) {}
 
 // Game Events
 
@@ -88,8 +64,6 @@ export default class MainGameController {
             (player: GamePlayer) => {
                 for (let i = 0; i < 2; i++)
                     this.cards.drawCard(player);
-
-                console.log(`${player.name}: ${JSON.stringify(this.cards.getHand(player).map(card => card.name))}`);
             }
         )
         this.turn.endTurn();
@@ -262,13 +236,13 @@ export default class MainGameController {
      * @param target The unit or location to apply the spell
      */
     playSpellCard(sourcePlayer:GamePlayer,card:Card,target:Unit|Position){
-        const effects = card.getEffects();
+        const spellCardEffects = card.getEffects();
 
-        if (!effects)
+        if (!spellCardEffects)
             throw new Error(`No effects were defined in ${card.name}...`);
 
 
-        this.effects.cast(sourcePlayer,effects,target);
+        this.effects.cast(sourcePlayer,spellCardEffects,target);
     }
 
     confirmDiscard(heroCard:Card, discard:Card){
